@@ -7,7 +7,7 @@ import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 export default function Home() {
   const db = useFirestore();
   
-  // 公開済みの記事を最新順に取得（インデックスが必要です）
+  // 公開済みの記事を最新順に取得
   const articlesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -22,28 +22,26 @@ export default function Home() {
 
   return (
     <center>
-      <table width="95%" border={0} cellPadding={10} cellSpacing={0}>
+      <table width="95%" border={0} cellPadding={10}>
         <tbody>
           <tr>
             <td align="center" style={{ borderBottom: '3px double #000000' }}>
-              <font size="6"><b>北海学園大学新聞会</b></font><br />
+              <h1>北海学園大学新聞会</h1>
               <font size="2">HOKKAI GAKUEN UNIVERSITY NEWSPAPER CLUB</font>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <table width="95%" border={0} cellPadding={10} cellSpacing={0}>
+      <table width="95%" border={0} cellPadding={10}>
         <tbody>
           <tr>
             <td width="20%" valign="top" style={{ borderRight: '1px solid #000000' }}>
               <p><b>■ メニュー</b></p>
-              <font size="3">
-                <ul>
-                  <li><Link href="/">トップページ</Link></li>
-                  <li><Link href="/admin">管理者室ログイン</Link></li>
-                </ul>
-              </font>
+              <ul>
+                <li><Link href="/">トップページ</Link></li>
+                <li><Link href="/admin">管理者室ログイン</Link></li>
+              </ul>
               <hr />
               <font size="1">
                 Since: 1950<br />
@@ -61,7 +59,7 @@ export default function Home() {
                   <tr>
                     <td>
                       {isLoading ? (
-                        <p>現在データを読み込んでいます...</p>
+                        <p>Loading...</p>
                       ) : (
                         <ul style={{ listStyleType: 'square' }}>
                           {articles && articles.length > 0 ? (
@@ -85,9 +83,10 @@ export default function Home() {
                   </tr>
                   <tr>
                     <td>
-                      <p>北海学園大学新聞会へようこそ。</p>
-                      <p>現在、note.comと連携した情報発信を行っております。最新の活動情報は上の記事リストからご覧いただけます。</p>
-                      <p>当サイトは軽量化のため、余計な画像を排除しております。</p>
+                      <p>北海学園大学新聞会 公式ホームページへようこそ。</p>
+                      <p>当会は1950年の創立以来、学内の情報を発信し続けております。</p>
+                      <p>現在、note.comと連携した情報発信のデジタル化を推進しております。最新の活動報告は上記の記事リストよりご覧いただけます。</p>
+                      <p>当サイトは表示速度を最優先し、極限まで軽量化を行っております。</p>
                     </td>
                   </tr>
                 </tbody>
@@ -105,7 +104,7 @@ export default function Home() {
             <td align="center">
               <font size="2">
                 Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.<br />
-                無断転載・無断引用を禁じます。
+                無断転載・複製を禁じます。
               </font>
             </td>
           </tr>

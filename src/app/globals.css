@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 阿部寛のホームページ風 究極の軽量化設定 */
+/* 阿部寛のホームページ風 究極の軽量化・爆速設定 */
 body {
   background-color: #ffffff;
   color: #000000;
   font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
-  margin: 10px;
+  margin: 20px;
   line-height: 1.2;
 }
 
@@ -41,16 +41,22 @@ th, td {
   padding: 4px;
 }
 
-h1, h2, h3 {
+h1 {
+  font-size: 24pt;
   margin: 0;
-  padding: 0;
 }
 
 ul {
   margin: 10px 0;
-  padding-left: 20px;
+  padding-left: 30px;
 }
 
 li {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #000;
+  height: 1px;
 }

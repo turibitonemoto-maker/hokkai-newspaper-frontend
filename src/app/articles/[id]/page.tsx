@@ -11,8 +11,8 @@ export default function ArticlePage() {
   const docRef = id && db ? doc(db, 'articles', id as string) : null;
   const { data: article, isLoading } = useDoc(docRef);
 
-  if (isLoading) return <center>読み込み中...</center>;
-  if (!article) return <center>記事が見つかりません。<br /><Link href="/">トップへ戻る</Link></center>;
+  if (isLoading) return <center><br />読み込み中...</center>;
+  if (!article) return <center><br />記事が見つかりませんでした。<br /><Link href="/">トップへ戻る</Link></center>;
 
   return (
     <center>
@@ -20,23 +20,23 @@ export default function ArticlePage() {
         <tbody>
           <tr>
             <td>
-              <Link href="/">トップ</Link> ＞ 記事閲覧
+              <Link href="/">トップ</Link> ＞ 記事詳細
               <hr />
               <h1>{article.title}</h1>
               <p><font size="2">公開日: {article.publishDate.split('T')[0]} | カテゴリ: {article.categoryId}</font></p>
               <hr />
               
               <div style={{ lineHeight: '1.6', fontSize: '1.1rem' }}>
-                {article.excerpt}
-                <br /><br />
+                <p>{article.excerpt}</p>
+                <br />
                 <center>
-                  <table border={1} cellPadding={10} style={{ backgroundColor: '#ffffcc' }}>
+                  <table border={1} cellPadding={20} style={{ backgroundColor: '#ffffcc' }}>
                     <tbody>
                       <tr>
-                        <td>
-                          <b>この記事の続きは note.com でご覧いただけます</b><br /><br />
-                          <a href={article.noteUrl} target="_blank" rel="noopener noreferrer">
-                            ⇒ note.com で全文を読む
+                        <td align="center">
+                          <b>この記事の全文は note.com で公開中です</b><br /><br />
+                          <a href={article.noteUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            ⇒ note.com で続きを読む（外部リンク）
                           </a>
                         </td>
                       </tr>
@@ -45,6 +45,7 @@ export default function ArticlePage() {
                 </center>
               </div>
 
+              <br />
               <hr />
               <center>
                 <Link href="/">[ トップページへ戻る ]</Link>
