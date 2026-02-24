@@ -6,15 +6,15 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
-    --primary: 220 100% 35%; /* 濃い青色（阿部寛スタイル） */
-    --border: 0 0% 80%;
+    --primary: 0 0% 0%;
+    --border: 0 0% 0%;
   }
 }
 
 body {
   background-color: #ffffff;
   color: #000000;
-  font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
   line-height: 1.2;
 }
 
@@ -23,38 +23,20 @@ a {
   text-decoration: underline;
 }
 
+a:visited {
+  color: #800080;
+}
+
 a:hover {
   color: #ff0000;
 }
 
-h1, h2, h3 {
-  background-color: #000080;
-  color: #ffffff;
-  padding: 4px 8px;
-  font-size: 1.2rem;
-  margin: 10px 0;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  border: 1px solid #000000;
-}
-
-th, td {
-  border: 1px solid #000000;
-  padding: 4px;
-  text-align: left;
-}
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 10px;
-}
-
-/* 不要なアニメーションを削除 */
+/* 究極のシンプル化のため、shadcnのアニメーション等を抑制 */
 * {
   animation: none !important;
   transition: none !important;
+}
+
+table, th, td {
+  border: 1px solid #000000;
 }
