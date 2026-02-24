@@ -1,20 +1,45 @@
 "use client";
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, FileText, Settings, LogOut, Home, Users } from 'lucide-react';
+import { Newspaper, LayoutDashboard, FileText, Settings, LogOut, Home, Users, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
+  if (isUserLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   const menuItems = [
     { label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
-    { label: '記事一覧', icon: FileText, href: '/admin/articles' },
+    { label: '記事管理', icon: FileText, href: '/admin' },
     { label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
-    { label: 'メンバー管理', icon: Users, href: '/admin/members' },
-    { label: '設定', icon: Settings, href: '/admin/settings' },
   ];
 
   return (
@@ -58,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="ログアウト" className="text-destructive hover:text-destructive">
+                <SidebarMenuButton onClick={handleSignOut} tooltip="ログアウト" className="text-destructive hover:text-destructive">
                   <LogOut />
                   <span>ログアウト</span>
                 </SidebarMenuButton>
@@ -75,11 +100,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div className="flex items-center gap-4">
               <div className="text-sm text-right hidden sm:block">
-                <p className="font-medium text-primary">新聞会 管理者</p>
-                <p className="text-xs text-muted-foreground">admin@hgu-shimbun.jp</p>
+                <p className="font-medium text-primary">新聞会 メンバー</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-primary font-bold">
-                A
+                {user.email?.charAt(0).toUpperCase()}
               </div>
             </div>
           </header>

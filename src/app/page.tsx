@@ -2,22 +2,22 @@
 
 import Link from 'next/link';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 
 export default function Home() {
   const db = useFirestore();
   
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
-    return collection(db, 'articles');
+    // 公開済みの記事のみを取得
+    return query(collection(db, 'articles'), where('isPublished', '==', true));
   }, [db]);
 
   const { data: rawArticles, isLoading } = useCollection(articlesRef);
 
-  // 公開済みの記事を日付順に並び替え
+  // 日付順に並び替え
   const articles = rawArticles 
     ? [...rawArticles]
-        .filter(a => a.isPublished === true)
         .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
         .slice(0, 50)
     : [];
@@ -42,7 +42,7 @@ export default function Home() {
               <p><b>■ メニュー</b></p>
               <ul>
                 <li><Link href="/">トップページ</Link></li>
-                <li><Link href="/admin">管理システム</Link></li>
+                <li><Link href="/login">管理者用入口</Link></li>
               </ul>
               <hr />
               <font size="1">
@@ -88,7 +88,6 @@ export default function Home() {
                     <td>
                       <p>北海学園大学新聞会 公式ホームページへようこそ。</p>
                       <p>当サイトは表示速度を最優先し、極限まで軽量化を行っております。</p>
-                      <p>記事の作成・編集は管理システムより行ってください。</p>
                     </td>
                   </tr>
                 </tbody>
