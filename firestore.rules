@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * FIREBASE SECURITY RULES DOCUMENTATION
+     *
+     * Core Philosophy:
+     * This ruleset implements a Role-Based Access Control (RBAC) model combined with Public Read 
+     * access for published content. It is designed for the Hokkai Gakuen University Newspaper 
+     * Club's website, which synchronizes content from note.com.
+     *
+     * Data Structure:
+     * - /articles/{articleId}: The primary content collection. Includes metadata for synchronization and AI summaries.
+     * - /categories/{categoryId}: Thematic groupings for articles.
+     * - /authors/{authorId}: Profiles of newspaper club members.
+     * - /roles_admin/{userId}: A dedicated collection for administrative authorization.
+     *
+     * Key Security Decisions:
+     * - Authorization Independence: Read access for articles is determined by an 'isPublished' flag 
+     *   on the document itself, avoiding expensive cross-document lookups.
+     * - Administrative RBAC: Write access across all content collections is restricted to users 
+     *   whose UID exists in the '/roles_admin' collection.
+     * - Denormalization: Article documents contain 'authorIds' and 'categoryId' to allow for 
+     *   performant queries without joins.
+     * - Prototyping Flexibility: While authorization is strictly enforced based on roles and 
+     *   publication status, specific data types for content fields are not validated to allow 
+     *   for rapid iteration of the sync logic.
+     */
+
+    // --- Helper Functions ---
+
+    /** @description Checks if the user is authenticated. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** @description Checks if the authenticated user has administrative privileges. */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /** @description Validates if a document is marked as published. */
+    function isPublished() {
+      return resource.data.isPublished == true;
+    }
+
+    /** @description Ensures a document exists and the user is an admin for destructive operations. */
+    function isExistingAdmin() {
+      return resource != null && isAdmin();
+    }
+
+    // --- Collection Rules ---
+
+    /**
+     * @description Rules for Articles. Public users can read published articles. Admins have full control.
+     * @path /articles/{articleId}
+     * @allow (get) If the article isPublished or the user is an admin.
+     * @deny (create) If the user is not an admin or the internal 'id' does not match the path.
+     * @principle Role-based writes with visibility-based reads (isPublished).
+     */
+    match /articles/{articleId} {
+      allow get: if isPublished() || isAdmin();
+      allow list: if isAdmin() || (request.query.limit <= 100 && resource.data.isPublished == true);
+      
+      allow create: if isAdmin() && request.resource.data.id == articleId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Rules for Categories. Publicly readable for navigation. Admin-only management.
+     * @path /categories/{categoryId}
+     * @allow (list) All users can list categories to build navigation menus.
+     * @deny (update) If the user is not an admin.
+     * @principle Public read-only access for organizational metadata.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == categoryId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Rules for Authors. Publicly readable author profiles. Admin-only management.
+     * @path /authors/{authorId}
+     * @allow (get) Any visitor can view an author's profile.
+     * @deny (delete) If the user is not an admin.
+     * @principle Public read access for profile data with restricted write access.
+     */
+    match /authors/{authorId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && request.resource.data.id == authorId;
+      allow update: if isExistingAdmin() && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Rules for Admin Roles. Used primarily for 'exists()' checks in other rules.
+     * @path /roles_admin/{userId}
+     * @allow (get) A user can check their own admin status.
+     * @deny (list) Listing administrators is prohibited for security.
+     * @principle Secure storage of privilege-granting tokens (documents).
+     */
+    match /roles_admin/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if false;
+      allow create, update, delete: if false; // Managed via Admin SDK or manual override.
+    }
+  }
+}
