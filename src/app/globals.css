@@ -2,22 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --border: 0 0% 0%;
-  }
-}
-
 body {
   background-color: #ffffff;
   color: #000000;
   font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
-  line-height: 1.2;
+  margin: 0;
+  padding: 0;
 }
 
+/* リンクの基本スタイル（青・下線） */
 a {
   color: #0000ff;
   text-decoration: underline;
@@ -31,12 +24,23 @@ a:hover {
   color: #ff0000;
 }
 
-/* 究極のシンプル化のため、shadcnのアニメーション等を抑制 */
+/* 究極の軽量化のため、全アニメーションを停止 */
 * {
   animation: none !important;
   transition: none !important;
 }
 
-table, th, td {
+/* テーブルの枠線 */
+table {
+  border-collapse: collapse;
+}
+
+th, td {
   border: 1px solid #000000;
+  padding: 5px;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  padding: 0;
 }

@@ -11,35 +11,48 @@ export default function ArticlePage() {
   const docRef = id && db ? doc(db, 'articles', id as string) : null;
   const { data: article, isLoading } = useDoc(docRef);
 
-  if (isLoading) return <div className="container">読み込み中...</div>;
-  if (!article) return <div className="container">記事が見つかりません。<br /><Link href="/">トップへ戻る</Link></div>;
+  if (isLoading) return <center>読み込み中...</center>;
+  if (!article) return <center>記事が見つかりません。<br /><Link href="/">トップへ戻る</Link></center>;
 
   return (
-    <div className="container">
-      <nav style={{ marginBottom: '10px' }}>
-        <Link href="/">トップ</Link> ＞ {article.title}
-      </nav>
+    <center>
+      <table width="800" border={0} cellPadding={10} style={{ textAlign: 'left' }}>
+        <tbody>
+          <tr>
+            <td>
+              <Link href="/">トップ</Link> ＞ 記事閲覧
+              <hr />
+              <h1>{article.title}</h1>
+              <p><font size="2">公開日: {article.publishDate.split('T')[0]} | カテゴリ: {article.categoryId}</font></p>
+              <hr />
+              
+              <div style={{ lineHeight: '1.6', fontSize: '1.1rem' }}>
+                {article.excerpt}
+                <br /><br />
+                <center>
+                  <table border={1} cellPadding={10} style={{ backgroundColor: '#ffffcc' }}>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <b>この記事の続きは note.com でご覧いただけます</b><br /><br />
+                          <a href={article.noteUrl} target="_blank" rel="noopener noreferrer">
+                            ⇒ note.com で全文を読む
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </center>
+              </div>
 
-      <article>
-        <h1>{article.title}</h1>
-        <div style={{ fontSize: '0.8rem', marginBottom: '10px', borderBottom: '1px solid #ccc' }}>
-          公開日: {article.publishDate.split('T')[0]} | 
-          <a href={article.noteUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: '10px' }}>
-            note.comで全文を読む
-          </a>
-        </div>
-        
-        <div style={{ whiteSpace: 'pre-wrap', padding: '10px 0' }}>
-          {article.excerpt}
-          <p style={{ marginTop: '20px', fontWeight: 'bold' }}>
-            ※全文は上のリンクからnote.comでご確認ください。
-          </p>
-        </div>
-      </article>
-
-      <footer style={{ marginTop: '30px', borderTop: '1px solid #000', textAlign: 'center' }}>
-        <Link href="/">トップページへ戻る</Link>
-      </footer>
-    </div>
+              <hr />
+              <center>
+                <Link href="/">[ トップページへ戻る ]</Link>
+              </center>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </center>
   );
 }
