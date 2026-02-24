@@ -15,14 +15,9 @@ service cloud.firestore {
     // --- コレクションルール ---
 
     match /articles/{articleId} {
-      // 公開済みなら誰でも、そうでないなら管理者のみ読み取り可能
-      allow get: if resource.data.isPublished == true || isAdmin();
-      // クエリでisPublished == trueが指定されていれば誰でもリスト表示可能
-      allow list: if isAdmin() || (request.query.limit <= 100 && resource.data.isPublished == true);
-      
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      // 公開済みなら誰でも閲覧可能、未公開なら管理者のみ
+      allow read: if resource.data.isPublished == true || isAdmin();
+      allow write: if isAdmin();
     }
 
     match /categories/{categoryId} {

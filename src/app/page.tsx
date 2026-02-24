@@ -1,22 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useCollection, useAuth } from '@/firebase';
+import { useCollection } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { useFirestore, useMemoFirebase } from '@/firebase';
-import { useEffect } from 'react';
-import { signInAnonymously } from 'firebase/auth';
 
 export default function Home() {
   const db = useFirestore();
-  const auth = useAuth();
-
-  // 確実にパーミッションを通すためにバックグラウンドで匿名ログイン
-  useEffect(() => {
-    if (auth) {
-      signInAnonymously(auth).catch(() => {});
-    }
-  }, [auth]);
   
   const articlesQuery = useMemoFirebase(() => {
     if (!db) return null;
@@ -24,77 +14,82 @@ export default function Home() {
       collection(db, 'articles'),
       where('isPublished', '==', true),
       orderBy('publishDate', 'desc'),
-      limit(30)
+      limit(50)
     );
   }, [db]);
 
   const { data: articles, isLoading } = useCollection(articlesQuery);
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '10px', backgroundColor: '#ffffff', color: '#000000' }}>
-      <header style={{ borderBottom: '2px double #000', marginBottom: '10px' }}>
-        <h1 style={{ fontSize: '1.8rem', textAlign: 'center', margin: '10px 0' }}>北海学園大学新聞会</h1>
-        <p style={{ textAlign: 'right', fontSize: '0.8rem' }}>
-          最終更新日: {new Date().toLocaleDateString('ja-JP')}
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '10px', backgroundColor: '#ffffff', color: '#000000' }}>
+      <header style={{ borderBottom: '3px double #000', marginBottom: '15px' }}>
+        <h1 style={{ fontSize: '2.2rem', textAlign: 'center', margin: '15px 0', letterSpacing: '0.2em' }}>
+          北海学園大学新聞会 公式サイト
+        </h1>
+        <p style={{ textAlign: 'right', fontSize: '0.85rem' }}>
+          Last Updated: {new Date().toLocaleDateString('ja-JP')}
         </p>
       </header>
 
-      <table border={1} cellPadding={5} style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #000' }}>
+      <table border={1} cellPadding={10} style={{ width: '100%', borderCollapse: 'collapse', border: '2px solid #000' }}>
         <tbody>
           <tr>
-            <td valign="top" style={{ width: '150px', backgroundColor: '#eeeeee' }}>
-              <strong style={{ display: 'block', borderBottom: '1px solid #000', marginBottom: '5px' }}>メニュー</strong>
-              <div style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
-                ・<Link href="/">トップ</Link><br />
+            <td valign="top" style={{ width: '180px', backgroundColor: '#e0e0e0' }}>
+              <strong style={{ display: 'block', borderBottom: '1px solid #000', marginBottom: '10px', fontSize: '1.1rem' }}>
+                INDEX
+              </strong>
+              <div style={{ fontSize: '0.95rem', lineHeight: '2.0' }}>
+                ・<Link href="/">トップページ</Link><br />
                 ・<Link href="/category/Campus">学内ニュース</Link><br />
-                ・<Link href="/category/Event">イベント</Link><br />
-                ・<Link href="/category/Interview">インタビュー</Link><br />
-                ・<Link href="/admin">管理者</Link>
+                ・<Link href="/category/Event">行事案内</Link><br />
+                ・<Link href="/category/Interview">学員取材</Link><br />
+                ・<Link href="/admin">管理者室</Link>
               </div>
-              <p style={{ fontSize: '0.7rem', marginTop: '20px' }}>
-                since 1950
-              </p>
+              <div style={{ marginTop: '30px', borderTop: '1px solid #000', paddingTop: '10px', fontSize: '0.75rem' }}>
+                <p>Since: 1950</p>
+                <p>HGU Newspaper Club</p>
+              </div>
             </td>
             <td valign="top">
-              <h2 style={{ fontSize: '1.1rem', backgroundColor: '#000080', color: '#ffffff', padding: '3px 8px', margin: '0 0 10px 0' }}>
-                最新のニュース (note.com同期)
+              <h2 style={{ fontSize: '1.2rem', backgroundColor: '#000080', color: '#ffffff', padding: '5px 10px', margin: '0 0 15px 0' }}>
+                最新情報 (note.com同期記事)
               </h2>
               
               {isLoading ? (
-                <p>読み込み中...</p>
+                <p>通信中...</p>
               ) : (
-                <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+                <ul style={{ listStyleType: 'square', paddingLeft: '20px', margin: 0 }}>
                   {articles && articles.length > 0 ? (
                     articles.map((article) => (
-                      <li key={article.id} style={{ marginBottom: '8px', borderBottom: '1px dotted #ccc', paddingBottom: '4px' }}>
-                        <span style={{ fontSize: '0.8rem', color: '#666', marginRight: '8px' }}>
+                      <li key={article.id} style={{ marginBottom: '10px' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#333', marginRight: '10px' }}>
                           [{article.publishDate.split('T')[0]}]
                         </span>
-                        <Link href={`/articles/${article.id}`} style={{ fontWeight: 'bold' }}>
+                        <Link href={`/articles/${article.id}`} style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
                           {article.title}
                         </Link>
                       </li>
                     ))
                   ) : (
-                    <li>記事がありません。</li>
+                    <li>記事のデータが存在しません。</li>
                   )}
                 </ul>
               )}
 
-              <h2 style={{ fontSize: '1.1rem', backgroundColor: '#000080', color: '#ffffff', padding: '3px 8px', margin: '20px 0 10px 0' }}>
-                新聞会について
+              <h2 style={{ fontSize: '1.2rem', backgroundColor: '#000080', color: '#ffffff', padding: '5px 10px', margin: '25px 0 15px 0' }}>
+                新聞会紹介
               </h2>
-              <p style={{ fontSize: '0.9rem', lineHeight: '1.5' }}>
-                北海学園大学公認の学生新聞組織です。学内の出来事や学生の声を独自の視点で発信しています。<br />
-                現在はnote.comと連携し、最新情報をリアルタイムにお届けしています。
+              <p style={{ fontSize: '1.0rem', lineHeight: '1.6' }}>
+                当新聞会は北海学園大学の公認団体です。学内の出来事、学生の活躍、教職員の声を独自に取材し、紙面およびインターネットを通じて発信しています。現在はnote.comを活用したデジタル発信に注力しております。
               </p>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <footer style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.8rem', borderTop: '1px solid #000', paddingTop: '10px' }}>
-        Copyright (C) 2024 HGU Newspaper Club. All Rights Reserved.
+      <footer style={{ marginTop: '30px', textAlign: 'center', fontSize: '0.85rem', borderTop: '1px solid #000', paddingTop: '15px' }}>
+        Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.<br />
+        当サイトの内容の無断転載を禁じます。
       </footer>
     </div>
   );
