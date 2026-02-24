@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "campus-hero",
+      "description": "Panoramic view of university campus building",
+      "imageUrl": "https://images.unsplash.com/photo-1583373834259-46cc92173cb7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx1bml2ZXJzaXR5JTIwY2FtcHVzfGVufDB8fHx8MTc3MTgzODY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "university campus"
+    },
+    {
+      "id": "news-event",
+      "description": "Students gathering at a campus event",
+      "imageUrl": "https://images.unsplash.com/photo-1576495199011-eb94736d05d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYW1wdXMlMjBsaWZlfGVufDB8fHx8MTc3MTkwNjc1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "campus life"
+    },
+    {
+      "id": "interview-scene",
+      "description": "Interview session in a modern office or studio",
+      "imageUrl": "https://images.unsplash.com/photo-1690264588465-41c2c7b3a582?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8aW50ZXJ2aWV3JTIwb2ZmaWNlfGVufDB8fHx8MTc3MTkxMDEwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "interview office"
+    },
+    {
+      "id": "sports-club",
+      "description": "University sports club activity",
+      "imageUrl": "https://images.unsplash.com/photo-1529267988596-c9e1c9e4670f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxzcG9ydHMlMjB0cmFpbmluZ3xlbnwwfHx8fDE3NzE5MTAxMDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sports training"
+    },
+    {
+      "id": "academic-lecture",
+      "description": "Lecture hall with students",
+      "imageUrl": "https://images.unsplash.com/photo-1477281765962-ef34e8bb0967?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx1bml2ZXJzaXR5JTIwbGVjdHVyZXxlbnwwfHx8fDE3NzE5MTAxMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "university lecture"
+    }
+  ]
 }
