@@ -1,11 +1,10 @@
 import type {Metadata} from 'next';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: '北海学園大学新聞会 | HGU Newspaper Club',
-  description: '北海学園大学の最新ニュース、イベント、インタビューをお届けする学生新聞会公式サイト。',
+  description: '北海学園大学の最新ニュースをお届けする学生新聞会公式サイト。',
 };
 
 export default function RootLayout({
@@ -18,7 +17,6 @@ export default function RootLayout({
       <body>
         <FirebaseClientProvider>
           {children}
-          <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>

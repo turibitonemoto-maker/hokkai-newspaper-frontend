@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 阿部寛のホームページ風 究極の軽量化設定 */
 body {
   background-color: #ffffff;
   color: #000000;
   font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
-  margin: 0;
-  padding: 0;
+  margin: 10px;
+  line-height: 1.2;
 }
 
 /* リンクの基本スタイル（青・下線） */
@@ -24,23 +25,32 @@ a:hover {
   color: #ff0000;
 }
 
-/* 究極の軽量化のため、全アニメーションを停止 */
+/* アニメーションとトランジションを完全に無効化 */
 * {
   animation: none !important;
   transition: none !important;
 }
 
-/* テーブルの枠線 */
+/* テーブルのスタイル */
 table {
   border-collapse: collapse;
 }
 
 th, td {
   border: 1px solid #000000;
-  padding: 5px;
+  padding: 4px;
 }
 
 h1, h2, h3 {
   margin: 0;
   padding: 0;
+}
+
+ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 5px;
 }

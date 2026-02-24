@@ -7,14 +7,14 @@ import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 export default function Home() {
   const db = useFirestore();
   
-  // 公開済みの記事を最新順に取得
+  // 公開済みの記事を最新順に取得（インデックスが必要です）
   const articlesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
       where('isPublished', '==', true),
       orderBy('publishDate', 'desc'),
-      limit(100)
+      limit(50)
     );
   }, [db]);
 
@@ -22,31 +22,35 @@ export default function Home() {
 
   return (
     <center>
-      <table width="95%" border={0} cellPadding={0} cellSpacing={0}>
+      <table width="95%" border={0} cellPadding={10} cellSpacing={0}>
         <tbody>
           <tr>
-            <td colSpan={2} align="center" style={{ backgroundColor: '#ffffff', padding: '20px 0', borderBottom: '3px double #000000' }}>
-              <font size="6"><b>北海学園大学新聞会 公式サイト</b></font><br />
+            <td align="center" style={{ borderBottom: '3px double #000000' }}>
+              <font size="6"><b>北海学園大学新聞会</b></font><br />
               <font size="2">HOKKAI GAKUEN UNIVERSITY NEWSPAPER CLUB</font>
             </td>
           </tr>
+        </tbody>
+      </table>
+
+      <table width="95%" border={0} cellPadding={10} cellSpacing={0}>
+        <tbody>
           <tr>
-            <td width="20%" valign="top" style={{ backgroundColor: '#f0f0f0', padding: '10px' }}>
-              <b>■ メニュー ■</b><br /><br />
+            <td width="20%" valign="top" style={{ borderRight: '1px solid #000000' }}>
+              <p><b>■ メニュー</b></p>
               <font size="3">
-              ・<Link href="/">トップページ</Link><br />
-              ・<Link href="/category/Campus">学内ニュース</Link><br />
-              ・<Link href="/category/Event">行事案内</Link><br />
-              ・<Link href="/category/Interview">学員取材</Link><br />
-              ・<Link href="/admin">管理者室</Link><br />
+                <ul>
+                  <li><Link href="/">トップページ</Link></li>
+                  <li><Link href="/admin">管理者室ログイン</Link></li>
+                </ul>
               </font>
               <hr />
-              <font size="2">
-               since: 1950<br />
-               更新日: {new Date().toLocaleDateString('ja-JP')}
+              <font size="1">
+                Since: 1950<br />
+                Last Update: {new Date().toLocaleDateString('ja-JP')}
               </font>
             </td>
-            <td width="80%" valign="top" style={{ padding: '20px' }}>
+            <td width="80%" valign="top">
               <table width="100%" border={0} cellPadding={5}>
                 <tbody>
                   <tr>
@@ -59,7 +63,7 @@ export default function Home() {
                       {isLoading ? (
                         <p>現在データを読み込んでいます...</p>
                       ) : (
-                        <ul style={{ lineHeight: '1.8' }}>
+                        <ul style={{ listStyleType: 'square' }}>
                           {articles && articles.length > 0 ? (
                             articles.map((article) => (
                               <li key={article.id}>
@@ -81,19 +85,27 @@ export default function Home() {
                   </tr>
                   <tr>
                     <td>
-                      <p>当新聞会は、北海学園大学の歴史と共に歩んできた学生団体です。</p>
-                      <p>現在、note.comを通じてデジタル発信を強化しております。右記のメニューより各カテゴリの記事をご覧いただけます。</p>
+                      <p>北海学園大学新聞会へようこそ。</p>
+                      <p>現在、note.comと連携した情報発信を行っております。最新の活動情報は上の記事リストからご覧いただけます。</p>
+                      <p>当サイトは軽量化のため、余計な画像を排除しております。</p>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </td>
           </tr>
+        </tbody>
+      </table>
+
+      <hr width="95%" />
+      
+      <table width="95%" border={0} cellPadding={5}>
+        <tbody>
           <tr>
-            <td colSpan={2} align="center" style={{ borderTop: '1px solid #000000', padding: '10px' }}>
+            <td align="center">
               <font size="2">
                 Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.<br />
-                このサイトの画像および文章の無断転載を禁じます。
+                無断転載・無断引用を禁じます。
               </font>
             </td>
           </tr>

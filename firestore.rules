@@ -3,22 +3,23 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // 記事、カテゴリー、著者は誰でも閲覧可能（爆速アクセスのため）
+    // allow read: if true; により、ログインしていなくても取得可能です。
     match /articles/{articleId} {
       allow read: if true;
-      allow write: if exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      allow write: if request.auth != null && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      allow write: if request.auth != null && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
     match /authors/{authorId} {
       allow read: if true;
-      allow write: if exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      allow write: if request.auth != null && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    // 管理者ロールの確認（本人のみ取得可能）
+    // 管理者ロールの確認
     match /roles_admin/{userId} {
       allow get: if request.auth != null && request.auth.uid == userId;
       allow write: if false;
