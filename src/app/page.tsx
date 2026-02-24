@@ -7,7 +7,6 @@ import { collection } from 'firebase/firestore';
 export default function Home() {
   const db = useFirestore();
   
-  // インデックスエラーを避けるため、クエリ条件を付けずに全件取得
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'articles');
@@ -15,7 +14,7 @@ export default function Home() {
 
   const { data: rawArticles, isLoading } = useCollection(articlesRef);
 
-  // クライアントサイドで並び替えとフィルタリングを行う（爆速＆エラー回避）
+  // 公開済みの記事を日付順に並び替え
   const articles = rawArticles 
     ? [...rawArticles]
         .filter(a => a.isPublished === true)
@@ -43,7 +42,7 @@ export default function Home() {
               <p><b>■ メニュー</b></p>
               <ul>
                 <li><Link href="/">トップページ</Link></li>
-                <li><Link href="/admin">管理者室</Link></li>
+                <li><Link href="/admin">管理システム</Link></li>
               </ul>
               <hr />
               <font size="1">
@@ -56,7 +55,7 @@ export default function Home() {
                 <tbody>
                   <tr>
                     <td style={{ backgroundColor: '#000080', color: '#ffffff' }}>
-                      <b>最新の記事 (note.com 同期)</b>
+                      <b>最新の記事</b>
                     </td>
                   </tr>
                   <tr>
@@ -70,10 +69,11 @@ export default function Home() {
                               <li key={article.id}>
                                 <font size="2">[{article.publishDate.split('T')[0]}]</font> 
                                 <Link href={`/articles/${article.id}`}><b>{article.title}</b></Link>
+                                <font size="1"> ({article.categoryId})</font>
                               </li>
                             ))
                           ) : (
-                            <li>記事が見つかりませんでした。</li>
+                            <li>現在、公開されている記事はありません。</li>
                           )}
                         </ul>
                       )}
@@ -87,8 +87,8 @@ export default function Home() {
                   <tr>
                     <td>
                       <p>北海学園大学新聞会 公式ホームページへようこそ。</p>
-                      <p>現在、note.comと連携した情報発信を行っております。最新記事は上記リストよりご覧いただけます。</p>
                       <p>当サイトは表示速度を最優先し、極限まで軽量化を行っております。</p>
+                      <p>記事の作成・編集は管理システムより行ってください。</p>
                     </td>
                   </tr>
                 </tbody>

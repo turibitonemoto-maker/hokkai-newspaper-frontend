@@ -23,27 +23,17 @@ export default function ArticlePage() {
               <Link href="/">トップ</Link> ＞ 記事詳細
               <hr />
               <h1>{article.title}</h1>
-              <p><font size="2">公開日: {article.publishDate.split('T')[0]}</font></p>
+              <p>
+                <font size="2">
+                  公開日: {article.publishDate.split('T')[0]} | カテゴリー: {article.categoryId}
+                </font>
+              </p>
               <hr />
               
-              <div style={{ lineHeight: '1.6', fontSize: '1.1rem' }}>
-                <p>{article.excerpt}</p>
-                <br />
-                <center>
-                  <table border={1} cellPadding={20} style={{ backgroundColor: '#ffffcc' }}>
-                    <tbody>
-                      <tr>
-                        <td align="center">
-                          <b>この記事の全文は note.com で公開中です</b><br /><br />
-                          <a href={article.noteUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                            ⇒ note.com で続きを読む（外部リンク）
-                          </a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </center>
-              </div>
+              <div 
+                style={{ lineHeight: '1.6', fontSize: '1.1rem' }}
+                dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
+              />
 
               <br />
               <hr />

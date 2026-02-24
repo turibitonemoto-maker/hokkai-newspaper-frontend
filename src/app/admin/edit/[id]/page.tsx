@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useFirestore, useDoc } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,12 +14,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, ChevronLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewArticlePage() {
+export default function EditArticlePage() {
   const router = useRouter();
+  const { id } = useParams();
   const db = useFirestore();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const articleRef = id && db ? doc(db, 'articles', id as string) : null;
+  const { data: article, isLoading: isFetching } = useDoc(articleRef);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     htmlContent: '',
@@ -27,32 +31,37 @@ export default function NewArticlePage() {
     isPublished: true,
   });
 
+  useEffect(() => {
+    if (article) {
+      setFormData({
+        title: article.title || '',
+        htmlContent: article.htmlContent || '',
+        categoryId: article.categoryId || 'Campus',
+        isPublished: article.isPublished ?? true,
+      });
+    }
+  }, [article]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!db || isSubmitting) return;
-
-    if (!formData.title || !formData.htmlContent) {
-      toast({ title: "入力エラー", description: "タイトルと本文は必須です。", variant: "destructive" });
-      return;
-    }
+    if (!db || !articleRef || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'articles'), {
+      await updateDoc(articleRef, {
         ...formData,
-        publishDate: new Date().toISOString(),
-        lastSyncedDate: new Date().toISOString(), // 手動更新日として利用
-        slug: formData.title.toLowerCase().replace(/ /g, '-'),
-        authorIds: ['newspaper-club'],
+        lastSyncedDate: new Date().toISOString(),
       });
-      toast({ title: "保存完了", description: "記事を公開しました。" });
+      toast({ title: "更新完了", description: "記事を更新しました。" });
       router.push('/admin');
     } catch (e) {
-      toast({ title: "エラー", description: "保存に失敗しました。", variant: "destructive" });
+      toast({ title: "エラー", description: "更新に失敗しました。", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isFetching) return <div className="p-8 text-center">読み込み中...</div>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -60,7 +69,7 @@ export default function NewArticlePage() {
         <Button variant="outline" size="icon" asChild>
           <Link href="/admin"><ChevronLeft size={20} /></Link>
         </Button>
-        <h2 className="text-3xl font-bold">新規記事作成</h2>
+        <h2 className="text-3xl font-bold">記事編集</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -73,7 +82,6 @@ export default function NewArticlePage() {
               <Label htmlFor="title">記事タイトル</Label>
               <Input
                 id="title"
-                placeholder="タイトルを入力してください"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
@@ -119,7 +127,6 @@ export default function NewArticlePage() {
               <Label htmlFor="content">本文</Label>
               <Textarea
                 id="content"
-                placeholder="記事の本文を入力してください（HTMLタグ使用可）"
                 className="min-h-[400px]"
                 value={formData.htmlContent}
                 onChange={(e) => setFormData({ ...formData, htmlContent: e.target.value })}
@@ -132,7 +139,7 @@ export default function NewArticlePage() {
           <Button variant="outline" type="button" onClick={() => router.push('/admin')}>キャンセル</Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 animate-spin" size={18} /> : <Save className="mr-2" size={18} />}
-            記事を保存する
+            更新を保存する
           </Button>
         </div>
       </form>
