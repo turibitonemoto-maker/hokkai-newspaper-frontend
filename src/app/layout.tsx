@@ -4,7 +4,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: '北海学園大学新聞会 | HGU Newspaper Club',
-  description: '北海学園大学の最新ニュースをお届けする学生新聞会公式サイト。',
+  description: '北海学園大学の最新情報を発信する学生新聞会公式サイト。',
 };
 
 export default function RootLayout({

@@ -2,23 +2,26 @@
 
 import Link from 'next/link';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 
 export default function Home() {
   const db = useFirestore();
   
-  // 公開済みの記事を最新順に取得
-  const articlesQuery = useMemoFirebase(() => {
+  // インデックスエラーを避けるため、クエリ条件を付けずに全件取得
+  const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
-    return query(
-      collection(db, 'articles'),
-      where('isPublished', '==', true),
-      orderBy('publishDate', 'desc'),
-      limit(50)
-    );
+    return collection(db, 'articles');
   }, [db]);
 
-  const { data: articles, isLoading } = useCollection(articlesQuery);
+  const { data: rawArticles, isLoading } = useCollection(articlesRef);
+
+  // クライアントサイドで並び替えとフィルタリングを行う（爆速＆エラー回避）
+  const articles = rawArticles 
+    ? [...rawArticles]
+        .filter(a => a.isPublished === true)
+        .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+        .slice(0, 50)
+    : [];
 
   return (
     <center>
@@ -40,12 +43,12 @@ export default function Home() {
               <p><b>■ メニュー</b></p>
               <ul>
                 <li><Link href="/">トップページ</Link></li>
-                <li><Link href="/admin">管理者室ログイン</Link></li>
+                <li><Link href="/admin">管理者室</Link></li>
               </ul>
               <hr />
               <font size="1">
                 Since: 1950<br />
-                Last Update: {new Date().toLocaleDateString('ja-JP')}
+                Update: {new Date().toLocaleDateString('ja-JP')}
               </font>
             </td>
             <td width="80%" valign="top">
@@ -62,7 +65,7 @@ export default function Home() {
                         <p>Loading...</p>
                       ) : (
                         <ul style={{ listStyleType: 'square' }}>
-                          {articles && articles.length > 0 ? (
+                          {articles.length > 0 ? (
                             articles.map((article) => (
                               <li key={article.id}>
                                 <font size="2">[{article.publishDate.split('T')[0]}]</font> 
@@ -84,8 +87,7 @@ export default function Home() {
                   <tr>
                     <td>
                       <p>北海学園大学新聞会 公式ホームページへようこそ。</p>
-                      <p>当会は1950年の創立以来、学内の情報を発信し続けております。</p>
-                      <p>現在、note.comと連携した情報発信のデジタル化を推進しております。最新の活動報告は上記の記事リストよりご覧いただけます。</p>
+                      <p>現在、note.comと連携した情報発信を行っております。最新記事は上記リストよりご覧いただけます。</p>
                       <p>当サイトは表示速度を最優先し、極限まで軽量化を行っております。</p>
                     </td>
                   </tr>
@@ -103,8 +105,7 @@ export default function Home() {
           <tr>
             <td align="center">
               <font size="2">
-                Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.<br />
-                無断転載・複製を禁じます。
+                Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.
               </font>
             </td>
           </tr>

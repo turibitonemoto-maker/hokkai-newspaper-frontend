@@ -23,7 +23,7 @@ export default function ArticlePage() {
               <Link href="/">トップ</Link> ＞ 記事詳細
               <hr />
               <h1>{article.title}</h1>
-              <p><font size="2">公開日: {article.publishDate.split('T')[0]} | カテゴリ: {article.categoryId}</font></p>
+              <p><font size="2">公開日: {article.publishDate.split('T')[0]}</font></p>
               <hr />
               
               <div style={{ lineHeight: '1.6', fontSize: '1.1rem' }}>

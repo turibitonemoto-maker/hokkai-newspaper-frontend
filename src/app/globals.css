@@ -1,8 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 阿部寛のホームページ風 究極の軽量化・爆速設定 */
+/* 阿部寛のホームページ風 究極の軽量化設定 */
 body {
   background-color: #ffffff;
   color: #000000;
@@ -25,13 +21,7 @@ a:hover {
   color: #ff0000;
 }
 
-/* アニメーションとトランジションを完全に無効化 */
-* {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* テーブルのスタイル */
+/* テーブルの基本スタイル */
 table {
   border-collapse: collapse;
 }
@@ -51,12 +41,14 @@ ul {
   padding-left: 30px;
 }
 
-li {
-  margin-bottom: 8px;
-}
-
 hr {
   border: 0;
   border-top: 1px solid #000;
   height: 1px;
+}
+
+/* アニメーション停止 */
+* {
+  animation: none !important;
+  transition: none !important;
 }
