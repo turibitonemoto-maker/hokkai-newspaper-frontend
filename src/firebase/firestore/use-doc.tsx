@@ -1,3 +1,4 @@
+
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -53,8 +54,7 @@ export function useDoc<T = any>(
       return;
     }
 
-    // すでにロード中またはデータがある場合は、不必要な状態更新を避ける
-    setIsLoading(prev => (prev ? prev : true));
+    setIsLoading(true);
     setError(null);
 
     const unsubscribe = onSnapshot(
@@ -62,7 +62,7 @@ export function useDoc<T = any>(
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
           const newData = { ...(snapshot.data() as T), id: snapshot.id };
-          // データのJSON文字列比較で、変更があった場合のみStateを更新し無限ループを防ぐ
+          // 無限ループを防ぐため、データが実質的に変わった場合のみセットする
           setData(prev => {
             if (JSON.stringify(prev) === JSON.stringify(newData)) return prev;
             return newData;

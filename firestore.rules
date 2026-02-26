@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 判定をより確実にするため、lower()を使用したCEL式での文字列マッチングを採用
+    // 特定のドメインまたはメールアドレスを許可
     function isAuthorizedEditor() {
       return request.auth != null && (
         request.auth.token.email.lower() == "admin@example.com" || 

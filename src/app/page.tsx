@@ -45,14 +45,14 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* ヒーローセクション */}
-        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[70vh]">
+        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[80vh]">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-xs font-black uppercase tracking-[0.2em] mb-10 border border-primary/30 backdrop-blur-sm">
                 <Newspaper size={14} />
                 <span>北海学園大学新聞 公式サイト</span>
               </div>
-              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.85] text-pretty">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.95]">
                 キャンパスの<br />
                 <span className="text-primary italic">「いま」</span> を届ける。
               </h1>
