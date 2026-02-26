@@ -133,9 +133,9 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-xl lg:prose-2xl", // 現状の拡大を標準に
-                    fontSize === 'lg' && "prose-2xl lg:text-3xl",  // さらに拡大
-                    fontSize === 'xl' && "prose-2xl text-3xl md:text-4xl" // 最大（特大）
+                    fontSize === 'base' && "prose-2xl lg:text-3xl", 
+                    fontSize === 'lg' && "prose-2xl text-3xl md:text-4xl",
+                    fontSize === 'xl' && "prose-2xl text-4xl md:text-5xl" 
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
