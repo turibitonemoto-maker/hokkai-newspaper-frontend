@@ -6,7 +6,7 @@ service cloud.firestore {
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
-               request.auth.token.email.matches('.*@hgu\\.jp$') || 
+               request.auth.token.email.endsWith('@hgu.jp') || 
                request.auth.token.email == "admin@example.com"
              );
     }

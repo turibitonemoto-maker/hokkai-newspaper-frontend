@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';

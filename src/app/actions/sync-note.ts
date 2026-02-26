@@ -3,6 +3,7 @@
 /**
  * @fileOverview note.comのRSSフィードから記事を高度に取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
  * 内容が途中で切れないよう、content:encoded（全文）を優先的に取得するように改善。
+ * また、「続きをみる」等の不要な末尾テキストを削除する処理を追加。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -42,6 +43,10 @@ export async function fetchAndSyncNoteRss() {
       if (!htmlContent || htmlContent.length < 100) {
         htmlContent = extract('description');
       }
+
+      // 「続きをみる」「続きを見る」等の不要な末尾テキストを削除
+      htmlContent = htmlContent.replace(/続きをみる.*$/s, '');
+      htmlContent = htmlContent.replace(/続きを見る.*$/s, '');
 
       const description = extract('description');
 
