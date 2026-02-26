@@ -2,13 +2,12 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck } from 'lucide-react';
+import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 
@@ -17,17 +16,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [showRetry, setShowRetry] = useState(false);
 
   // 権限チェック：特定のドメインまたはメールのみ許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 認証チェックが終わり、ログインしていない、または権限がない場合はログイン画面へ
-    if (!isUserLoading && (!user || !isAuthorized)) {
-      setIsRedirecting(true);
-      router.replace('/login');
+    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示
+    const timer = setTimeout(() => {
+      if (isUserLoading) setShowRetry(true);
+    }, 5000);
+
+    if (!isUserLoading) {
+      if (!user || !isAuthorized) {
+        router.replace('/login');
+      }
     }
+    return () => clearTimeout(timer);
   }, [user, isUserLoading, isAuthorized, router]);
 
   const handleSignOut = async () => {
@@ -35,25 +40,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace('/login');
   };
 
-  // 認証情報の読み込み中、または未承認・遷移中の表示
-  if (isUserLoading || !user || !isAuthorized || isRedirecting) {
+  // 認証チェック中
+  if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-6 p-8 max-w-sm text-center">
           <div className="relative">
             <Loader2 className="animate-spin text-primary" size={60} strokeWidth={3} />
             <div className="absolute inset-0 flex items-center justify-center">
               <ShieldCheck size={20} className="text-primary opacity-50" />
             </div>
           </div>
-          <div className="text-center space-y-2">
+          <div className="space-y-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
-              {isUserLoading ? "Checking Credentials..." : "Redirecting to Security Gate..."}
+              Security Verification in Progress...
             </p>
-            {!isUserLoading && !user && (
-              <Button variant="link" onClick={() => router.push('/login')} className="text-[9px] font-black text-primary p-0 h-auto uppercase tracking-widest">
-                If not redirecting, click here
-              </Button>
+            {showRetry && (
+              <div className="animate-fade-in space-y-4 pt-4 border-t border-slate-200">
+                <div className="flex items-center gap-2 justify-center text-amber-600">
+                  <AlertCircle size={16} />
+                  <span className="text-xs font-bold">認証に時間がかかっています</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="rounded-xl font-bold h-10">
+                    <RefreshCw size={14} className="mr-2" /> ページを再読み込み
+                  </Button>
+                  <Button variant="link" onClick={() => router.push('/login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    ログイン画面へ戻る
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </div>

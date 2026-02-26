@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -19,20 +19,12 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   // 権限チェック関数
-  const checkIsAuthorized = (u: any) => {
-    return !!(u && (u.email === 'admin@example.com' || u.email?.endsWith('@hgu.jp')));
-  };
-
-  const isAuthorized = checkIsAuthorized(user);
+  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   // すでにログインしていて権限がある場合は自動的に管理画面へ
   useEffect(() => {
     if (!isUserLoading && user && isAuthorized) {
-      // 少しだけ待機して状態を安定させてから遷移
-      const timer = setTimeout(() => {
-        router.replace('/admin');
-      }, 500);
-      return () => clearTimeout(timer);
+      router.replace('/admin');
     }
   }, [user, isUserLoading, isAuthorized, router]);
 
@@ -41,7 +33,6 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     
     const provider = new GoogleAuthProvider();
-    // 常にアカウント選択画面を表示
     provider.setCustomParameters({
       prompt: 'select_account'
     });
@@ -49,13 +40,12 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const loggedInUser = result.user;
+      const loggedInAuthorized = !!(loggedInUser && (loggedInUser.email === 'admin@example.com' || loggedInUser.email?.endsWith('@hgu.jp')));
       
-      if (checkIsAuthorized(loggedInUser)) {
+      if (loggedInAuthorized) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
-        // 直接遷移を試みる
         router.replace('/admin');
       } else {
-        // 権限がない場合は即座にサインアウトして、ユーザーに知らせる
         await signOut(auth);
         toast({ 
           title: "アクセス権限なし", 
@@ -65,18 +55,15 @@ export default function LoginPage() {
         setIsLoggingIn(false);
       }
     } catch (error: any) {
-      if (error.code === 'auth/popup-closed-by-user') {
-        setIsLoggingIn(false);
-        return;
-      }
+      setIsLoggingIn(false);
+      if (error.code === 'auth/popup-closed-by-user') return;
       
       console.error("Login error:", error);
       toast({
         title: "ログイン失敗",
-        description: "認証中にエラーが発生しました。Googleログイン設定が有効か確認してください。",
+        description: "認証中にエラーが発生しました。Googleログイン設定を確認してください。",
         variant: "destructive",
       });
-      setIsLoggingIn(false);
     }
   };
 
@@ -90,7 +77,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Checking Authentication...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Establishing Connection...</p>
         </div>
       </div>
     );
@@ -160,6 +147,12 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
+              
+              <div className="pt-4 flex justify-center">
+                <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="text-[9px] font-bold text-slate-400">
+                  <RefreshCw size={10} className="mr-1" /> ログイン画面が動かない場合はこちら
+                </Button>
+              </div>
             </div>
           )}
           
