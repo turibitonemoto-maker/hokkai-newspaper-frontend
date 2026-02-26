@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useDoc, useFirestore } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,11 @@ import { Button } from '@/components/ui/button';
 export default function ArticlePage() {
   const { id } = useParams();
   const db = useFirestore();
-  const docRef = id && db ? doc(db, 'articles', id as string) : null;
+  const docRef = useMemoFirebase(() => {
+    if (!id || !db) return null;
+    return doc(db, 'articles', id as string);
+  }, [db, id]);
+
   const { data: article, isLoading } = useDoc(docRef);
 
   if (isLoading) {

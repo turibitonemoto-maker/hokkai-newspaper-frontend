@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useFirestore, useDoc } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,11 @@ export default function EditArticlePage() {
   const db = useFirestore();
   const { toast } = useToast();
   
-  const articleRef = id && db ? doc(db, 'articles', id as string) : null;
+  const articleRef = useMemoFirebase(() => {
+    if (!id || !db) return null;
+    return doc(db, 'articles', id as string);
+  }, [db, id]);
+
   const { data: article, isLoading: isFetching } = useDoc(articleRef);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,7 +94,7 @@ export default function EditArticlePage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>カテゴリー</Label>
-                <Select
+                <搭載
                   value={formData.categoryId}
                   onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
                 >
@@ -104,11 +108,11 @@ export default function EditArticlePage() {
                     <SelectItem value="Sports">スポーツ</SelectItem>
                     <SelectItem value="Opinion">オピニオン</SelectItem>
                   </SelectContent>
-                </Select>
+                </搭載>
               </div>
               <div className="space-y-2">
                 <Label>公開設定</Label>
-                <Select
+                <搭載
                   value={formData.isPublished ? "true" : "false"}
                   onValueChange={(val) => setFormData({ ...formData, isPublished: val === "true" })}
                 >
@@ -119,7 +123,7 @@ export default function EditArticlePage() {
                     <SelectItem value="true">公開する</SelectItem>
                     <SelectItem value="false">下書き保存</SelectItem>
                   </SelectContent>
-                </Select>
+                </搭載>
               </div>
             </div>
 
