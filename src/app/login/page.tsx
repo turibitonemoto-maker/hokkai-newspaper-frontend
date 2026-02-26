@@ -21,6 +21,11 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     
+    // 常にアカウント選択画面を表示させるための設定
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
+    
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -32,9 +37,11 @@ export default function LoginPage() {
       } else {
         toast({ 
           title: "アクセス権限なし", 
-          description: "このアカウントには管理権限がありません。新聞会のメールアドレスを使用してください。", 
+          description: "このアカウントには管理権限がありません。新聞会のメールアドレス（@hgu.jp）を使用してください。", 
           variant: "destructive" 
         });
+        // 権限がない場合は、混乱を避けるためにサインアウトしておく（オプション）
+        // await auth.signOut();
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -95,6 +102,9 @@ export default function LoginPage() {
           </Button>
           
           <div className="text-center">
+            <p className="text-[10px] text-slate-400 font-bold mb-4 uppercase tracking-tighter">
+              ※クリックするとアカウント選択画面が開きます
+            </p>
             <Button variant="link" asChild className="text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
               <Link href="/">サイトに戻る</Link>
             </Button>
