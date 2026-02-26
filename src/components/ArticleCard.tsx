@@ -10,7 +10,6 @@ interface ArticleCardProps {
   article: {
     id: string;
     title: string;
-    summary?: string;
     htmlContent?: string;
     categoryId: string;
     publishDate: string;
@@ -23,10 +22,14 @@ interface ArticleCardProps {
 export function ArticleCard({ article }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/800/500`;
   const isExternal = article.source === 'note';
+  
+  // 本文からテキストのみを抽出して冒頭部分を表示
+  const plainText = article.htmlContent?.replace(/<[^>]*>?/gm, '') || "";
+  const excerpt = plainText.substring(0, 150) + (plainText.length > 150 ? "..." : "");
 
   return (
     <Link href={`/articles/${article.id}`} className="group block h-full">
-      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-xl transition-all duration-500 rounded-3xl ring-1 ring-slate-100 group-hover:ring-primary/20">
+      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-xl transition-all duration-500 rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20">
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
             src={displayImage}
@@ -66,7 +69,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
         <CardContent className="px-8 py-0 flex-grow">
           <p className="text-slate-500 text-sm line-clamp-3 leading-relaxed font-medium">
-            {article.summary || article.htmlContent?.replace(/<[^>]*>?/gm, '').substring(0, 150)}
+            {excerpt}
           </p>
         </CardContent>
 

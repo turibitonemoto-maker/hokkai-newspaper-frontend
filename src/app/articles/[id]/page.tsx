@@ -18,7 +18,7 @@ export default function ArticlePage() {
     return doc(db, 'articles', id as string);
   }, [db, id]);
 
-  const { data: article, isLoading } = useDoc(docRef);
+  const { data: article, isLoading } = useDoc(articleRef);
 
   if (isLoading) {
     return (
@@ -58,7 +58,7 @@ export default function ArticlePage() {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" className="mb-10 gap-2 -ml-4 hover:bg-slate-50 text-slate-500 font-bold" asChild>
+            <Button variant="ghost" className="mb-10 gap-2 -ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl" asChild>
               <Link href="/"><ChevronLeft size={18} /> BACK TO NEWSFEED</Link>
             </Button>
 
@@ -82,7 +82,7 @@ export default function ArticlePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <User size={16} className="text-primary" />
-                    <span>BY: 北海学園大学新聞</span>
+                    <span>BY: {article.authorName || '北海学園大学新聞'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={16} className="text-primary" />
@@ -108,30 +108,19 @@ export default function ArticlePage() {
               </div>
 
               <div className="max-w-3xl mx-auto">
-                {article.summary && (
-                  <div className="bg-slate-50 rounded-3xl p-8 mb-12 border border-slate-100 relative">
-                    <div className="absolute -top-3 left-8 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full tracking-[0.2em] uppercase">
-                      Executive Summary
-                    </div>
-                    <p className="text-lg leading-relaxed text-slate-700 italic font-medium">
-                      {article.summary}
-                    </p>
-                  </div>
-                )}
-                
                 <div 
                   className="prose prose-slate lg:prose-xl max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950"
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
 
                 <footer className="mt-20 pt-12 border-t border-slate-100">
-                  <div className="bg-slate-50 rounded-3xl p-8 flex items-center gap-6">
+                  <div className="bg-slate-50 rounded-[32px] p-8 flex items-center gap-6">
                     <div className="w-16 h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-black text-2xl uppercase">
                       H
                     </div>
                     <div>
                       <h4 className="font-black text-slate-900 mb-1">北海学園大学新聞</h4>
-                      <p className="text-sm text-slate-500 leading-relaxed">
+                      <p className="text-sm text-slate-500 leading-relaxed font-medium">
                         この記事は北海学園大学新聞 取材班によって執筆・編集されました。
                         学内での出来事や学生の声をお届けしています。
                       </p>

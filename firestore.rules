@@ -15,7 +15,6 @@ service cloud.firestore {
     // 記事（articles）のルール
     match /articles/{articleId} {
       allow read: if true;
-      // create, update, delete を明示的に許可
       allow create, update, delete: if isAuthorizedEditor();
     }
 

@@ -149,7 +149,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-[32px] p-24 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
+              <div className="bg-white rounded-[40px] p-24 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
                 <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
                   <Ghost className="text-slate-200" size={40} />
                 </div>

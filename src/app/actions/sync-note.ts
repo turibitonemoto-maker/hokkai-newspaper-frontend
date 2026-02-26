@@ -44,7 +44,6 @@ export async function fetchAndSyncNoteRss() {
       }
 
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
-      const plainTextContent = description.replace(/<[^>]*>?/gm, '');
 
       // カテゴリーの自動判別ロジック
       let categoryId = 'Campus';
@@ -64,7 +63,7 @@ export async function fetchAndSyncNoteRss() {
         noteUrl: link,
         source: 'note',
         htmlContent: description,
-        summary: plainTextContent.substring(0, 200).trim() + (plainTextContent.length > 200 ? '...' : ''),
+        summary: "", // 要約機能を削除
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
