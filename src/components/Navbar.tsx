@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Newspaper, Menu, Search, UserCircle } from 'lucide-react';
+import { Newspaper, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Navbar() {
@@ -28,14 +28,8 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="hidden sm:flex text-slate-500 hover:text-primary hover:bg-primary/5 rounded-full">
+          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-primary hover:bg-primary/5 rounded-full">
             <Search size={20} />
-          </Button>
-          <Button variant="outline" size="sm" className="hidden sm:flex rounded-full border-slate-200 font-bold px-6 text-xs h-9" asChild>
-            <Link href="/login">
-              <UserCircle size={16} className="mr-2" />
-              LOGIN
-            </Link>
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden text-slate-600">
             <Menu size={24} />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -28,6 +29,7 @@ export default function Home() {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
+      orderBy('publishDate', 'desc'),
       limit(24)
     );
   }, [db]);
@@ -44,25 +46,19 @@ export default function Home() {
     if (heroImages && heroImages.length > 1) {
       const interval = setInterval(() => {
         setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
-      }, 6000); // 6秒ごとに切り替え
+      }, 6000);
       return () => clearInterval(interval);
     }
   }, [heroImages]);
 
-  const publishedArticles = articles 
-    ? articles
-        .filter(a => a.isPublished)
-        .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
-    : [];
+  const publishedArticles = articles ? articles.filter(a => a.isPublished) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
       <Navbar />
       
       <main className="flex-grow">
-        {/* ヒーローセクション: 高さを抑え、背景スライドショーを実装 */}
         <section className="relative h-[65vh] min-h-[500px] flex items-center overflow-hidden bg-slate-900 text-white">
-          {/* 背景画像レイヤー */}
           <div className="absolute inset-0 z-0">
             {heroImages && heroImages.length > 0 ? (
               heroImages.map((img, idx) => (
@@ -79,7 +75,7 @@ export default function Home() {
                     className="object-cover"
                     priority={idx === 0}
                   />
-                  <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]" />
+                  <div className="absolute inset-0 bg-slate-950/30 backdrop-blur-[1px]" />
                 </div>
               ))
             ) : (
@@ -103,19 +99,15 @@ export default function Home() {
                 学生の視点で記録する。学内のニュース、<br className="hidden md:block" />
                 インタビュー、イベント情報をどこよりも深く。
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-2xl px-8 h-14 text-sm font-black shadow-2xl shadow-primary/30 hover:scale-105 transition-all" asChild>
+              <div>
+                <Button size="lg" className="rounded-2xl px-10 h-14 text-sm font-black shadow-2xl shadow-primary/30 hover:scale-105 transition-all" asChild>
                   <Link href="/category/Campus">記事を読む</Link>
-                </Button>
-                <Button size="lg" variant="outline" className="rounded-2xl px-8 h-14 text-sm font-black border-white/30 hover:bg-white/10 backdrop-blur-md transition-all" asChild>
-                  <Link href="/login">管理コンソール</Link>
                 </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ニュースティッカー */}
         <div className="bg-white border-b sticky top-16 z-40 shadow-sm overflow-hidden">
           <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-8">
             <div className="flex items-center gap-4 text-xs font-black text-slate-900 shrink-0">
@@ -180,9 +172,14 @@ export default function Home() {
             </div>
             <span className="font-black text-2xl tracking-tighter text-white uppercase italic">北海学園大学新聞</span>
           </div>
-          <p className="text-[9px] font-bold tracking-[0.5em] uppercase opacity-30">
-            &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
-          </p>
+          <div className="flex flex-col gap-4 items-center">
+            <p className="text-[9px] font-bold tracking-[0.5em] uppercase opacity-30">
+              &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
+            </p>
+            <Link href="/login" className="text-[8px] font-bold text-slate-800 hover:text-slate-600 transition-colors uppercase tracking-widest opacity-20 hover:opacity-100">
+              Admin Login
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
