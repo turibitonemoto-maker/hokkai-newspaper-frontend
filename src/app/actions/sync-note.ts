@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を高度に取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
- * タイトルからカテゴリーを自動判別する機能を追加。
+ * 内容が途中で切れないよう、content:encoded（全文）を優先的に取得するように改善。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -21,6 +21,7 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const xmlText = await response.text();
+    // 各アイテム（記事）を分割
     const items = xmlText.match(/<item>([\s\S]*?)<\/item>/g) || [];
     
     if (items.length === 0) {
@@ -28,18 +29,31 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const parsedArticles = items.map(item => {
+      // CDATAや名前空間付きタグを考慮した高度な抽出関数
       const extract = (tag: string) => {
-        const regex = new RegExp(`<${tag}>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`);
-        return item.match(regex)?.[1]?.trim() || "";
+        // <tag>...</tag> または <namespace:tag>...</namespace:tag> に対応
+        const regex = new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i');
+        const match = item.match(regex);
+        return match ? match[1].trim() : "";
       };
 
       const title = extract('title');
       const link = extract('link');
-      const description = extract('description');
       const pubDate = extract('pubDate');
       
+      // 本文の取得：content:encodedがあればそれを優先（全文が含まれるため）
+      // なければdescriptionを使用
+      let htmlContent = extract('content:encoded');
+      if (!htmlContent || htmlContent.length < 100) {
+        htmlContent = extract('description');
+      }
+
+      // 概要（プレビュー）用としてdescriptionも保持
+      const description = extract('description');
+
       let imageUrl = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || "";
       if (!imageUrl) {
+        // descriptionから最初のimgタグのsrcを抽出
         imageUrl = description.match(/<img[^>]+src="([^">]+)"/)?.[1] || "";
       }
 
@@ -62,8 +76,8 @@ export async function fetchAndSyncNoteRss() {
         title: title,
         noteUrl: link,
         source: 'note',
-        htmlContent: description,
-        summary: "", // 要約機能を削除
+        htmlContent: htmlContent, // 全文（または長文）を保存
+        summary: "", // 要約機能は削除済み
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
