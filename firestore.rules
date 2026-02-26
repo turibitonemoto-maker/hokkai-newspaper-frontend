@@ -6,7 +6,7 @@ service cloud.firestore {
     function isAuthorizedEditor() {
       return request.auth != null && (
         request.auth.token.email == "admin@example.com" || 
-        request.auth.token.email.matches('^.*@hgu\\.jp$')
+        request.auth.token.email.lower().endsWith('@hgu.jp')
       );
     }
 
@@ -27,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // ルールデプロイ強制更新: 2024-05-24 17:45 - ドメイン判定正規表現の厳密化
+    // ルールデプロイ強制更新: 2024-05-24 17:50 - endsWithによるドメイン判定の安定化
   }
 }
