@@ -18,7 +18,7 @@ export default function ArticlePage() {
     return doc(db, 'articles', id as string);
   }, [db, id]);
 
-  const { data: article, isLoading } = useDoc(articleRef);
+  const { data: article, isLoading } = useDoc(docRef);
 
   if (isLoading) {
     return (

@@ -40,7 +40,6 @@ export default function NewArticlePage() {
     try {
       await addDoc(collection(db, 'articles'), {
         ...formData,
-        summary: "", // 要約フィールドは空で保存
         publishDate: new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
         slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),

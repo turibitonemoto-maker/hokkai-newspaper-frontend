@@ -23,7 +23,7 @@ export function Navbar() {
           <Link href="/category/Event" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Events</Link>
           <Link href="/category/Interview" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Interviews</Link>
           <Link href="/category/Sports" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Sports</Link>
-          <Link href="/category/Opinion" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1 text-primary/80">Opinion</Link>
+          <Link href="/category/Opinion" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Opinion</Link>
         </nav>
 
         <div className="flex items-center gap-3">
