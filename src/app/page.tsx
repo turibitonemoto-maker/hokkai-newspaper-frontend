@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -23,12 +22,12 @@ export default function Home() {
     }));
   }, []);
 
-  // 公開済みの最新記事を取得（パーミッションエラーを避けるためシンプルなクエリから開始）
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
       where('isPublished', '==', true),
+      orderBy('publishDate', 'desc'),
       limit(10)
     );
   }, [db]);
@@ -36,12 +35,11 @@ export default function Home() {
   const { data: articles, isLoading } = useCollection(latestArticlesRef);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
       
       <main className="flex-grow">
-        {/* Modern Hero Section */}
-        <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
+        <section className="bg-slate-900 text-white py-20 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary-foreground text-xs font-bold uppercase tracking-widest mb-6 border border-primary/30">
@@ -52,12 +50,12 @@ export default function Home() {
                 北海学園大学の<br />
                 「いま」を記録する。
               </h1>
-              <p className="text-xl text-slate-300 mb-10 leading-relaxed font-medium">
+              <p className="text-xl text-slate-300 mb-10 leading-relaxed">
                 学生の視点で、キャンパスの鼓動を伝える。
-                学内ニュース、イベント、独占インタビューをいち早くお届け。
+                最新ニュース、独占インタビュー、イベント情報をいち早くお届け。
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full px-8 h-14 text-lg font-bold transition-transform hover:scale-105" asChild>
+                <Button size="lg" className="rounded-full px-8 h-14 text-lg font-bold" asChild>
                   <Link href="/category/Campus">記事一覧を見る</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-lg font-bold border-white/20 hover:bg-white/10" asChild>
@@ -67,16 +65,14 @@ export default function Home() {
             </div>
           </div>
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
         </section>
 
-        {/* Info Bar */}
         <div className="bg-white border-b sticky top-16 z-40 shadow-sm">
           <div className="container mx-auto px-4 h-14 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-8 no-scrollbar">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
               <TrendingUp size={16} className="text-primary" />
               <span>注目:</span>
-              <span className="font-medium text-slate-500 ml-2">最新のキャンパスニュースをチェック</span>
+              <span className="font-medium text-slate-500 ml-2">最新の学内トピックをチェック</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-400 font-medium">
               <Calendar size={14} />
@@ -85,13 +81,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Content Section */}
-        <section className="py-20">
+        <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
               <div>
-                <h2 className="text-4xl font-black tracking-tight text-slate-900">最新のニュース</h2>
-                <p className="text-slate-500 mt-2 font-medium">Campus Highlights & Updates</p>
+                <h2 className="text-3xl font-black tracking-tight text-slate-900">最新記事</h2>
+                <p className="text-slate-500 mt-2 font-medium uppercase text-xs tracking-widest">Campus Highlights</p>
               </div>
               <Button variant="ghost" className="font-bold gap-2 text-primary hover:text-primary hover:bg-primary/5 hidden sm:flex" asChild>
                 <Link href="/category/Campus">
@@ -103,44 +98,35 @@ export default function Home() {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-32">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} />
-                <p className="text-slate-500 font-bold tracking-widest uppercase text-sm">Loading Stories...</p>
+                <p className="text-slate-500 font-bold uppercase text-xs tracking-widest">Fetching Stories...</p>
               </div>
             ) : articles && articles.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                {articles
-                  .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
-                  .map((article) => (
-                    <ArticleCard key={article.id} article={article as any} />
-                  ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {articles.map((article) => (
+                  <ArticleCard key={article.id} article={article as any} />
+                ))}
               </div>
             ) : (
               <div className="bg-white rounded-3xl p-24 text-center border-2 border-dashed border-slate-200">
-                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                  <Ghost className="text-slate-300" size={40} />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">まだ記事がありません</h3>
+                <Ghost className="text-slate-200 mx-auto mb-6" size={64} />
+                <h3 className="text-2xl font-black text-slate-900 mb-2">記事がありません</h3>
                 <p className="text-slate-500 font-medium max-w-sm mx-auto">
                   管理画面から最初の記事を投稿してください。
                 </p>
-                <Button className="mt-8 rounded-full font-bold px-8" asChild>
-                  <Link href="/admin">記事を作成する</Link>
-                </Button>
               </div>
             )}
           </div>
         </section>
       </main>
 
-      <footer className="bg-slate-950 text-slate-400 py-20">
+      <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-800">
         <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="bg-primary p-2 rounded-lg text-white">
-              <Newspaper size={24} />
-            </div>
-            <span className="font-black text-2xl tracking-tighter text-white">北海学園大学新聞会</span>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Newspaper size={24} className="text-primary" />
+            <span className="font-black text-xl tracking-tighter text-white uppercase">HGU Newspaper Club</span>
           </div>
-          <p className="text-xs font-bold tracking-[0.3em] uppercase opacity-40">
-            &copy; {new Date().getFullYear()} HGU NEWSPAPER CLUB / REPORTING FOR THE FUTURE
+          <p className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
+            &copy; {new Date().getFullYear()} 北海学園大学新聞会 / Reporting for the Future
           </p>
         </div>
       </footer>
