@@ -42,7 +42,6 @@ export default function NewArticlePage() {
         ...formData,
         publishDate: new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
-        slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         authorName: '北海学園大学新聞',
         source: 'internal'
       });

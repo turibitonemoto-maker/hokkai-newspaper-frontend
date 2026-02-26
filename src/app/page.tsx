@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, limit, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
@@ -28,8 +28,7 @@ export default function Home() {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      orderBy('publishDate', 'desc'),
-      limit(24)
+      orderBy('publishDate', 'desc')
     );
   }, [db]);
 
@@ -100,7 +99,7 @@ export default function Home() {
               </p>
               <div>
                 <Button size="lg" className="rounded-2xl px-10 h-14 text-sm font-black shadow-2xl shadow-primary/30 hover:scale-105 transition-all" asChild>
-                  <Link href="/category/Campus">記事を読む</Link>
+                  <Link href="/category/Campus">記事をすべて見る</Link>
                 </Button>
               </div>
             </div>
@@ -114,7 +113,7 @@ export default function Home() {
                 <TrendingUp size={14} />
                 <span className="uppercase tracking-widest text-[9px]">Latest</span>
               </div>
-              <span className="hidden sm:inline">最新ニュース</span>
+              <span className="hidden sm:inline">全ニュース一覧</span>
             </div>
             <div className="flex items-center gap-3 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
               <Calendar size={14} className="text-primary" />
@@ -130,11 +129,6 @@ export default function Home() {
                 <h2 className="text-3xl font-black tracking-tight text-slate-900">最新のストーリー</h2>
                 <div className="h-1 w-20 bg-primary rounded-full" />
               </div>
-              <Button variant="ghost" className="font-black gap-2 text-primary hover:text-primary hover:bg-primary/5 rounded-2xl px-4 text-xs" asChild>
-                <Link href="/category/Campus">
-                  VIEW ALL <ArrowRight size={14} />
-                </Link>
-              </Button>
             </div>
 
             {isArticlesLoading ? (

@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { ChevronRight, Filter, Loader2, Ghost } from 'lucide-react';
@@ -18,15 +18,11 @@ export default function CategoryPage() {
       collection(db, 'articles'),
       where('categoryId', '==', slug),
       where('isPublished', '==', true),
-      limit(20)
+      orderBy('publishDate', 'desc')
     );
   }, [db, slug]);
 
   const { data: articles, isLoading } = useCollection(categoryQuery);
-
-  const sortedArticles = articles 
-    ? [...articles].sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
-    : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
@@ -49,7 +45,7 @@ export default function CategoryPage() {
             </h1>
           </div>
           <p className="text-slate-500 font-medium max-w-2xl leading-relaxed">
-            {slug}に関する最新の記事一覧です。北海学園大学の「いま」を現場からお届けします。
+            {slug}に関するすべての記事一覧です。北海学園大学の「いま」を現場からお届けします。
           </p>
         </header>
 
@@ -58,9 +54,9 @@ export default function CategoryPage() {
             <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
             <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Database Synchronizing</p>
           </div>
-        ) : sortedArticles.length > 0 ? (
+        ) : articles && articles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 animate-fade-in">
-            {sortedArticles.map((article) => (
+            {articles.map((article) => (
               <ArticleCard key={article.id} article={article as any} />
             ))}
           </div>
