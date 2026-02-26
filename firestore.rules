@@ -4,13 +4,13 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // 記事（articles）のルール
     match /articles/{articleId} {
-      // 誰でも「公開済み」の記事は閲覧可能。ログインユーザーは全て閲覧可能。
-      allow read: if (resource != null && resource.data.isPublished == true) || request.auth != null;
-      // 書き込みは認証済みユーザーのみ
+      // 閲覧は誰でも可能（公開済みかどうかのフィルタリングはクライアントクエリで行う）
+      allow read: if true;
+      // 書き込みは認証済みユーザー（部員）のみ
       allow write: if request.auth != null;
     }
 
-    // カテゴリーと著者（基本は読み取り専用で公開）
+    // カテゴリーと著者
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if request.auth != null;

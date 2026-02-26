@@ -58,8 +58,8 @@ export default function Home() {
                 学内ニュース、イベント、独占インタビューをいち早くお届け。
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full px-8 h-14 text-lg font-bold transition-transform hover:scale-105">
-                  記事一覧を見る
+                <Button size="lg" className="rounded-full px-8 h-14 text-lg font-bold transition-transform hover:scale-105" asChild>
+                  <Link href="/category/Campus">記事一覧を見る</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-lg font-bold border-white/20 hover:bg-white/10" asChild>
                   <Link href="/login">管理者ログイン</Link>
@@ -76,8 +76,8 @@ export default function Home() {
           <div className="container mx-auto px-4 h-14 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-8 no-scrollbar">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
               <TrendingUp size={16} className="text-primary" />
-              <span>注目記事:</span>
-              <span className="font-medium text-slate-500 ml-2">学園祭レポート、部活動紹介、学内施設案内...</span>
+              <span>注目:</span>
+              <span className="font-medium text-slate-500 ml-2">最新のキャンパスニュースをチェック</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-400 font-medium">
               <Calendar size={14} />
@@ -108,7 +108,8 @@ export default function Home() {
               </div>
             ) : error ? (
               <div className="bg-red-50 border border-red-100 rounded-2xl p-12 text-center">
-                <p className="text-red-600 font-bold">エラーが発生しました。時間を置いて再度お試しください。</p>
+                <p className="text-red-600 font-bold">閲覧権限またはデータ取得に問題が発生しました。</p>
+                <p className="text-sm text-red-400 mt-2">{error.message}</p>
               </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -123,8 +124,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">まだ記事がありません</h3>
                 <p className="text-slate-500 font-medium max-w-sm mx-auto">
-                  管理画面から最初の記事を投稿してください。<br />
-                  北海学園大学のニュースをお待ちしています。
+                  管理画面から最初の記事を投稿してください。
                 </p>
                 <Button className="mt-8 rounded-full font-bold px-8" asChild>
                   <Link href="/admin">記事を作成する</Link>
@@ -144,7 +144,7 @@ export default function Home() {
             <span className="font-black text-2xl tracking-tighter text-white">北海学園大学新聞会</span>
           </div>
           <p className="text-xs font-bold tracking-[0.3em] uppercase opacity-40">
-            &copy; {new Date().getFullYear()} HGU NEWSPAPER CLUB / TRUTH AND RESPONSIBILITY
+            &copy; {new Date().getFullYear()} HGU NEWSPAPER CLUB / REPORTING FOR THE FUTURE
           </p>
         </div>
       </footer>
