@@ -1,3 +1,4 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -27,7 +28,7 @@ export function initializeFirebase() {
   auth = getAuth(firebaseApp);
   firestore = getFirestore(firebaseApp);
 
-  // 認証の永続化を即座に設定
+  // 認証の永続化を即座に設定（全タブでのログイン共有を確実にする）
   setPersistence(auth, browserLocalPersistence).catch((err) => {
     console.error("Firebase Auth Persistence Error:", err);
   });

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
@@ -16,23 +16,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [showRetry, setShowRetry] = useState(false);
+  const [hasTimeout, setHasTimeout] = useState(false);
 
   // 権限チェック：特定のドメインまたはメールのみ許可
-  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
+  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 認証チェックが完了し、未ログインまたは未承認ならログイン画面へ
+    // 5秒経過してもロード中の場合はタイムアウト表示
+    const timer = setTimeout(() => {
+      if (isUserLoading) setHasTimeout(true);
+    }, 5000);
+
     if (!isUserLoading) {
       if (!user || !isAuthorized) {
         router.replace('/login');
       }
     }
-
-    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示
-    const timer = setTimeout(() => {
-      if (isUserLoading) setShowRetry(true);
-    }, 5000);
 
     return () => clearTimeout(timer);
   }, [isUserLoading, user, isAuthorized, router]);
@@ -57,12 +56,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
               Authenticating Session...
             </p>
-            {showRetry && (
+            {hasTimeout && (
               <div className="animate-fade-in space-y-4 pt-4 border-t border-slate-200">
                 <p className="text-xs font-bold text-amber-600">認証に時間がかかっています</p>
                 <div className="flex flex-col gap-2">
                   <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="rounded-xl font-bold h-10">
                     <RefreshCw size={14} className="mr-2" /> ページを再読み込み
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => router.replace('/login')} className="text-[10px] font-bold">
+                    ログイン画面へ戻る
                   </Button>
                 </div>
               </div>
@@ -74,8 +76,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const menuItems = [
-    { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
-    { id: 'new-article', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
+    { id: 'admin-dash', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
+    { id: 'admin-new', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
   ];
 
   return (
