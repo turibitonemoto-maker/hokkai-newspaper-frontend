@@ -6,20 +6,20 @@ service cloud.firestore {
     function isAuthorizedEditor() {
       return request.auth != null && (
         request.auth.token.email == "admin@example.com" || 
-        request.auth.token.email.endsWith("@hgu.jp")
+        request.auth.token.email.matches('.*@hgu\\.jp$')
       );
     }
 
     // 記事のルール: 閲覧およびリスト取得は全員に許可、書き込みは特定の認証済みユーザーのみ
     match /articles/{articleId} {
       allow read, list: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // カテゴリー: 閲覧は全員、書き込みは特定の認証済みユーザーのみ
     match /categories/{categoryId} {
       allow read, list: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // デフォルトで全てのアクセスを拒否
@@ -27,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // ルールデプロイ強制更新: 2024-05-24 16:00 - 同期権限エラー修正
+    // ルールデプロイ強制更新: 2024-05-24 17:30 - matchesによるドメイン判定強化
   }
 }

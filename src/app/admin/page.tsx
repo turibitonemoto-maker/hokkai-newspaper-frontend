@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, query, limit } from 'firebase/firestore';
+import { collection, doc, query, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Ghost } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -17,9 +18,7 @@ import {
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -63,29 +62,15 @@ export default function AdminDashboard() {
           return;
         }
 
-        let count = 0;
-        // 各記事の保存を非同期で開始
+        // 各記事の保存を非同期で開始（ユーティリティを使用して確実に権限エラーを捕捉）
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
-          
-          // 非ブロッキングで保存し、権限エラーがあればキャッチしてエミットする
-          setDoc(docRef, article, { merge: true })
-            .then(() => {
-              count++;
-            })
-            .catch(async (err) => {
-              const permissionError = new FirestorePermissionError({
-                path: docRef.path,
-                operation: 'write',
-                requestResourceData: article,
-              });
-              errorEmitter.emit('permission-error', permissionError);
-            });
+          setDocumentNonBlocking(docRef, article, { merge: true });
         }
         
         toast({ 
           title: "同期リクエスト完了", 
-          description: "記事の保存処理を開始しました。",
+          description: `${result.articles.length}件の記事の保存処理を開始しました。`,
         });
       } else {
         throw new Error(result.error || '不明なエラーが発生しました');

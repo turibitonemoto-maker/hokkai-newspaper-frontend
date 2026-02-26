@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
@@ -21,37 +22,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示（接続不良や別タブ同期遅延対策）
+    // 認証チェックが完了し、未ログインまたは未承認ならログイン画面へ
+    if (!isUserLoading) {
+      if (!user || !isAuthorized) {
+        router.replace('/login');
+      }
+    }
+
+    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示
     const timer = setTimeout(() => {
       if (isUserLoading) setShowRetry(true);
     }, 5000);
 
-    // 認証状態の変更を直接監視（FirebaseProviderと連携しつつ、レイアウト側でも確実にハンドリング）
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser && !isUserLoading) {
-        // 未ログインが確定した場合
-        router.replace('/login');
-      } else if (firebaseUser) {
-        // ログイン済みだが権限がない場合
-        const authorized = firebaseUser.email === 'admin@example.com' || firebaseUser.email?.endsWith('@hgu.jp');
-        if (!authorized) {
-          router.replace('/login');
-        }
-      }
-    });
-
-    return () => {
-      clearTimeout(timer);
-      unsubscribe();
-    };
-  }, [auth, isUserLoading, router]);
+    return () => clearTimeout(timer);
+  }, [isUserLoading, user, isAuthorized, router]);
 
   const handleSignOut = async () => {
     await signOut(auth);
     router.replace('/login');
   };
 
-  // 認証チェック中または未ログイン/未承認の場合
+  // 認証チェック中または未承認の場合の表示
   if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -64,20 +55,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div className="space-y-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
-              Security Verification in Progress...
+              Authenticating Session...
             </p>
             {showRetry && (
               <div className="animate-fade-in space-y-4 pt-4 border-t border-slate-200">
-                <div className="flex items-center gap-2 justify-center text-amber-600">
-                  <AlertCircle size={16} />
-                  <span className="text-xs font-bold">認証に時間がかかっています</span>
-                </div>
+                <p className="text-xs font-bold text-amber-600">認証に時間がかかっています</p>
                 <div className="flex flex-col gap-2">
                   <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="rounded-xl font-bold h-10">
                     <RefreshCw size={14} className="mr-2" /> ページを再読み込み
-                  </Button>
-                  <Button variant="link" onClick={() => router.push('/login')} className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    ログイン画面へ戻る
                   </Button>
                 </div>
               </div>
