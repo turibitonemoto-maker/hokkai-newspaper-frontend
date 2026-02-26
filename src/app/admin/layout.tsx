@@ -18,6 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [hasTimeout, setHasTimeout] = useState(false);
 
+  // あなたのメールアドレスを管理者として許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
 
   useEffect(() => {

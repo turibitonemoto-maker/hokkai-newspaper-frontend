@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -90,12 +90,12 @@ export default function ArticlePage() {
                     <span>BY: {article.authorName || '北海学園大学新聞'}</span>
                   </div>
                   <div className="flex-grow" />
-                  <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border">
+                  <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border shadow-sm">
                     <Button 
                       variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('base')}
-                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
                     >
                       標準
                     </Button>
@@ -103,7 +103,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'lg' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('lg')}
-                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
                     >
                       拡大
                     </Button>
@@ -111,7 +111,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'xl' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('xl')}
-                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
                     >
                       最大
                     </Button>
@@ -133,9 +133,9 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-base",
-                    fontSize === 'lg' && "prose-lg lg:prose-xl",
-                    fontSize === 'xl' && "prose-xl lg:prose-2xl"
+                    fontSize === 'base' && "prose-lg lg:prose-xl",
+                    fontSize === 'lg' && "prose-xl lg:prose-2xl",
+                    fontSize === 'xl' && "prose-2xl lg:text-3xl"
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />

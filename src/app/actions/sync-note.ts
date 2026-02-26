@@ -47,7 +47,7 @@ export async function fetchAndSyncNoteRss() {
 
       // 記事末尾の不要なナビゲーションテキストを強力に削除
       // note側の仕様で付与される末尾の「続きをみる」系のテキストを完全にカットします。
-      // また、HTMLタグが含まれている場合もあるため、より強力に処理します。
+      // HTMLタグ、空白、特殊文字を含めてマッチさせ、文末から取り除きます。
       htmlContent = htmlContent.replace(/(\s|&nbsp;|<br\s*\/?>)*(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/si, '');
       htmlContent = htmlContent.trim();
 
@@ -55,7 +55,7 @@ export async function fetchAndSyncNoteRss() {
 
       let imageUrl = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || "";
       if (!imageUrl) {
-        imageUrl = description.match(/<img[^>]+src="([^">]+)"/)?.[1] || "";
+        imageUrl = description.match(/<img[^+]+src="([^">]+)"/)?.[1] || "";
       }
 
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);

@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut, RefreshCw } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -18,6 +18,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  // あなたのメールアドレスを管理者として許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function LoginPage() {
         await signOut(auth);
         toast({ 
           title: "アクセス権限なし", 
-          description: "新聞会のメールアドレス（@hgu.jp）を使用してください。", 
+          description: "許可された管理者メールアドレスを使用してください。", 
           variant: "destructive" 
         });
         setIsLoggingIn(false);
