@@ -44,16 +44,18 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* ヒーローセクション */}
-        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[80vh]">
+        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[85vh]">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-xs font-black uppercase tracking-[0.2em] mb-10 border border-primary/30 backdrop-blur-sm">
                 <Newspaper size={14} />
                 <span>北海学園大学新聞 公式サイト</span>
               </div>
-              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.95] text-balance">
-                キャンパスの<br />
-                <span className="text-primary italic">「いま」</span> を届ける。
+              <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-[9rem] font-black tracking-tighter mb-12 leading-[1.05] flex flex-col">
+                <span className="block mb-2 opacity-90">キャンパスの</span>
+                <span className="whitespace-nowrap">
+                  <span className="text-primary italic">「いま」</span>を届ける。
+                </span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-400 mb-14 leading-relaxed font-medium max-w-2xl">
                 学生の視点で、大学の鼓動を記録する。<br className="hidden md:block" />
@@ -69,7 +71,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* 背景の装飾 */}
           <div className="absolute top-0 right-0 w-full lg:w-2/3 h-full bg-[radial-gradient(circle_at_70%_30%,rgba(51,102,153,0.25),transparent_70%)] pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         </section>
@@ -107,13 +108,8 @@ export default function Home() {
 
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-40">
-                <div className="relative">
-                  <Loader2 className="animate-spin text-primary" size={60} strokeWidth={3} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-primary rounded-full" />
-                  </div>
-                </div>
-                <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em] mt-8">Database Synchronizing</p>
+                <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
+                <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Database Synchronizing</p>
               </div>
             ) : publishedArticles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -143,12 +139,6 @@ export default function Home() {
               <Newspaper size={28} />
             </div>
             <span className="font-black text-3xl tracking-tighter text-white uppercase italic">北海学園大学新聞</span>
-          </div>
-          <div className="flex justify-center gap-10 mb-12 text-[10px] font-black uppercase tracking-[0.3em]">
-            <Link href="/" className="hover:text-white transition-colors">About Us</Link>
-            <Link href="/" className="hover:text-white transition-colors">Contact</Link>
-            <Link href="/" className="hover:text-white transition-colors">Archives</Link>
-            <Link href="/login" className="hover:text-white transition-colors">Admin</Link>
           </div>
           <p className="text-[10px] font-bold tracking-[0.5em] uppercase opacity-30">
             &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE

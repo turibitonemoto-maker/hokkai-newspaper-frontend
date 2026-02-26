@@ -4,8 +4,8 @@ service cloud.firestore {
     // 特定のドメインまたはメールアドレスを許可
     function isAuthorizedEditor() {
       return request.auth != null && (
-        request.auth.token.email.lower() == "admin@example.com" || 
-        request.auth.token.email.lower().endsWith('@hgu.jp')
+        request.auth.token.email.lower().matches(".*@hgu\\.jp$") || 
+        request.auth.token.email.lower() == "admin@example.com"
       );
     }
 
