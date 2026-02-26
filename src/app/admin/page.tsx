@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, deleteDoc, doc, setDoc, query, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, ChevronRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Ghost, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -51,30 +50,41 @@ export default function AdminDashboard() {
     
     toast({ 
       title: "同期開始", 
-      description: "noteから最新の記事を取得しています...",
+      description: "noteから最新記事を読み込んでいます...",
     });
 
     try {
       const result = await fetchAndSyncNoteRss();
+      
       if (result.success && result.articles) {
-        let count = 0;
-        for (const article of result.articles) {
-          const docRef = doc(db, 'articles', article.id);
-          // 既存の記事を上書きまたは新規作成
-          await setDoc(docRef, article, { merge: true });
-          count++;
+        if (result.articles.length === 0) {
+          toast({ title: "同期完了", description: "新しい記事はありませんでした。" });
+          return;
         }
+
+        let count = 0;
+        // バッチ処理的に一つずつ保存（Firestoreの無料枠や制限を考慮しつつ確実に実行）
+        for (const article of result.articles) {
+          try {
+            const docRef = doc(db, 'articles', article.id);
+            await setDoc(docRef, article, { merge: true });
+            count++;
+          } catch (err) {
+            console.error(`Error saving article ${article.id}:`, err);
+          }
+        }
+        
         toast({ 
-          title: "同期完了", 
-          description: `${count}件の記事を同期・更新しました。`,
+          title: "同期成功", 
+          description: `${count}件の記事を正常に同期しました。`,
         });
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error || '不明なエラーが発生しました');
       }
     } catch (e: any) {
       toast({ 
         title: "同期エラー", 
-        description: e.message || "同期に失敗しました。", 
+        description: e.message || "noteとの通信に失敗しました。URLを確認してください。", 
         variant: "destructive" 
       });
     } finally {
@@ -87,7 +97,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
-          <p className="text-slate-500 mt-2 font-bold uppercase text-[10px] tracking-[0.2em]">北海学園大学新聞 コンテンツマネジメント</p>
+          <p className="text-slate-500 mt-2 font-bold uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
         </div>
         <div className="flex gap-4">
           <Button 
@@ -128,7 +138,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
           <CardHeader className="pb-2 p-8">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Sync Sources</CardTitle>
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Note Sources</CardTitle>
           </CardHeader>
           <CardContent className="p-8 pt-0">
             <div className="text-7xl font-black text-slate-900 tracking-tighter">{articles?.filter(a => a.source === 'note').length || 0}</div>
@@ -153,7 +163,7 @@ export default function AdminDashboard() {
                 <TableCell colSpan={5} className="text-center py-32">
                   <div className="flex flex-col items-center gap-6">
                     <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Establishing Secure Connection</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Synchronizing with Cloud</p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -165,7 +175,7 @@ export default function AdminDashboard() {
                   </TableCell>
                   <TableCell>
                     <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm ${article.source === 'note' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {article.source || 'INTERNAL'}
+                      {article.source?.toUpperCase() || 'INTERNAL'}
                     </span>
                   </TableCell>
                   <TableCell className="text-slate-500 text-sm font-bold">
@@ -206,7 +216,7 @@ export default function AdminDashboard() {
                       <Newspaper className="text-slate-200" size={40} />
                     </div>
                     <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">管理対象の記事がありません</h3>
-                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Start your publication by creating a new story</p>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Create your first story or sync from Note</p>
                   </div>
                 </TableCell>
               </TableRow>
