@@ -16,65 +16,57 @@
         },
         "noteUrl": {
           "type": "string",
-          "description": "The full URL of the original article on note.com, serving as the primary source link. (Relationship: External 1:1 Article)",
+          "description": "The full URL of the original article on note.com, serving as the primary source link.",
           "format": "uri"
+        },
+        "source": {
+          "type": "string",
+          "description": "The origin of the article (e.g., 'note', 'internal')."
         },
         "slug": {
           "type": "string",
-          "description": "A URL-friendly, unique identifier for the article on the website, derived from its title for clean URLs."
+          "description": "A URL-friendly, unique identifier for the article."
         },
         "publishDate": {
           "type": "string",
-          "description": "The date and time the article was originally published (either on note.com or first made public on the website).",
+          "description": "The date and time the article was originally published.",
           "format": "date-time"
         },
         "lastSyncedDate": {
           "type": "string",
-          "description": "The date and time when the article's content was last synchronized from note.com.",
+          "description": "The date and time when the article's content was last synchronized.",
           "format": "date-time"
         },
         "htmlContent": {
           "type": "string",
-          "description": "The full HTML content of the article, fetched and stored from note.com, to be displayed directly on the website."
+          "description": "The full HTML content of the article."
         },
         "summary": {
           "type": "string",
-          "description": "A concise, AI-generated summary of the article's content, providing quick insights for readers."
+          "description": "A concise, AI-generated summary of the article's content."
         },
         "mainImageUrl": {
           "type": "string",
-          "description": "URL of the primary image associated with the article, often extracted from the note.com content or manually assigned for display.",
+          "description": "URL of the primary image associated with the article.",
           "format": "uri"
         },
         "isPublished": {
           "type": "boolean",
-          "description": "Flag indicating whether the article is currently visible and accessible to public users on the website, controlled by administrators."
-        },
-        "isFeatured": {
-          "type": "boolean",
-          "description": "Flag indicating if the article should be highlighted, for example, on the homepage or in special sections."
+          "description": "Flag indicating whether the article is visible to public users."
         },
         "categoryId": {
           "type": "string",
-          "description": "Reference to the Category this article belongs to. (Relationship: Category 1:N Article)"
+          "description": "Reference to the Category this article belongs to."
         },
-        "authorIds": {
-          "type": "array",
-          "description": "References to the Authors who contributed to this article. (Relationship: Author N:N Article)",
-          "items": {
-            "type": "string"
-          }
+        "authorName": {
+          "type": "string",
+          "description": "The name of the author (from RSS or internal)."
         }
       },
       "required": [
         "id",
         "title",
-        "noteUrl",
-        "slug",
         "publishDate",
-        "lastSyncedDate",
-        "htmlContent",
-        "summary",
         "isPublished",
         "categoryId"
       ]
@@ -83,7 +75,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Category",
       "type": "object",
-      "description": "Organizes articles into thematic groups, allowing users to filter and browse content by various topics.",
+      "description": "Organizes articles into thematic groups.",
       "properties": {
         "id": {
           "type": "string",
@@ -91,50 +83,7 @@
         },
         "name": {
           "type": "string",
-          "description": "The human-readable name of the category (e.g., \"キャンパスニュース\", \"イベント\")."
-        },
-        "slug": {
-          "type": "string",
-          "description": "A URL-friendly identifier for the category, derived from its name, for use in navigation."
-        },
-        "description": {
-          "type": "string",
-          "description": "A brief explanation describing the purpose or scope of the category."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "slug"
-      ]
-    },
-    "Author": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Author",
-      "type": "object",
-      "description": "Represents a member of the newspaper club who contributes and authors articles.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Author entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The full name of the author as it should appear on articles."
-        },
-        "bio": {
-          "type": "string",
-          "description": "A short biographical sketch or description of the author."
-        },
-        "profileImageUrl": {
-          "type": "string",
-          "description": "URL to the author's profile picture or avatar for display.",
-          "format": "uri"
-        },
-        "noteProfileUrl": {
-          "type": "string",
-          "description": "URL to the author's personal profile page on note.com, if applicable.",
-          "format": "uri"
+          "description": "The human-readable name of the category."
         }
       },
       "required": [
@@ -145,8 +94,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
@@ -158,7 +106,7 @@
           "schema": {
             "$ref": "#/backend/entities/Article"
           },
-          "description": "Stores individual articles, including content, metadata, and synchronization details from note.com. Includes denormalized 'isPublished' boolean for authorization independence in public reads and 'authorIds' for author attribution and potential author-specific edit permissions. Access control for publishing and general management is linked to the '/roles_admin/{userId}' collection."
+          "description": "Stores individual articles."
         }
       },
       {
@@ -168,30 +116,9 @@
           "schema": {
             "$ref": "#/backend/entities/Category"
           },
-          "description": "Stores article categories for browsing. Publicly readable, with write access restricted to administrators as defined in '/roles_admin/{userId}'."
-        }
-      },
-      {
-        "path": "/authors/{authorId}",
-        "definition": {
-          "entityName": "Author",
-          "schema": {
-            "$ref": "#/backend/entities/Author"
-          },
-          "description": "Stores information about article authors (newspaper club members). Publicly readable for author profiles, with write access restricted to administrators as defined in '/roles_admin/{userId}'."
-        }
-      },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "user",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "A collection used for Database Access Control (DBAC) to define which users have administrative privileges. The mere existence of a document at `/roles_admin/{request.auth.uid}` grants administrative rights. This adheres to Authorization Independence by allowing direct 'exists()' checks in security rules."
+          "description": "Stores article categories."
         }
       }
-    ],
-    "reasoning": "The Firestore data structure for the 北海学園大学新聞会 website prioritizes security, scalability, and debuggability by adhering to the core design principles. The structure uses a flat collection model for `articles`, `categories`, and `authors`, augmented by a dedicated `roles_admin` collection for managing administrative permissions. This approach ensures Authorization Independence and robust support for Queryable Access Patterns (QAPs).\n\n**Authorization Independence via Denormalization:**\n*   **Articles (`/articles/{articleId}`):** Public read access for articles is determined by the `isPublished` boolean field directly within each article document. This means a security rule can evaluate `resource.data.isPublished == true` without needing to perform a `get()` operation on a parent document or related collection. This is critical for atomic operations and avoiding complex rule dependencies. Similarly, for administrative access (create, update, delete), authorization is based on the user's presence in the `/roles_admin/{userId}` collection, which is checked via an `exists()` call, maintaining independence.\n*   **Categories (`/categories/{categoryId}`) and Authors (`/authors/{authorId}`):** These collections are designed for public read access, requiring no complex authorization logic for viewing. Write operations (create, update, delete) are restricted to authenticated users present in the `/roles_admin/{userId}` collection. This again avoids `get()` operations on potentially hierarchical parent data for authorization.\n*   **Roles (`/roles_admin/{adminId}`):** This collection explicitly stores administrative user IDs. Authorization checks for administrators are simple `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))` checks, which are highly efficient and independent of any other document's data.\n\n**Support for Queryable Access Patterns (QAPs):**\n*   **Articles (`/articles/{articleId}`):** To display 'Latest Articles' and 'Category-Based Article Browsing' for public users, queries will include `where('isPublished', '==', true)`. Firestore security rules will enforce this. For example, a rule for listing articles would be `allow list: request.query.where.isPublished == true;`. This ensures that only published articles are returned and prevents malicious queries from exposing drafts, fulfilling the QAP principle by making rules act as validators, not filters that magically hide data not explicitly requested.\n*   **Categories (`/categories/{categoryId}`) and Authors (`/authors/{authorsId}`):** These collections are entirely public for reads and lists, enabling straightforward retrieval of all categories and authors without needing complex `where` clauses or security rule filtering. This satisfies QAPs by allowing clients to request exactly what they are authorized to see (all data) directly."
+    ]
   }
 }
