@@ -6,7 +6,7 @@ import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, Clock, ChevronLeft } from 'lucide-react';
+import { Calendar, User, Clock, ChevronLeft, Share2, Printer, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -19,10 +19,13 @@ export default function ArticlePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-white">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
-          <div className="animate-pulse text-muted-foreground">読み込み中...</div>
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-sm font-bold text-slate-400 tracking-widest uppercase">Fetching Story</p>
+          </div>
         </div>
       </div>
     );
@@ -30,90 +33,119 @@ export default function ArticlePage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-white">
         <Navbar />
         <div className="flex-grow flex flex-col items-center justify-center p-4">
-          <h1 className="text-2xl font-bold mb-4">記事が見つかりませんでした</h1>
-          <Button asChild>
-            <Link href="/">トップへ戻る</Link>
+          <Badge variant="destructive" className="mb-4">404 NOT FOUND</Badge>
+          <h1 className="text-3xl font-black mb-6 tracking-tight">記事が見つかりませんでした</h1>
+          <Button asChild className="rounded-full px-8">
+            <Link href="/">トップページへ戻る</Link>
           </Button>
         </div>
       </div>
     );
   }
 
-  const displayImage = article.imageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
+  const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/30">
+    <div className="min-h-screen flex flex-col bg-white font-body">
       <Navbar />
       
-      <main className="flex-grow container mx-auto px-4 py-8 lg:py-12">
-        <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" className="mb-8 gap-2 -ml-4" asChild>
-            <Link href="/"><ChevronLeft size={18} /> 一覧に戻る</Link>
-          </Button>
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" className="mb-10 gap-2 -ml-4 hover:bg-slate-50 text-slate-500 font-bold" asChild>
+              <Link href="/"><ChevronLeft size={18} /> BACK TO NEWSFEED</Link>
+            </Button>
 
-          <header className="mb-10 text-center md:text-left">
-            <Badge className="mb-4" variant="secondary">{article.categoryId}</Badge>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-6 leading-tight">
-              {article.title}
-            </h1>
-            
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-sm text-muted-foreground border-b border-slate-200 pb-8">
-              <div className="flex items-center gap-2">
-                <Calendar size={16} />
-                <span>公開日: {article.publishDate?.split('T')[0]}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <User size={16} />
-                <span>取材班</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock size={16} />
-                <span>読了目安: 3分</span>
-              </div>
-            </div>
-          </header>
+            <article>
+              <header className="mb-12">
+                <div className="flex items-center gap-3 mb-6">
+                  <Badge className="bg-primary text-white hover:bg-primary border-none font-bold py-1 px-3">
+                    {article.categoryId}
+                  </Badge>
+                  <div className="h-px flex-grow bg-slate-100" />
+                </div>
+                
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 leading-[1.15] text-slate-950">
+                  {article.title}
+                </h1>
+                
+                <div className="flex flex-wrap items-center gap-8 py-8 border-y border-slate-100 text-sm text-slate-500 font-medium uppercase tracking-wider">
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} className="text-primary" />
+                    <span>PUBLISHED: {article.publishDate?.split('T')[0]}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <User size={16} className="text-primary" />
+                    <span>BY: HGU NEWSPAPER CLUB</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} className="text-primary" />
+                    <span>READ TIME: 3 MINS</span>
+                  </div>
+                  <div className="flex-grow" />
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" className="rounded-full"><Share2 size={18} /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-full"><Bookmark size={18} /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-full"><Printer size={18} /></Button>
+                  </div>
+                </div>
+              </header>
 
-          <div className="relative aspect-video rounded-3xl overflow-hidden mb-12 shadow-2xl shadow-primary/10">
-            <Image
-              src={displayImage}
-              alt={article.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          <div className="bg-white rounded-3xl p-8 lg:p-12 shadow-sm border border-slate-100">
-            {article.summary && (
-              <div className="bg-slate-50 border-l-4 border-primary p-6 rounded-r-xl mb-10 italic text-muted-foreground">
-                <p className="font-bold text-primary not-italic mb-2 text-sm uppercase tracking-widest">Article Summary</p>
-                {article.summary}
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-16 shadow-2xl shadow-slate-200 ring-1 ring-slate-100">
+                <Image
+                  src={displayImage}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
-            )}
-            
-            <article 
-              className="prose prose-slate lg:prose-xl max-w-none prose-headings:font-black prose-a:text-primary"
-              dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
-            />
-          </div>
 
-          <div className="mt-16 text-center border-t pt-12">
-            <p className="text-muted-foreground mb-6">この記事が役に立ったらシェアしてください</p>
-            <div className="flex justify-center gap-4">
-              <Button variant="outline" className="rounded-full px-8">SNSでシェア</Button>
-              <Button variant="default" className="rounded-full px-8" asChild>
-                <Link href="/">他の記事を読む</Link>
-              </Button>
-            </div>
+              <div className="max-w-3xl mx-auto">
+                {article.summary && (
+                  <div className="bg-slate-50 rounded-3xl p-8 mb-12 border border-slate-100 relative">
+                    <div className="absolute -top-3 left-8 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full tracking-[0.2em] uppercase">
+                      Executive Summary
+                    </div>
+                    <p className="text-lg leading-relaxed text-slate-700 italic font-medium">
+                      {article.summary}
+                    </p>
+                  </div>
+                )}
+                
+                <div 
+                  className="prose prose-slate lg:prose-xl max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950"
+                  dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
+                />
+
+                <footer className="mt-20 pt-12 border-t border-slate-100">
+                  <div className="bg-slate-50 rounded-3xl p-8 flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-black text-2xl uppercase">
+                      H
+                    </div>
+                    <div>
+                      <h4 className="font-black text-slate-900 mb-1">北海学園大学新聞会</h4>
+                      <p className="text-sm text-slate-500 leading-relaxed">
+                        この記事は北海学園大学新聞会 取材班によって執筆・編集されました。
+                        学内での出来事や学生の声をお届けしています。
+                      </p>
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            </article>
           </div>
         </div>
       </main>
 
-      <footer className="bg-slate-900 text-slate-400 py-12 mt-20">
+      <footer className="bg-slate-50 py-12 mt-12 border-t">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm">&copy; {new Date().getFullYear()} 北海学園大学新聞会</p>
+          <p className="text-xs text-slate-400 font-bold tracking-widest uppercase">
+            &copy; {new Date().getFullYear()} HGU NEWSPAPER CLUB / REPORTING FOR THE FUTURE
+          </p>
         </div>
       </footer>
     </div>
