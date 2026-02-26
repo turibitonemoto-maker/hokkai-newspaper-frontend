@@ -1,12 +1,19 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 
 export default function Home() {
+  const [updateDate, setUpdateDate] = useState<string>('');
   const db = useFirestore();
   
+  // ハイドレーションエラー防止のため、日付はクライアントサイドで設定
+  useEffect(() => {
+    setUpdateDate(new Date().toLocaleDateString('ja-JP'));
+  }, []);
+
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     // 公開済みの記事のみを取得
@@ -18,7 +25,11 @@ export default function Home() {
   // 日付順に並び替え
   const articles = rawArticles 
     ? [...rawArticles]
-        .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+        .sort((a, b) => {
+          const dateA = a.publishDate ? new Date(a.publishDate).getTime() : 0;
+          const dateB = b.publishDate ? new Date(b.publishDate).getTime() : 0;
+          return dateB - dateA;
+        })
         .slice(0, 50)
     : [];
 
@@ -40,14 +51,14 @@ export default function Home() {
           <tr>
             <td width="20%" valign="top" style={{ borderRight: '1px solid #000000' }}>
               <p><b>■ メニュー</b></p>
-              <ul>
+              <ul style={{ paddingLeft: '20px' }}>
                 <li><Link href="/">トップページ</Link></li>
-                <li><Link href="/login">管理者用入口</Link></li>
+                <li><Link href="/login">管理者入口</Link></li>
               </ul>
               <hr />
               <font size="1">
                 Since: 1950<br />
-                Update: {new Date().toLocaleDateString('ja-JP')}
+                Update: {updateDate || '----/--/--'}
               </font>
             </td>
             <td width="80%" valign="top">
@@ -61,15 +72,15 @@ export default function Home() {
                   <tr>
                     <td>
                       {isLoading ? (
-                        <p>Loading...</p>
+                        <p>読み込み中...</p>
                       ) : (
-                        <ul style={{ listStyleType: 'square' }}>
+                        <ul style={{ listStyleType: 'square', paddingLeft: '25px' }}>
                           {articles.length > 0 ? (
                             articles.map((article) => (
                               <li key={article.id}>
-                                <font size="2">[{article.publishDate.split('T')[0]}]</font> 
+                                <font size="2">[{article.publishDate ? article.publishDate.split('T')[0] : '不明'}]</font> 
                                 <Link href={`/articles/${article.id}`}><b>{article.title}</b></Link>
-                                <font size="1"> ({article.categoryId})</font>
+                                <font size="1"> ({article.categoryId || '未分類'})</font>
                               </li>
                             ))
                           ) : (
@@ -88,6 +99,7 @@ export default function Home() {
                     <td>
                       <p>北海学園大学新聞会 公式ホームページへようこそ。</p>
                       <p>当サイトは表示速度を最優先し、極限まで軽量化を行っております。</p>
+                      <p>すべての情報は手動で更新されています。</p>
                     </td>
                   </tr>
                 </tbody>
@@ -104,7 +116,7 @@ export default function Home() {
           <tr>
             <td align="center">
               <font size="2">
-                Copyright (C) 2024 北海学園大学新聞会 All Rights Reserved.
+                Copyright (C) 2024-2025 北海学園大学新聞会 All Rights Reserved.
               </font>
             </td>
           </tr>

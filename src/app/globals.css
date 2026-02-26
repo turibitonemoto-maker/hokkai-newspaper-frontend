@@ -1,4 +1,13 @@
 /* 阿部寛のホームページ風 究極の軽量化設定 */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --primary: 240 100% 25%; /* 紺色 #000080 */
+  --primary-foreground: 0 0% 100%;
+  --border: 0 0% 0%;
+  --radius: 0px;
+}
+
 body {
   background-color: #ffffff;
   color: #000000;
@@ -21,24 +30,25 @@ a:hover {
   color: #ff0000;
 }
 
+/* フォーム要素の最低限の装飾 */
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
 /* テーブルの基本スタイル */
 table {
   border-collapse: collapse;
 }
 
-th, td {
-  border: 1px solid #000000;
-  padding: 4px;
-}
-
 h1 {
   font-size: 24pt;
   margin: 0;
+  font-weight: bold;
 }
 
 ul {
   margin: 10px 0;
-  padding-left: 30px;
 }
 
 hr {
