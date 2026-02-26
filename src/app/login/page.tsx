@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut, UserCircle } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -19,15 +20,15 @@ export default function LoginPage() {
 
   // 権限チェック関数
   const checkIsAuthorized = (u: any) => {
-    return u && (u.email === 'admin@example.com' || u.email?.endsWith('@hgu.jp'));
+    return !!(u && (u.email === 'admin@example.com' || u.email?.endsWith('@hgu.jp')));
   };
 
   const isAuthorized = checkIsAuthorized(user);
 
-  // すでにログインしていて権限がある場合は管理画面へ
+  // すでにログインしていて権限がある場合は自動的に管理画面へ
   useEffect(() => {
     if (!isUserLoading && user && isAuthorized) {
-      router.push('/admin');
+      router.replace('/admin');
     }
   }, [user, isUserLoading, isAuthorized, router]);
 
@@ -35,7 +36,7 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
     
-    // 常にアカウント選択画面を表示するように設定（ユーザーのリクエスト）
+    // 常にアカウント選択画面を表示するように設定
     provider.setCustomParameters({
       prompt: 'select_account'
     });
@@ -46,7 +47,7 @@ export default function LoginPage() {
       
       if (checkIsAuthorized(loggedInUser)) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
-        router.push('/admin');
+        router.replace('/admin');
       } else {
         toast({ 
           title: "アクセス権限なし", 
@@ -63,7 +64,7 @@ export default function LoginPage() {
       console.error("Login error:", error);
       toast({
         title: "ログイン失敗",
-        description: "Google認証中にエラーが発生しました。コンソールでGoogleログインが有効か確認してください。",
+        description: "認証中にエラーが発生しました。コンソールでGoogleログインが有効か確認してください。",
         variant: "destructive",
       });
     } finally {
@@ -73,20 +74,23 @@ export default function LoginPage() {
 
   const handleSignOut = async () => {
     await signOut(auth);
-    toast({ title: "ログアウト完了", description: "アカウントを切り替える準備ができました。" });
+    toast({ title: "ログアウト完了", description: "別のアカウントでログイン可能です。" });
   };
 
   if (isUserLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="animate-spin text-primary" size={48} />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-primary" size={48} />
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Session...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md shadow-2xl border-none rounded-3xl overflow-hidden">
+      <Card className="w-full max-w-md shadow-2xl border-none rounded-3xl overflow-hidden animate-fade-in">
         <div className="h-2 bg-primary w-full" />
         <CardHeader className="space-y-4 pt-10 text-center">
           <div className="flex items-center justify-center">
@@ -109,13 +113,13 @@ export default function LoginPage() {
                 <div className="space-y-1">
                   <p className="text-xs text-destructive font-black uppercase tracking-wider">Unauthorized Account</p>
                   <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    現在「{user.email}」でログイン中ですが、このアカウントには管理権限がありません。
+                    「{user.email}」には管理権限がありません。
                   </p>
                 </div>
               </div>
               <Button 
                 variant="outline"
-                className="w-full h-14 rounded-2xl text-sm font-bold gap-3 border-slate-200"
+                className="w-full h-14 rounded-2xl text-sm font-bold gap-3 border-slate-200 hover:bg-slate-50"
                 onClick={handleSignOut}
               >
                 <LogOut size={20} />

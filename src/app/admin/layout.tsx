@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -16,39 +17,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
-  // 特定のドメインまたはメールのみ許可するチェック
+  // 権限チェック：特定のドメインまたはメールのみ許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
+    // 認証チェックが終わった段階で判断
     if (!isUserLoading) {
-      if (!user) {
-        // ログインしていない場合はログイン画面へ
-        router.push('/login');
-      } else if (!isAuthorized) {
-        // ログインしているが権限がない場合もログイン画面へ（そこでエラー表示）
-        router.push('/login');
+      if (!user || !isAuthorized) {
+        // ログインしていない、または権限がない場合は即座にログイン画面へ
+        // replace を使うことで履歴を汚さず、別タブでの状態変更にも対応しやすくする
+        router.replace('/login');
       }
     }
-  }, [user, isUserLoading, router, isAuthorized]);
+  }, [user, isUserLoading, isAuthorized, router]);
 
   const handleSignOut = async () => {
     await signOut(auth);
-    router.push('/login');
+    router.replace('/login');
   };
 
-  if (isUserLoading) {
+  // 認証情報の読み込み中、または未承認でのアクセス時はローディングを表示
+  if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Checking Authentication...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            {isUserLoading ? "Checking Authentication..." : "Redirecting to Login..."}
+          </p>
         </div>
       </div>
     );
   }
-
-  // 権限がない場合は何も表示せず useEffect のリダイレクトを待つ
-  if (!user || !isAuthorized) return null;
 
   const menuItems = [
     { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
