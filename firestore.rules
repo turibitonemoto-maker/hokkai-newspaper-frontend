@@ -22,7 +22,6 @@ service cloud.firestore {
 
     match /hero-images/{imageId} {
       allow read: if true;
-      // delete権限を明示的に定義
       allow create, update, delete: if isAuthorizedEditor();
     }
 

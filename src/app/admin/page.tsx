@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -19,6 +18,17 @@ import {
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -36,11 +46,11 @@ export default function AdminDashboard() {
     ? [...articles].sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
     : [];
 
-  const handleDelete = async (id: string) => {
-    if (!db || !confirm('本当にこの記事を削除しますか？')) return;
+  const handleDelete = (id: string) => {
+    if (!db) return;
     const docRef = doc(db, 'articles', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "削除リクエスト送信", description: "削除処理を開始しました。" });
+    toast({ title: "削除完了", description: "記事を削除しました。" });
   };
 
   const handleSyncNote = async () => {
@@ -62,7 +72,6 @@ export default function AdminDashboard() {
           return;
         }
 
-        // 各記事の保存を非同期で開始（ユーティリティを使用して確実に権限エラーを捕捉）
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
           setDocumentNonBlocking(docRef, article, { merge: true });
@@ -195,9 +204,30 @@ export default function AdminDashboard() {
                           <Edit size={18} />
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl text-destructive hover:bg-destructive/10 transition-all" onClick={() => handleDelete(article.id)}>
-                        <Trash2 size={18} />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl text-destructive hover:bg-destructive/10 transition-all">
+                            <Trash2 size={18} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="rounded-[32px]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="font-black text-xl">記事を削除しますか？</AlertDialogTitle>
+                            <AlertDialogDescription className="font-medium">
+                              この操作は取り消せません。サイトからこの記事が完全に削除されます。
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="gap-2">
+                            <AlertDialogCancel className="rounded-xl font-bold">キャンセル</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDelete(article.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl font-bold"
+                            >
+                              削除する
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
