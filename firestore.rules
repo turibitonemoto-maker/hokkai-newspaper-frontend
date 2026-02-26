@@ -2,12 +2,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 公開済みの記事は誰でも閲覧可能
+    // 記事（articles）のルール
     match /articles/{articleId} {
-      allow read: if resource == null || resource.data.isPublished == true || request.auth != null;
+      // 誰でも「公開済み」の記事は閲覧可能。ログインユーザーは全て閲覧可能。
+      allow read: if (resource != null && resource.data.isPublished == true) || request.auth != null;
+      // 書き込みは認証済みユーザーのみ
       allow write: if request.auth != null;
     }
 
+    // カテゴリーと著者（基本は読み取り専用で公開）
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if request.auth != null;
@@ -18,7 +21,7 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // 管理者ロールの確認（拡張用）
+    // 管理者ロールの確認用
     match /roles_admin/{userId} {
       allow read: if request.auth != null;
       allow write: if false;
