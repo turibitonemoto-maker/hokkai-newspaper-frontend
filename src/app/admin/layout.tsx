@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from 'react';
@@ -24,7 +23,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!isUserLoading && !user) {
       router.push('/login');
     } else if (!isUserLoading && user && !isAuthorized) {
-      // ログインはしているが権限がない場合
       router.push('/login');
     }
   }, [user, isUserLoading, router, isAuthorized]);
@@ -47,10 +45,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!user || !isAuthorized) return null;
 
-  // 各項目に一意のIDを持たせるか、ラベルをキーに使用して重複を避ける
   const menuItems = [
     { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
-    { id: 'articles', label: '記事管理', icon: FileText, href: '/admin' },
     { id: 'new-article', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
   ];
 
@@ -64,8 +60,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <ShieldCheck size={20} strokeWidth={2.5} />
               </div>
               <div className="group-data-[state=collapsed]:hidden flex flex-col">
-                <span className="font-black text-slate-900 leading-none text-sm tracking-tight">北海学園大学新聞</span>
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Console</span>
+                <span className="font-black text-slate-900 leading-none text-sm tracking-tight uppercase italic">北海学園大学新聞</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Admin Panel</span>
               </div>
             </Link>
           </SidebarHeader>

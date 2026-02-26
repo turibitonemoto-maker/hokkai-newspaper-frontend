@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -21,7 +20,7 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     
-    // 常にアカウント選択画面を表示させるための設定
+    // 常にアカウント選択画面を表示
     provider.setCustomParameters({
       prompt: 'select_account'
     });
@@ -40,10 +39,14 @@ export default function LoginPage() {
           description: "このアカウントには管理権限がありません。新聞会のメールアドレス（@hgu.jp）を使用してください。", 
           variant: "destructive" 
         });
-        // 権限がない場合は、混乱を避けるためにサインアウトしておく（オプション）
-        // await auth.signOut();
       }
     } catch (error: any) {
+      // ユーザーがポップアップを閉じた場合はエラーを表示しない
+      if (error.code === 'auth/popup-closed-by-user') {
+        setIsLoading(false);
+        return;
+      }
+
       console.error("Login error:", error);
       
       let errorMessage = "Google認証中にエラーが発生しました。";
@@ -72,9 +75,9 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <CardTitle className="text-3xl font-black tracking-tighter">ADMIN LOGIN</CardTitle>
+            <CardTitle className="text-3xl font-black tracking-tighter uppercase italic">北海学園大学新聞</CardTitle>
             <CardDescription className="text-slate-500 font-medium uppercase tracking-widest text-[10px] mt-2">
-              北海学園大学新聞 管理コンソール
+              管理者コンソール
             </CardDescription>
           </div>
         </CardHeader>
