@@ -14,20 +14,20 @@ service cloud.firestore {
     // 記事（articles）のルール
     match /articles/{articleId} {
       allow read: if true;
-      // create, update, delete すべてを許可
-      allow write: if isAuthorizedEditor();
+      // create, update, delete を明示的に許可
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // カテゴリー（categories）のルール
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // ヒーロー画像（hero-images）のルール
     match /hero-images/{imageId} {
       allow read: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // デフォルトはすべて拒否
