@@ -21,13 +21,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 認証チェックが終わった段階で判断
-    if (!isUserLoading) {
-      if (!user || !isAuthorized) {
-        // ログインしていない、または権限がない場合は即座にログイン画面へ
-        // replace を使うことで履歴を汚さず、別タブでの状態変更にも対応しやすくする
-        router.replace('/login');
-      }
+    // 認証チェックが終わり、ログインしていない、または権限がない場合は即座にログイン画面へ
+    if (!isUserLoading && (!user || !isAuthorized)) {
+      router.replace('/login');
     }
   }, [user, isUserLoading, isAuthorized, router]);
 
@@ -40,10 +36,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            {isUserLoading ? "Checking Authentication..." : "Redirecting to Login..."}
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <Loader2 className="animate-spin text-primary" size={60} strokeWidth={3} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ShieldCheck size={20} className="text-primary opacity-50" />
+            </div>
+          </div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
+            {isUserLoading ? "Authenticating..." : "Redirecting..."}
           </p>
         </div>
       </div>
@@ -65,12 +66,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <ShieldCheck size={20} strokeWidth={2.5} />
               </div>
               <div className="group-data-[state=collapsed]:hidden flex flex-col">
-                <span className="font-black text-slate-900 leading-none text-sm tracking-tight uppercase italic text-nowrap">北海学園大学新聞</span>
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Admin Panel</span>
+                <span className="font-black text-slate-950 leading-none text-sm tracking-tight uppercase italic text-nowrap">北海学園大学新聞</span>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">ADMIN CONSOLE</span>
               </div>
             </Link>
           </SidebarHeader>
-          <SidebarContent className="p-3">
+          <SidebarContent className="p-4">
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
@@ -78,31 +79,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     asChild 
                     isActive={pathname === item.href}
                     tooltip={item.label}
-                    className="rounded-xl h-11 px-4 font-bold text-slate-600 data-[active=true]:bg-primary/5 data-[active=true]:text-primary transition-all"
+                    className="rounded-2xl h-14 px-5 font-black text-slate-600 data-[active=true]:bg-primary/10 data-[active=true]:text-primary transition-all duration-300"
                   >
                     <Link href={item.href}>
-                      <item.icon className={pathname === item.href ? "text-primary" : "text-slate-400"} />
-                      <span>{item.label}</span>
+                      <item.icon className={pathname === item.href ? "text-primary" : "text-slate-400"} strokeWidth={pathname === item.href ? 2.5 : 2} />
+                      <span className="text-xs uppercase tracking-wider">{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="p-4 border-t border-slate-50">
-            <SidebarMenu>
+          <SidebarFooter className="p-6 border-t border-slate-50">
+            <SidebarMenu className="gap-2">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="サイトを表示" className="rounded-xl font-bold text-slate-500">
+                <SidebarMenuButton asChild tooltip="サイトを表示" className="rounded-xl font-bold text-slate-500 h-11">
                   <Link href="/">
-                    <Home />
-                    <span>公開サイトを表示</span>
+                    <Home size={18} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">サイトを表示</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleSignOut} tooltip="ログアウト" className="rounded-xl font-bold text-destructive hover:text-destructive hover:bg-destructive/5 transition-colors">
-                  <LogOut />
-                  <span>ログアウト</span>
+                <SidebarMenuButton onClick={handleSignOut} tooltip="ログアウト" className="rounded-xl font-black text-destructive hover:text-destructive hover:bg-destructive/5 transition-colors h-11">
+                  <LogOut size={18} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">ログアウト</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

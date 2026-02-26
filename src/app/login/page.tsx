@@ -33,10 +33,11 @@ export default function LoginPage() {
   }, [user, isUserLoading, isAuthorized, router]);
 
   const handleGoogleLogin = async () => {
+    if (isLoggingIn) return;
     setIsLoggingIn(true);
-    const provider = new GoogleAuthProvider();
     
-    // 常にアカウント選択画面を表示するように設定
+    const provider = new GoogleAuthProvider();
+    // 常にアカウント選択画面を表示
     provider.setCustomParameters({
       prompt: 'select_account'
     });
@@ -49,14 +50,17 @@ export default function LoginPage() {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
         router.replace('/admin');
       } else {
+        // 権限がない場合は即座にサインアウトして、ユーザーに知らせる
+        await signOut(auth);
         toast({ 
           title: "アクセス権限なし", 
-          description: "このアカウントには管理権限がありません。新聞会のメールアドレス（@hgu.jp）を使用してください。", 
+          description: "新聞会のメールアドレス（@hgu.jp）を使用してください。", 
           variant: "destructive" 
         });
       }
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {
+        // ユーザーが閉じた場合はエラーを出さない
         setIsLoggingIn(false);
         return;
       }
@@ -82,7 +86,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Session...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">セッションを確認中...</p>
         </div>
       </div>
     );
@@ -90,53 +94,56 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md shadow-2xl border-none rounded-3xl overflow-hidden animate-fade-in">
+      <Card className="w-full max-w-md shadow-2xl border-none rounded-[40px] overflow-hidden animate-fade-in bg-white">
         <div className="h-2 bg-primary w-full" />
-        <CardHeader className="space-y-4 pt-10 text-center">
+        <CardHeader className="space-y-4 pt-12 text-center">
           <div className="flex items-center justify-center">
-            <div className="bg-primary/10 p-4 rounded-2xl text-primary ring-8 ring-primary/5">
+            <div className="bg-primary/10 p-5 rounded-[24px] text-primary ring-8 ring-primary/5">
               <ShieldCheck size={40} strokeWidth={2.5} />
             </div>
           </div>
-          <div>
-            <CardTitle className="text-3xl font-black tracking-tighter uppercase italic text-slate-900">北海学園大学新聞</CardTitle>
-            <CardDescription className="text-slate-500 font-medium uppercase tracking-widest text-[10px] mt-2">
-              管理者コンソール
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-black tracking-tighter uppercase italic text-slate-950">北海学園大学新聞</CardTitle>
+            <CardDescription className="text-slate-500 font-black uppercase tracking-[0.2em] text-[10px]">
+              ADMINISTRATION CONSOLE
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 pb-10">
+        <CardContent className="space-y-8 pb-12 px-10">
           {user && !isAuthorized ? (
             <div className="space-y-6">
-              <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex gap-3">
-                <AlertTriangle className="text-destructive shrink-0" size={20} />
+              <div className="bg-destructive/5 border border-destructive/10 rounded-3xl p-6 flex flex-col items-center text-center gap-3">
+                <AlertTriangle className="text-destructive" size={24} />
                 <div className="space-y-1">
-                  <p className="text-xs text-destructive font-black uppercase tracking-wider">Unauthorized Account</p>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    「{user.email}」には管理権限がありません。
+                  <p className="text-[10px] text-destructive font-black uppercase tracking-widest">Unauthorized Access</p>
+                  <p className="text-sm text-slate-600 font-bold leading-relaxed">
+                    「{user.email}」<br />
+                    には管理権限がありません。
                   </p>
                 </div>
               </div>
               <Button 
                 variant="outline"
-                className="w-full h-14 rounded-2xl text-sm font-bold gap-3 border-slate-200 hover:bg-slate-50"
+                className="w-full h-16 rounded-2xl text-sm font-black gap-3 border-slate-200 hover:bg-slate-50 active:scale-95 transition-all"
                 onClick={handleSignOut}
               >
                 <LogOut size={20} />
-                別のアカウントでログインし直す
+                別のアカウントで入り直す
               </Button>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
-                <AlertTriangle className="text-amber-600 shrink-0" size={20} />
-                <p className="text-xs text-amber-700 leading-relaxed font-medium">
-                  承認された新聞会のGoogleアカウント（@hgu.jp）でのみアクセスできます。
+              <div className="bg-amber-50 border border-amber-100/50 rounded-2xl p-5 flex gap-4">
+                <div className="bg-amber-100 p-2 rounded-xl h-fit shrink-0">
+                  <AlertTriangle className="text-amber-700" size={18} />
+                </div>
+                <p className="text-xs text-amber-900 leading-relaxed font-bold">
+                  北海学園大学新聞会から承認された Googleアカウント（@hgu.jp）を使用してログインしてください。
                 </p>
               </div>
 
               <Button 
-                className="w-full h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                className="w-full h-16 rounded-2xl text-lg font-black gap-4 shadow-xl shadow-primary/25 transition-all hover:scale-[1.02] active:scale-95" 
                 onClick={handleGoogleLogin} 
                 disabled={isLoggingIn}
               >
@@ -144,7 +151,7 @@ export default function LoginPage() {
                   <Loader2 className="animate-spin" size={24} />
                 ) : (
                   <>
-                    <Mail size={24} />
+                    <Mail size={24} strokeWidth={2.5} />
                     Googleでログイン
                   </>
                 )}
@@ -152,9 +159,9 @@ export default function LoginPage() {
             </div>
           )}
           
-          <div className="text-center pt-4 border-t border-slate-100">
-            <Button variant="link" asChild className="text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
-              <Link href="/">サイトに戻る</Link>
+          <div className="text-center pt-6 border-t border-slate-50">
+            <Button variant="link" asChild className="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-colors">
+              <Link href="/">← サイトに戻る</Link>
             </Button>
           </div>
         </CardContent>
