@@ -23,18 +23,17 @@ export default function Home() {
     }));
   }, []);
 
-  // 公開済みの最新記事を取得
+  // 公開済みの最新記事を取得（パーミッションエラーを避けるためシンプルなクエリから開始）
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
       where('isPublished', '==', true),
-      orderBy('publishDate', 'desc'),
-      limit(6)
+      limit(10)
     );
   }, [db]);
 
-  const { data: articles, isLoading, error } = useCollection(latestArticlesRef);
+  const { data: articles, isLoading } = useCollection(latestArticlesRef);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
@@ -108,9 +107,11 @@ export default function Home() {
               </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} article={article as any} />
-                ))}
+                {articles
+                  .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+                  .map((article) => (
+                    <ArticleCard key={article.id} article={article as any} />
+                  ))}
               </div>
             ) : (
               <div className="bg-white rounded-3xl p-24 text-center border-2 border-dashed border-slate-200">

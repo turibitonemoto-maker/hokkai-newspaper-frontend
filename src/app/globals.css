@@ -6,7 +6,7 @@
 @layer base {
   :root {
     /* プライマリカラー: 信頼感のあるディープブルー (#336699) */
-    --background: 210 32% 93%; /* #E8EDF2 */
+    --background: 210 32% 98%; /* #F8FAFC */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -25,7 +25,16 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 211 50% 40%;
-    --radius: 0.75rem;
+    --radius: 1rem;
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 211 50% 40%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -46,13 +55,12 @@
   scrollbar-width: none;
 }
 
-/* 記事本文用のタイポグラフィ */
-.prose-article {
-  @apply text-slate-800 leading-relaxed;
+/* アニメーション */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.prose-article h2 {
-  @apply text-2xl font-bold mt-8 mb-4 text-primary border-l-4 border-primary pl-4;
-}
-.prose-article p {
-  @apply mb-4;
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
