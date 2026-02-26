@@ -17,13 +17,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   // 特定のドメインまたはメールのみ許可するチェック
-  const isAuthorized = user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp'));
+  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    } else if (!isUserLoading && user && !isAuthorized) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (!user) {
+        // ログインしていない場合はログイン画面へ
+        router.push('/login');
+      } else if (!isAuthorized) {
+        // ログインしているが権限がない場合もログイン画面へ（そこでエラー表示）
+        router.push('/login');
+      }
     }
   }, [user, isUserLoading, router, isAuthorized]);
 
@@ -37,15 +41,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Checking Authentication</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Checking Authentication...</p>
         </div>
       </div>
     );
   }
 
+  // 権限がない場合は何も表示せず useEffect のリダイレクトを待つ
   if (!user || !isAuthorized) return null;
 
-  // Reactのkeyエラーを避けるため、各項目に一意のidを付与
   const menuItems = [
     { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'new-article', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
@@ -61,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <ShieldCheck size={20} strokeWidth={2.5} />
               </div>
               <div className="group-data-[state=collapsed]:hidden flex flex-col">
-                <span className="font-black text-slate-900 leading-none text-sm tracking-tight uppercase italic">北海学園大学新聞</span>
+                <span className="font-black text-slate-900 leading-none text-sm tracking-tight uppercase italic text-nowrap">北海学園大学新聞</span>
                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Admin Panel</span>
               </div>
             </Link>

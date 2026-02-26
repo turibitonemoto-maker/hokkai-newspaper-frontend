@@ -1,36 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useAuth, useUser } from '@/firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ShieldCheck, Mail, AlertTriangle } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, AlertTriangle, LogOut, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
+  // 権限チェック関数
+  const checkIsAuthorized = (u: any) => {
+    return u && (u.email === 'admin@example.com' || u.email?.endsWith('@hgu.jp'));
+  };
+
+  const isAuthorized = checkIsAuthorized(user);
+
+  // すでにログインしていて権限がある場合は管理画面へ
+  useEffect(() => {
+    if (!isUserLoading && user && isAuthorized) {
+      router.push('/admin');
+    }
+  }, [user, isUserLoading, isAuthorized, router]);
+
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
+    setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
     
-    // 常にアカウント選択画面を表示
+    // 常にアカウント選択画面を表示するように設定（ユーザーのリクエスト）
     provider.setCustomParameters({
       prompt: 'select_account'
     });
     
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const loggedInUser = result.user;
       
-      // メールアドレスの制限チェック
-      if (user.email && (user.email === 'admin@example.com' || user.email.endsWith('@hgu.jp'))) {
+      if (checkIsAuthorized(loggedInUser)) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
         router.push('/admin');
       } else {
@@ -41,29 +55,34 @@ export default function LoginPage() {
         });
       }
     } catch (error: any) {
-      // ユーザーがポップアップを自ら閉じた場合は、エラーとして扱わず静かに終了する
       if (error.code === 'auth/popup-closed-by-user') {
-        setIsLoading(false);
+        setIsLoggingIn(false);
         return;
       }
-
-      // その他のエラー（通信エラーや設定ミスなど）は通知する
-      console.error("Login error:", error);
       
-      let errorMessage = "Google認証中にエラーが発生しました。";
-      if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = "Googleログインが有効になっていません。Firebaseコンソールの [Authentication] > [Sign-in method] でGoogleを有効にしてください。";
-      }
-
+      console.error("Login error:", error);
       toast({
         title: "ログイン失敗",
-        description: errorMessage,
+        description: "Google認証中にエラーが発生しました。コンソールでGoogleログインが有効か確認してください。",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoggingIn(false);
     }
   };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    toast({ title: "ログアウト完了", description: "アカウントを切り替える準備ができました。" });
+  };
+
+  if (isUserLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
@@ -83,32 +102,53 @@ export default function LoginPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pb-10">
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
-            <AlertTriangle className="text-amber-600 shrink-0" size={20} />
-            <p className="text-xs text-amber-700 leading-relaxed font-medium">
-              この記事管理システムには、承認された新聞会のGoogleアカウント（@hgu.jp）でのみアクセスできます。
-            </p>
-          </div>
+          {user && !isAuthorized ? (
+            <div className="space-y-6">
+              <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 flex gap-3">
+                <AlertTriangle className="text-destructive shrink-0" size={20} />
+                <div className="space-y-1">
+                  <p className="text-xs text-destructive font-black uppercase tracking-wider">Unauthorized Account</p>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                    現在「{user.email}」でログイン中ですが、このアカウントには管理権限がありません。
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="outline"
+                className="w-full h-14 rounded-2xl text-sm font-bold gap-3 border-slate-200"
+                onClick={handleSignOut}
+              >
+                <LogOut size={20} />
+                別のアカウントでログインし直す
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
+                <AlertTriangle className="text-amber-600 shrink-0" size={20} />
+                <p className="text-xs text-amber-700 leading-relaxed font-medium">
+                  承認された新聞会のGoogleアカウント（@hgu.jp）でのみアクセスできます。
+                </p>
+              </div>
 
-          <Button 
-            className="w-full h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" 
-            onClick={handleGoogleLogin} 
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={24} />
-            ) : (
-              <>
-                <Mail size={24} />
-                Googleでログイン
-              </>
-            )}
-          </Button>
+              <Button 
+                className="w-full h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                onClick={handleGoogleLogin} 
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? (
+                  <Loader2 className="animate-spin" size={24} />
+                ) : (
+                  <>
+                    <Mail size={24} />
+                    Googleでログイン
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
           
-          <div className="text-center">
-            <p className="text-[10px] text-slate-400 font-bold mb-4 uppercase tracking-tighter">
-              ※クリックするとアカウント選択画面が開きます
-            </p>
+          <div className="text-center pt-4 border-t border-slate-100">
             <Button variant="link" asChild className="text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
               <Link href="/">サイトに戻る</Link>
             </Button>
