@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     if (!db) return;
     const docRef = doc(db, 'articles', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "削除完了", description: "記事を削除しました。" });
+    toast({ title: "削除完了", description: "記事を完全に削除しました。" });
   };
 
   const handleSyncNote = async () => {
