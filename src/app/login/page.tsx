@@ -19,8 +19,8 @@ export default function LoginPage() {
 
   // 管理者権限の判定
   const isAuthorized = !!(user && (
-    user.email === 'turibitonemoto@gmail.com' || 
-    user.email === 'admin@example.com' || 
+    user.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
+    user.email?.toLowerCase() === 'admin@example.com' || 
     user.email?.toLowerCase().endsWith('@hgu.jp')
   ));
 
@@ -41,8 +41,8 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const loggedInUser = result.user;
       const loggedInAuthorized = !!(loggedInUser && (
-        loggedInUser.email === 'turibitonemoto@gmail.com' || 
-        loggedInUser.email === 'admin@example.com' || 
+        loggedInUser.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
+        loggedInUser.email?.toLowerCase() === 'admin@example.com' || 
         loggedInUser.email?.toLowerCase().endsWith('@hgu.jp')
       ));
       

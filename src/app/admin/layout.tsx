@@ -19,8 +19,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // 管理者権限の判定
   const isAuthorized = !!(user && (
-    user.email === 'turibitonemoto@gmail.com' || 
-    user.email === 'admin@example.com' || 
+    user.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
+    user.email?.toLowerCase() === 'admin@example.com' || 
     user.email?.toLowerCase().endsWith('@hgu.jp')
   ));
 
