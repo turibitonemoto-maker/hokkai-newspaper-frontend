@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -134,27 +133,26 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    // 標準サイズを以前の拡大サイズ(xl)に設定
-                    fontSize === 'base' && "prose-xl lg:prose-2xl",
-                    fontSize === 'lg' && "prose-2xl lg:text-3xl",
-                    fontSize === 'xl' && "prose-2xl text-3xl md:text-4xl"
+                    fontSize === 'base' && "prose-xl lg:prose-2xl", // 現状の拡大を標準に
+                    fontSize === 'lg' && "prose-2xl lg:text-3xl",  // さらに拡大
+                    fontSize === 'xl' && "prose-2xl text-3xl md:text-4xl" // 最大（特大）
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
 
                 {isExternal && article.noteUrl && (
-                  <div className="mt-16 pt-8 border-t border-slate-100">
-                    <Button 
-                      asChild 
-                      className="w-full h-20 text-xl font-black rounded-[24px] bg-green-600 hover:bg-green-700 shadow-xl shadow-green-100 gap-4"
+                  <div className="mt-20 pt-12 border-t-2 border-slate-100">
+                    <a 
+                      href={article.noteUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-full h-24 text-2xl font-black rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-2xl shadow-green-200 transition-all active:scale-[0.98] gap-4"
                     >
-                      <a href={article.noteUrl} target="_blank" rel="noopener noreferrer">
-                        note.comでこの記事の続きを読む
-                        <ExternalLink size={24} strokeWidth={3} />
-                      </a>
-                    </Button>
-                    <p className="text-center mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                      ※noteのサイトへ移動します
+                      note.comでこの記事の続きを読む
+                      <ExternalLink size={28} strokeWidth={3} />
+                    </a>
+                    <p className="text-center mt-6 text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                      ※外部サイト（note.com）へ移動します
                     </p>
                   </div>
                 )}
