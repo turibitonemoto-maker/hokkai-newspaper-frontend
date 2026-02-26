@@ -75,7 +75,7 @@ export default function EditArticlePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
+        <Card className="bg-white">
           <CardHeader>
             <CardTitle>基本情報</CardTitle>
           </CardHeader>

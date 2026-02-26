@@ -1,8 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 管理者権限の判定: @hgu.jp ドメインまたは指定の管理者メールアドレス
-    // lower() を使用して、大文字小文字に関わらず確実に判定されるように設定
+    // 管理者権限の判定をより堅牢に定義
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
@@ -12,18 +11,18 @@ service cloud.firestore {
     }
 
     match /articles/{articleId} {
-      allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isAuthorizedEditor();
     }
 
     match /categories/{categoryId} {
-      allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isAuthorizedEditor();
     }
 
     match /hero-images/{imageId} {
-      allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isAuthorizedEditor();
     }
 
     match /{path=**} {

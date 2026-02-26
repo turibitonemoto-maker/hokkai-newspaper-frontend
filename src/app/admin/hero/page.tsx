@@ -69,16 +69,16 @@ export default function HeroImageAdmin() {
           <Link href="/admin"><ArrowLeft size={20} /></Link>
         </Button>
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">ヒーロー画像管理</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">ヒーロー画像管理</h2>
           <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Manage Top Page Background Slideshow</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <Card className="rounded-[32px] border-none shadow-xl">
+          <Card className="rounded-[32px] border-none shadow-xl bg-white">
             <CardHeader>
-              <CardTitle className="text-lg font-black">画像の追加</CardTitle>
+              <CardTitle className="text-lg font-bold">画像の追加</CardTitle>
               <CardDescription>背景に使用する画像のURLを入力してください。</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -110,11 +110,11 @@ export default function HeroImageAdmin() {
                 <Card key={img.id} className="overflow-hidden rounded-[24px] border-none shadow-md group relative">
                   <div className="aspect-video relative">
                     <img src={img.imageUrl} alt="Hero" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="icon" className="rounded-xl">
-                            <Trash2 size={18} />
+                          <Button variant="destructive" size="icon" className="rounded-xl shadow-xl">
+                            <Trash2 size={20} />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="rounded-[32px]">
@@ -124,7 +124,7 @@ export default function HeroImageAdmin() {
                               この操作は取り消せません。トップページの背景スライドショーからこの画像が削除されます。
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
+                          <AlertDialogFooter className="gap-2">
                             <AlertDialogCancel className="rounded-xl font-bold">キャンセル</AlertDialogCancel>
                             <AlertDialogAction 
                               onClick={() => handleDelete(img.id)}
@@ -140,7 +140,7 @@ export default function HeroImageAdmin() {
                 </Card>
               ))
             ) : (
-              <div className="col-span-full py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
+              <div className="col-span-full py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200 shadow-sm">
                 <ImageIcon className="mx-auto text-slate-200 mb-4" size={48} />
                 <p className="text-slate-400 font-bold">画像が登録されていません</p>
               </div>
