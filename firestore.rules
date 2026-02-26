@@ -1,9 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 記事のルール: 閲覧は全員に許可（エラー解消のため明示的に許可）
+    // 記事のルール: 閲覧は全員に許可（get/listの両方を明示的に許可）
     match /articles/{articleId} {
       allow read: if true;
+      allow list: if true;
       allow write: if request.auth != null;
     }
 
@@ -13,7 +14,7 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // デプロイを強制するためのコメント: 2024-05-21 修正
+    // ルール再適用のための強制コメント: 2024-05-23 セキュリティルールの最適化
     match /{path=**} {
       allow read, write: if false;
     }

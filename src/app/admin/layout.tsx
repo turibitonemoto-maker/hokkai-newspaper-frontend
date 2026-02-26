@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="bg-primary p-1.5 rounded-lg text-primary-foreground shrink-0">
                 <Newspaper size={20} />
               </div>
-              <span className="font-bold truncate group-data-[state=collapsed]:hidden">HGU新聞 管理</span>
+              <span className="font-bold truncate group-data-[state=collapsed]:hidden">北海学園大学新聞 管理</span>
             </Link>
           </SidebarHeader>
           <SidebarContent className="p-2">

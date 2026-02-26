@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -79,7 +78,7 @@ export default function ArticlePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <User size={16} className="text-primary" />
-                    <span>BY: HGU NEWSPAPER CLUB</span>
+                    <span>BY: 北海学園大学新聞</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={16} className="text-primary" />
@@ -127,9 +126,9 @@ export default function ArticlePage() {
                       H
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 mb-1">北海学園大学新聞会</h4>
+                      <h4 className="font-black text-slate-900 mb-1">北海学園大学新聞</h4>
                       <p className="text-sm text-slate-500 leading-relaxed">
-                        この記事は北海学園大学新聞会 取材班によって執筆・編集されました。
+                        この記事は北海学園大学新聞 取材班によって執筆・編集されました。
                         学内での出来事や学生の声をお届けしています。
                       </p>
                     </div>
@@ -144,7 +143,7 @@ export default function ArticlePage() {
       <footer className="bg-slate-50 py-12 mt-12 border-t">
         <div className="container mx-auto px-4 text-center">
           <p className="text-xs text-slate-400 font-bold tracking-widest uppercase">
-            &copy; {new Date().getFullYear()} HGU NEWSPAPER CLUB / REPORTING FOR THE FUTURE
+            &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
           </p>
         </div>
       </footer>

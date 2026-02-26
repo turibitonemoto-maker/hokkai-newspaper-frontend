@@ -50,7 +50,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl text-center">管理者ログイン</CardTitle>
           <CardDescription className="text-center">
-            北海学園大学新聞会 管理システム
+            北海学園大学新聞 管理システム
           </CardDescription>
         </CardHeader>
         <CardContent>

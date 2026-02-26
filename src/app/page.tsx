@@ -24,7 +24,6 @@ export default function Home() {
 
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
-    // インデックスエラーを避けるため、一旦単純な取得にする
     return query(
       collection(db, 'articles'),
       limit(20)
@@ -33,7 +32,6 @@ export default function Home() {
 
   const { data: articles, isLoading } = useCollection(latestArticlesRef);
 
-  // クライアントサイドでフィルタリングとソートを行う
   const publishedArticles = articles 
     ? articles
         .filter(a => a.isPublished)
@@ -45,13 +43,12 @@ export default function Home() {
       <Navbar />
       
       <main className="flex-grow">
-        {/* Hero Section */}
         <section className="bg-slate-900 text-white py-20 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary-foreground text-xs font-bold uppercase tracking-widest mb-6 border border-primary/30">
                 <Newspaper size={14} />
-                <span>HGU Newspaper Club Official</span>
+                <span>北海学園大学新聞 公式</span>
               </div>
               <h1 className="text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-[1.1]">
                 北海学園大学の<br />
@@ -74,7 +71,6 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
         </section>
 
-        {/* Ticker / Info Bar */}
         <div className="bg-white border-b sticky top-16 z-40 shadow-sm">
           <div className="container mx-auto px-4 h-14 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-8 no-scrollbar">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
@@ -89,7 +85,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Article Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
@@ -128,15 +123,14 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-800">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Newspaper size={24} className="text-primary" />
-            <span className="font-black text-xl tracking-tighter text-white uppercase">HGU Newspaper Club</span>
+            <span className="font-black text-xl tracking-tighter text-white uppercase">北海学園大学新聞</span>
           </div>
           <p className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
-            &copy; {new Date().getFullYear()} 北海学園大学新聞会 / Reporting for the Future
+            &copy; {new Date().getFullYear()} 北海学園大学新聞 / Reporting for the Future
           </p>
         </div>
       </footer>

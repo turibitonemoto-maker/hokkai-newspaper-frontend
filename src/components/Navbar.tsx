@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -14,7 +13,7 @@ export function Navbar() {
             <Newspaper size={20} />
           </div>
           <span className="font-black text-xl tracking-tighter text-slate-950">
-            HGU<span className="text-primary">新聞会</span>
+            北海学園大学<span className="text-primary">新聞</span>
           </span>
         </Link>
 
