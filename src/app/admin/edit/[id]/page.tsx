@@ -16,13 +16,14 @@ import Link from 'next/link';
 
 export default function EditArticlePage() {
   const router = useRouter();
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const db = useFirestore();
   const { toast } = useToast();
   
   const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
-    return doc(db, 'articles', id as string);
+    return doc(db, 'articles', id);
   }, [db, id]);
 
   const { data: article, isLoading: isFetching } = useDoc(articleRef);
@@ -94,7 +95,7 @@ export default function EditArticlePage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>カテゴリー</Label>
-                <搭載
+                <Select
                   value={formData.categoryId}
                   onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
                 >
@@ -108,11 +109,11 @@ export default function EditArticlePage() {
                     <SelectItem value="Sports">スポーツ</SelectItem>
                     <SelectItem value="Opinion">オピニオン</SelectItem>
                   </SelectContent>
-                </搭載>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>公開設定</Label>
-                <搭載
+                <Select
                   value={formData.isPublished ? "true" : "false"}
                   onValueChange={(val) => setFormData({ ...formData, isPublished: val === "true" })}
                 >
@@ -123,7 +124,7 @@ export default function EditArticlePage() {
                     <SelectItem value="true">公開する</SelectItem>
                     <SelectItem value="false">下書き保存</SelectItem>
                   </SelectContent>
-                </搭載>
+                </Select>
               </div>
             </div>
 

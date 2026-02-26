@@ -53,19 +53,24 @@ export function useDoc<T = any>(
       return;
     }
 
-    setIsLoading(true);
+    // すでにロード中またはデータがある場合は、不必要な状態更新を避ける
+    setIsLoading(prev => (prev ? prev : true));
     setError(null);
 
     const unsubscribe = onSnapshot(
       memoizedDocRef,
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
-          setData({ ...(snapshot.data() as T), id: snapshot.id });
+          const newData = { ...(snapshot.data() as T), id: snapshot.id };
+          // データのJSON文字列比較で、変更があった場合のみStateを更新し無限ループを防ぐ
+          setData(prev => {
+            if (JSON.stringify(prev) === JSON.stringify(newData)) return prev;
+            return newData;
+          });
         } else {
-          // Document does not exist
           setData(null);
         }
-        setError(null); // Clear any previous error on successful snapshot (even if doc doesn't exist)
+        setError(null);
         setIsLoading(false);
       },
       (error: FirestoreError) => {
@@ -78,13 +83,12 @@ export function useDoc<T = any>(
         setData(null)
         setIsLoading(false)
 
-        // trigger global error propagation
         errorEmitter.emit('permission-error', contextualError);
       }
     );
 
     return () => unsubscribe();
-  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
+  }, [memoizedDocRef]);
 
   if(memoizedDocRef && !memoizedDocRef.__memo) {
     throw new Error(memoizedDocRef.path + ' was not properly memoized using useMemoFirebase');
