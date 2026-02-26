@@ -7,7 +7,7 @@ import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft } from 'lucide-react';
+import { Calendar, User, ChevronLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,7 @@ export default function ArticlePage() {
   }
 
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
+  const isExternal = article.source === 'note';
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
@@ -133,12 +134,30 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-lg lg:prose-xl",
-                    fontSize === 'lg' && "prose-xl lg:prose-2xl",
-                    fontSize === 'xl' && "prose-2xl lg:text-3xl"
+                    // 標準サイズを以前の拡大サイズ(xl)に設定
+                    fontSize === 'base' && "prose-xl lg:prose-2xl",
+                    fontSize === 'lg' && "prose-2xl lg:text-3xl",
+                    fontSize === 'xl' && "prose-2xl text-3xl md:text-4xl"
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
+
+                {isExternal && article.noteUrl && (
+                  <div className="mt-16 pt-8 border-t border-slate-100">
+                    <Button 
+                      asChild 
+                      className="w-full h-20 text-xl font-black rounded-[24px] bg-green-600 hover:bg-green-700 shadow-xl shadow-green-100 gap-4"
+                    >
+                      <a href={article.noteUrl} target="_blank" rel="noopener noreferrer">
+                        note.comでこの記事の続きを読む
+                        <ExternalLink size={24} strokeWidth={3} />
+                      </a>
+                    </Button>
+                    <p className="text-center mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                      ※noteのサイトへ移動します
+                    </p>
+                  </div>
+                )}
 
                 <footer className="mt-20 pt-12 border-t border-slate-100">
                   <div className="bg-slate-50 rounded-[32px] p-8 flex items-center gap-6">
