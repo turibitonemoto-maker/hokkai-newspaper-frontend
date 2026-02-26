@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -52,7 +51,7 @@ export default function Home() {
                 <Newspaper size={14} />
                 <span>北海学園大学新聞 公式サイト</span>
               </div>
-              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.95]">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.95] text-balance">
                 キャンパスの<br />
                 <span className="text-primary italic">「いま」</span> を届ける。
               </h1>
