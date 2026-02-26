@@ -13,17 +13,17 @@ service cloud.firestore {
 
     match /articles/{articleId} {
       allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow write: if isAuthorizedEditor();
     }
 
     match /categories/{categoryId} {
       allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow write: if isAuthorizedEditor();
     }
 
     match /hero-images/{imageId} {
       allow read, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow write: if isAuthorizedEditor();
     }
 
     match /{path=**} {
