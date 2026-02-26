@@ -8,7 +8,18 @@ export async function fetchAndSyncNoteRss() {
   const NOTE_RSS_URL = 'https://note.com/lucky_minnow287/rss';
   
   try {
-    const response = await fetch(NOTE_RSS_URL, { next: { revalidate: 3600 } });
+    // サーバーサイドでフェッチを実行
+    const response = await fetch(NOTE_RSS_URL, { 
+      next: { revalidate: 0 }, // 常に最新を取得
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`RSSの取得に失敗しました: ${response.statusText}`);
+    }
+
     const xmlText = await response.text();
     
     // シンプルな正規表現によるXMLパース（ブラウザのDOMParserはサーバーサイドで使えないため）
@@ -25,16 +36,16 @@ export async function fetchAndSyncNoteRss() {
       // noteのURLから一意のIDを抽出 (例: https://note.com/user/n/n12345 -> n12345)
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
 
-      // 簡単なHTMLタグ除去
+      // 簡単なHTMLタグ除去と要約作成
       const plainTextContent = description.replace(/<[^>]*>?/gm, '');
 
       return {
         id: noteId,
-        title,
-        noteUrl: link,
+        title: title.trim(),
+        noteUrl: link.trim(),
         source: 'note',
         htmlContent: description,
-        summary: plainTextContent.substring(0, 200) + '...',
+        summary: plainTextContent.substring(0, 150).trim() + '...',
         publishDate: new Date(pubDate).toISOString(),
         lastSyncedDate: new Date().toISOString(),
         isPublished: true,
@@ -44,8 +55,8 @@ export async function fetchAndSyncNoteRss() {
     });
 
     return { success: true, articles: parsedArticles };
-  } catch (error) {
+  } catch (error: any) {
     console.error('RSS Sync Error:', error);
-    return { success: false, error: 'RSSの取得に失敗しました。' };
+    return { success: false, error: error.message || 'RSSの取得に失敗しました。' };
   }
 }
