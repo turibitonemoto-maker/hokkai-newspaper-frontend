@@ -6,7 +6,7 @@ import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft } from 'lucide-react';
+import { Calendar, User, ChevronLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,6 @@ export default function ArticlePage() {
     return doc(db, 'articles', id as string);
   }, [db, id]);
 
-  // 変数名を docRef に統一し、ReferenceError を解消
   const { data: article, isLoading } = useDoc(docRef);
 
   if (isLoading) {
@@ -90,7 +89,6 @@ export default function ArticlePage() {
                     <span>BY: {article.authorName || '北海学園大学新聞'}</span>
                   </div>
                   <div className="flex-grow" />
-                  {/* 文字サイズ変更機能 */}
                   <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border">
                     <Button 
                       variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
@@ -131,7 +129,6 @@ export default function ArticlePage() {
               </div>
 
               <div className="max-w-3xl mx-auto relative">
-                {/* 記事全文を表示 */}
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
@@ -141,6 +138,18 @@ export default function ArticlePage() {
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
+
+                {article.source === 'note' && article.noteUrl && (
+                  <div className="mt-12 p-8 bg-green-50 rounded-[32px] border border-green-100 flex flex-col items-center text-center gap-4">
+                    <p className="text-green-800 font-bold text-sm">この記事には続きがあるか、元のプラットフォームで詳細を確認できます。</p>
+                    <Button asChild className="bg-green-600 hover:bg-green-700 text-white rounded-2xl h-14 px-8 font-black gap-2 shadow-xl shadow-green-200">
+                      <a href={article.noteUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink size={20} />
+                        note.comで続きを読む
+                      </a>
+                    </Button>
+                  </div>
+                )}
 
                 <footer className="mt-20 pt-12 border-t border-slate-100">
                   <div className="bg-slate-50 rounded-[32px] p-8 flex items-center gap-6">

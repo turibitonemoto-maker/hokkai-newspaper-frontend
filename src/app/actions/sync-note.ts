@@ -21,7 +21,6 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const xmlText = await response.text();
-    // 各アイテム（記事）を分割
     const items = xmlText.match(/<item>([\s\S]*?)<\/item>/g) || [];
     
     if (items.length === 0) {
@@ -29,9 +28,7 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const parsedArticles = items.map(item => {
-      // CDATAや名前空間付きタグを考慮した高度な抽出関数
       const extract = (tag: string) => {
-        // <tag>...</tag> または <namespace:tag>...</namespace:tag> に対応
         const regex = new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i');
         const match = item.match(regex);
         return match ? match[1].trim() : "";
@@ -41,25 +38,20 @@ export async function fetchAndSyncNoteRss() {
       const link = extract('link');
       const pubDate = extract('pubDate');
       
-      // 本文の取得：content:encodedがあればそれを優先（全文が含まれるため）
-      // なければdescriptionを使用
       let htmlContent = extract('content:encoded');
       if (!htmlContent || htmlContent.length < 100) {
         htmlContent = extract('description');
       }
 
-      // 概要（プレビュー）用としてdescriptionも保持
       const description = extract('description');
 
       let imageUrl = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || "";
       if (!imageUrl) {
-        // descriptionから最初のimgタグのsrcを抽出
         imageUrl = description.match(/<img[^>]+src="([^">]+)"/)?.[1] || "";
       }
 
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
 
-      // カテゴリーの自動判別ロジック
       let categoryId = 'Campus';
       if (title.includes('インタビュー') || title.includes('対談')) {
         categoryId = 'Interview';
@@ -76,8 +68,8 @@ export async function fetchAndSyncNoteRss() {
         title: title,
         noteUrl: link,
         source: 'note',
-        htmlContent: htmlContent, // 全文（または長文）を保存
-        summary: "", // 要約機能は削除済み
+        htmlContent: htmlContent,
+        summary: "",
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
