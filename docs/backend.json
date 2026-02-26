@@ -86,6 +86,27 @@
         "id",
         "name"
       ]
+    },
+    "HeroImage": {
+      "title": "HeroImage",
+      "type": "object",
+      "description": "トップページのヒーローセクションに表示される背景画像。",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "order": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "imageUrl"
+      ]
     }
   },
   "auth": {
@@ -105,6 +126,12 @@
         "$ref": "#/backend/entities/Category"
       },
       "description": "Stores article categories."
+    },
+    "/hero-images/{imageId}": {
+      "schema": {
+        "$ref": "#/backend/entities/HeroImage"
+      },
+      "description": "トップページの背景画像リスト。"
     }
   }
 }

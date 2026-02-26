@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -6,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
@@ -18,11 +17,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [hasTimeout, setHasTimeout] = useState(false);
 
-  // 権限チェック：特定のドメインまたはメールのみ許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 5秒経過してもロード中の場合はタイムアウト表示
     const timer = setTimeout(() => {
       if (isUserLoading) setHasTimeout(true);
     }, 5000);
@@ -41,7 +38,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace('/login');
   };
 
-  // 認証チェック中または未承認の場合の表示
   if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -78,6 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const menuItems = [
     { id: 'admin-dash', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'admin-new', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
+    { id: 'admin-hero', label: 'ヒーロー画像設定', icon: ImageIcon, href: '/admin/hero' },
   ];
 
   return (
