@@ -1,9 +1,9 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, deleteDoc, doc, setDoc, query, limit } from 'firebase/firestore';
+import { collection, doc, setDoc, query, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Ghost, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -36,12 +39,9 @@ export default function AdminDashboard() {
 
   const handleDelete = async (id: string) => {
     if (!db || !confirm('本当にこの記事を削除しますか？')) return;
-    try {
-      await deleteDoc(doc(db, 'articles', id));
-      toast({ title: "削除完了", description: "記事を削除しました。" });
-    } catch (e) {
-      toast({ title: "エラー", description: "削除に失敗しました。", variant: "destructive" });
-    }
+    const docRef = doc(db, 'articles', id);
+    deleteDocumentNonBlocking(docRef);
+    toast({ title: "削除リクエスト送信", description: "削除処理を開始しました。" });
   };
 
   const handleSyncNote = async () => {
@@ -59,24 +59,33 @@ export default function AdminDashboard() {
       if (result.success && result.articles) {
         if (result.articles.length === 0) {
           toast({ title: "同期完了", description: "新しい記事はありませんでした。" });
+          setIsSyncing(false);
           return;
         }
 
         let count = 0;
-        // バッチ処理的に一つずつ保存（Firestoreの無料枠や制限を考慮しつつ確実に実行）
+        // 各記事の保存を非同期で開始
         for (const article of result.articles) {
-          try {
-            const docRef = doc(db, 'articles', article.id);
-            await setDoc(docRef, article, { merge: true });
-            count++;
-          } catch (err) {
-            console.error(`Error saving article ${article.id}:`, err);
-          }
+          const docRef = doc(db, 'articles', article.id);
+          
+          // 非ブロッキングで保存し、権限エラーがあればキャッチしてエミットする
+          setDoc(docRef, article, { merge: true })
+            .then(() => {
+              count++;
+            })
+            .catch(async (err) => {
+              const permissionError = new FirestorePermissionError({
+                path: docRef.path,
+                operation: 'write',
+                requestResourceData: article,
+              });
+              errorEmitter.emit('permission-error', permissionError);
+            });
         }
         
         toast({ 
-          title: "同期成功", 
-          description: `${count}件の記事を正常に同期しました。`,
+          title: "同期リクエスト完了", 
+          description: "記事の保存処理を開始しました。",
         });
       } else {
         throw new Error(result.error || '不明なエラーが発生しました');
@@ -84,7 +93,7 @@ export default function AdminDashboard() {
     } catch (e: any) {
       toast({ 
         title: "同期エラー", 
-        description: e.message || "noteとの通信に失敗しました。URLを確認してください。", 
+        description: e.message || "noteとの通信に失敗しました。", 
         variant: "destructive" 
       });
     } finally {

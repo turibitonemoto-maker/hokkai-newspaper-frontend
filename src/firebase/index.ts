@@ -2,32 +2,32 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getAuth, setPersistence, browserLocalPersistence, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
 
 /**
  * Firebase SDKの初期化と、ブラウザ間での認証共有を確実にするための設定を行います。
  */
 export function initializeFirebase() {
-  let firebaseApp: FirebaseApp;
-
   if (!getApps().length) {
     try {
-      // Firebase App Hosting環境下での自動初期化を試行
-      firebaseApp = initializeApp();
+      firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      // 開発環境や手動設定が必要な場合のフォールバック
+      console.error("Firebase Initialization Error:", e);
       firebaseApp = initializeApp(firebaseConfig);
     }
   } else {
     firebaseApp = getApp();
   }
 
-  const auth = getAuth(firebaseApp);
-  const firestore = getFirestore(firebaseApp);
+  auth = getAuth(firebaseApp);
+  firestore = getFirestore(firebaseApp);
 
-  // 認証の永続化をLOCALに設定（別タブやブラウザ再起動後もログインを維持）
-  // 非同期処理だが、トップレベルでの呼び出しにより初期化プロセスの一部として組み込む
+  // 認証の永続化を即座に設定
   setPersistence(auth, browserLocalPersistence).catch((err) => {
     console.error("Firebase Auth Persistence Error:", err);
   });
