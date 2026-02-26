@@ -47,7 +47,7 @@ export async function fetchAndSyncNoteRss() {
       // 記事末尾の不要なナビゲーションテキストを強力に削除
       // 「続きをみる」「続きを見る」「続きを読む」「...」「…」「→」などを対象
       // これにより、note側の仕様で付与される末尾のテキストをカットします
-      htmlContent = htmlContent.replace(/(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/s, '');
+      htmlContent = htmlContent.replace(/(\n|\s)*(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/s, '');
       htmlContent = htmlContent.trim();
 
       const description = extract('description');
