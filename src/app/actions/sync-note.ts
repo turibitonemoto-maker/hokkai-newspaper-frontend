@@ -2,6 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を高度に取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
+ * タイトルからカテゴリーを自動判別する機能を追加。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -20,8 +21,6 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const xmlText = await response.text();
-    
-    // <item>タグで分割
     const items = xmlText.match(/<item>([\s\S]*?)<\/item>/g) || [];
     
     if (items.length === 0) {
@@ -29,7 +28,6 @@ export async function fetchAndSyncNoteRss() {
     }
 
     const parsedArticles = items.map(item => {
-      // データの抽出（CDATAセクション対応）
       const extract = (tag: string) => {
         const regex = new RegExp(`<${tag}>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`);
         return item.match(regex)?.[1]?.trim() || "";
@@ -40,31 +38,38 @@ export async function fetchAndSyncNoteRss() {
       const description = extract('description');
       const pubDate = extract('pubDate');
       
-      // noteのアイキャッチ画像 (media:thumbnail または content:encoded から抽出を試みる)
       let imageUrl = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || "";
       if (!imageUrl) {
-        // description内にある最初のimgタグを探す
         imageUrl = description.match(/<img[^>]+src="([^">]+)"/)?.[1] || "";
       }
 
-      // noteのIDを抽出
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
-
-      // 本文からHTMLタグを除去してプレーンテキストの要約を作成
       const plainTextContent = description.replace(/<[^>]*>?/gm, '');
+
+      // カテゴリーの自動判別ロジック
+      let categoryId = 'Campus';
+      if (title.includes('インタビュー') || title.includes('対談')) {
+        categoryId = 'Interview';
+      } else if (title.includes('イベント') || title.includes('祭') || title.includes('開催')) {
+        categoryId = 'Event';
+      } else if (title.includes('部') || title.includes('大会') || title.includes('スポーツ') || title.includes('戦')) {
+        categoryId = 'Sports';
+      } else if (title.includes('オピニオン') || title.includes('論説') || title.includes('社説')) {
+        categoryId = 'Opinion';
+      }
 
       return {
         id: noteId,
         title: title,
         noteUrl: link,
         source: 'note',
-        htmlContent: description, // noteはdescriptionにリッチコンテンツが含まれることが多い
+        htmlContent: description,
         summary: plainTextContent.substring(0, 200).trim() + (plainTextContent.length > 200 ? '...' : ''),
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
         isPublished: true,
-        categoryId: 'Campus',
+        categoryId: categoryId,
         authorName: '北海学園大学新聞 (note)'
       };
     });

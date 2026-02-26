@@ -17,11 +17,12 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
+        <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
           <Link href="/category/Campus" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Campus</Link>
           <Link href="/category/Event" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Events</Link>
           <Link href="/category/Interview" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Interviews</Link>
           <Link href="/category/Sports" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Sports</Link>
+          <Link href="/category/Opinion" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1 text-primary/80">Opinion</Link>
         </nav>
 
         <div className="flex items-center gap-3">
