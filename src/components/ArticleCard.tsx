@@ -20,6 +20,7 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  // プレースホルダー画像の設定
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/800/500`;
 
   return (

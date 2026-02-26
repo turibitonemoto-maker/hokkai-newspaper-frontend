@@ -106,11 +106,6 @@ export default function Home() {
                 <Loader2 className="animate-spin text-primary mb-4" size={48} />
                 <p className="text-slate-500 font-bold tracking-widest uppercase text-sm">Loading Stories...</p>
               </div>
-            ) : error ? (
-              <div className="bg-red-50 border border-red-100 rounded-2xl p-12 text-center">
-                <p className="text-red-600 font-bold">閲覧権限またはデータ取得に問題が発生しました。</p>
-                <p className="text-sm text-red-400 mt-2">{error.message}</p>
-              </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                 {articles.map((article) => (

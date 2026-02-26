@@ -5,26 +5,27 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    /* プライマリカラー: 信頼感のあるディープブルー (#336699) */
+    --background: 210 32% 93%; /* #E8EDF2 */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 211 50% 40%; /* #336699 */
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
+    --accent: 180 43% 66%; /* #85CCCC */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 1rem;
+    --ring: 211 50% 40%;
+    --radius: 0.75rem;
   }
 }
 
@@ -43,4 +44,15 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* 記事本文用のタイポグラフィ */
+.prose-article {
+  @apply text-slate-800 leading-relaxed;
+}
+.prose-article h2 {
+  @apply text-2xl font-bold mt-8 mb-4 text-primary border-l-4 border-primary pl-4;
+}
+.prose-article p {
+  @apply mb-4;
 }

@@ -2,15 +2,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 記事（articles）のルール
+    // 記事（articles）のルール: 閲覧は全員に許可、書き込みは認証済みユーザーのみ
+    // セキュリティルールを確実に更新するためにこのコメントを追加します
     match /articles/{articleId} {
-      // 閲覧は誰でも可能（公開済みかどうかのフィルタリングはクライアントクエリで行う）
       allow read: if true;
-      // 書き込みは認証済みユーザー（部員）のみ
       allow write: if request.auth != null;
     }
 
-    // カテゴリーと著者
+    // カテゴリーと著者: 閲覧は全員、書き込みは認証済みユーザーのみ
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if request.auth != null;
