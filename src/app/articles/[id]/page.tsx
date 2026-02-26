@@ -1,18 +1,22 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, Clock, ChevronLeft, Share2, Printer, Bookmark } from 'lucide-react';
+import { Calendar, User, Clock, ChevronLeft, Share2, Printer, Bookmark, Type, ZoomIn, ZoomOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function ArticlePage() {
   const { id } = useParams();
   const db = useFirestore();
+  const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
+
   const docRef = useMemoFirebase(() => {
     if (!id || !db) return null;
     return doc(db, 'articles', id as string);
@@ -84,15 +88,32 @@ export default function ArticlePage() {
                     <User size={16} className="text-primary" />
                     <span>BY: {article.authorName || '北海学園大学新聞'}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-primary" />
-                    <span>READ TIME: 3 MINS</span>
-                  </div>
                   <div className="flex-grow" />
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="rounded-full"><Share2 size={18} /></Button>
-                    <Button variant="ghost" size="icon" className="rounded-full"><Bookmark size={18} /></Button>
-                    <Button variant="ghost" size="icon" className="rounded-full"><Printer size={18} /></Button>
+                  <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border">
+                    <Button 
+                      variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
+                      size="sm" 
+                      onClick={() => setFontSize('base')}
+                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                    >
+                      標準
+                    </Button>
+                    <Button 
+                      variant={fontSize === 'lg' ? 'secondary' : 'ghost'} 
+                      size="sm" 
+                      onClick={() => setFontSize('lg')}
+                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                    >
+                      拡大
+                    </Button>
+                    <Button 
+                      variant={fontSize === 'xl' ? 'secondary' : 'ghost'} 
+                      size="sm" 
+                      onClick={() => setFontSize('xl')}
+                      className="rounded-lg h-8 w-12 px-0 font-bold text-xs"
+                    >
+                      最大
+                    </Button>
                   </div>
                 </div>
               </header>
@@ -107,9 +128,14 @@ export default function ArticlePage() {
                 />
               </div>
 
-              <div className="max-w-3xl mx-auto">
+              <div className="max-w-3xl mx-auto relative">
                 <div 
-                  className="prose prose-slate lg:prose-xl max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950"
+                  className={cn(
+                    "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
+                    fontSize === 'base' && "prose-base lg:prose-xl",
+                    fontSize === 'lg' && "prose-lg lg:prose-2xl",
+                    fontSize === 'xl' && "prose-xl lg:prose-3xl"
+                  )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
 

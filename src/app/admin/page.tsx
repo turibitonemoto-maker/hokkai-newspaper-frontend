@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, limit } from 'firebase/firestore';
+import { collection, doc, query } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper } from 'lucide-react';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
-    return query(collection(db, 'articles'), limit(100));
+    return query(collection(db, 'articles'));
   }, [db]);
 
   const { data: articles, isLoading } = useCollection(articlesRef);
