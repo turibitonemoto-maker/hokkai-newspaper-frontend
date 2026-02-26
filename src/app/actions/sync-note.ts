@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview note.comのRSSフィードから記事を高度に取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
+ * @fileOverview note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
  * 内容が途中で切れないよう、content:encoded（全文）を優先的に取得。
  * また、「続きをみる」「続きを見る」や矢印、三点リーダー等の不要な末尾テキストを強力な正規表現で完全に削除。
  */
@@ -46,6 +46,7 @@ export async function fetchAndSyncNoteRss() {
 
       // 記事末尾の不要なナビゲーションテキストを強力に削除
       // 「続きをみる」「続きを見る」「続きを読む」「...」「…」「→」などを対象
+      // これにより、note側の仕様で付与される末尾のテキストをカットします
       htmlContent = htmlContent.replace(/(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/s, '');
       htmlContent = htmlContent.trim();
 
