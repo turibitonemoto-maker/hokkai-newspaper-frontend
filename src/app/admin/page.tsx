@@ -1,9 +1,9 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, setDoc, query, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -24,10 +25,14 @@ export default function AdminDashboard() {
 
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
-    return collection(db, 'articles');
+    return query(collection(db, 'articles'), limit(100));
   }, [db]);
 
   const { data: articles, isLoading } = useCollection(articlesRef);
+
+  const sortedArticles = articles 
+    ? [...articles].sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+    : [];
 
   const handleDelete = async (id: string) => {
     if (!db || !confirm('本当にこの記事を削除しますか？')) return;
@@ -48,7 +53,6 @@ export default function AdminDashboard() {
         let count = 0;
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
-          // IDを指定して保存（重複を防ぐ）
           await setDoc(docRef, article, { merge: true });
           count++;
         }
@@ -64,91 +68,122 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-black tracking-tight">記事管理</h2>
-          <p className="text-muted-foreground">手動作成した記事とnoteから同期した記事を管理できます。</p>
+          <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
+          <p className="text-slate-500 mt-1">手動作成した記事とnoteから同期した記事を一覧で管理できます。</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleSyncNote} disabled={isSyncing} className="gap-2">
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleSyncNote} disabled={isSyncing} className="gap-2 h-11 px-5 border-slate-200">
             {isSyncing ? <Loader2 className="animate-spin" size={18} /> : <RefreshCw size={18} />}
             noteから同期
           </Button>
-          <Button asChild>
-            <Link href="/admin/new" className="gap-2">
-              <Plus size={18} />
+          <Button asChild className="gap-2 h-11 px-6 shadow-lg shadow-primary/20">
+            <Link href="/admin/new">
+              <Plus size={20} />
               新規記事作成
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-primary text-primary-foreground border-none shadow-xl shadow-primary/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] opacity-80">Total Stories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-black">{articles?.length || 0}</div>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Published</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-black text-slate-900">{articles?.filter(a => a.isPublished).length || 0}</div>
+          </CardContent>
+        </Card>
+        <Card className="border-slate-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Drafts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-black text-slate-900">{articles?.filter(a => !a.isPublished).length || 0}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-slate-200 shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-slate-50">
+          <TableHeader className="bg-slate-50/50">
             <TableRow>
-              <TableHead className="font-bold">タイトル</TableHead>
-              <TableHead className="font-bold">情報源</TableHead>
-              <TableHead className="font-bold">公開日</TableHead>
-              <TableHead className="font-bold">状態</TableHead>
-              <TableHead className="text-right font-bold">操作</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-5">Article Title</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-5">Source</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-5">Date</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-5">Status</TableHead>
+              <TableHead className="text-right font-black text-[10px] uppercase tracking-widest py-5">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-12">
-                  <Loader2 className="animate-spin mx-auto mb-2 text-primary" />
-                  読み込み中...
+                <TableCell colSpan={5} className="text-center py-20">
+                  <Loader2 className="animate-spin mx-auto mb-4 text-primary" size={32} />
+                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Loading Database...</p>
                 </TableCell>
               </TableRow>
-            ) : articles && articles.length > 0 ? (
-              articles.sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()).map((article) => (
-                <TableRow key={article.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-bold text-slate-900 max-w-xs md:max-w-md truncate">
-                    {article.title}
+            ) : sortedArticles.length > 0 ? (
+              sortedArticles.map((article) => (
+                <TableRow key={article.id} className="hover:bg-slate-50/50 transition-colors">
+                  <TableCell className="font-bold text-slate-900 max-w-xs md:max-w-md">
+                    <div className="truncate">{article.title}</div>
                   </TableCell>
                   <TableCell>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${article.source === 'note' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {article.source || '内部'}
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${article.source === 'note' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                      {article.source || 'Internal'}
                     </span>
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm">
+                  <TableCell className="text-slate-500 text-sm font-medium">
                     {article.publishDate?.split('T')[0]}
                   </TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${article.isPublished ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'}`}>
-                      {article.isPublished ? '公開中' : '下書き'}
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${article.isPublished ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'}`}>
+                      {article.isPublished ? 'Live' : 'Draft'}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right space-x-1">
-                    <Button variant="ghost" size="icon" asChild title="表示">
-                      <Link href={`/articles/${article.id}`} target="_blank">
-                        <ExternalLink size={16} />
-                      </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" asChild title="編集">
-                      <Link href={`/admin/edit/${article.id}`}>
-                        <Edit size={16} />
-                      </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(article.id)} title="削除">
-                      <Trash2 size={16} />
-                    </Button>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" asChild title="表示">
+                        <Link href={`/articles/${article.id}`} target="_blank">
+                          <ExternalLink size={14} />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" asChild title="編集">
+                        <Link href={`/admin/edit/${article.id}`}>
+                          <Edit size={14} />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" onClick={() => handleDelete(article.id)} title="削除">
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-20 text-muted-foreground italic">
-                  記事がありません。「新規記事作成」または「noteから同期」をクリックしてください。
+                <TableCell colSpan={5} className="text-center py-24 bg-slate-50/30">
+                  <Newspaper className="mx-auto mb-4 text-slate-200" size={48} />
+                  <p className="text-slate-400 font-bold">記事が見つかりませんでした。</p>
+                  <p className="text-slate-400 text-xs mt-1 uppercase tracking-widest">Add your first story to get started</p>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </div>
+      </Card>
     </div>
   );
 }

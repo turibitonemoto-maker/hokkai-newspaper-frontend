@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, limit } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
@@ -24,21 +24,28 @@ export default function Home() {
 
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
+    // インデックスエラーを避けるため、一旦単純な取得にする
     return query(
       collection(db, 'articles'),
-      where('isPublished', '==', true),
-      orderBy('publishDate', 'desc'),
-      limit(10)
+      limit(20)
     );
   }, [db]);
 
   const { data: articles, isLoading } = useCollection(latestArticlesRef);
+
+  // クライアントサイドでフィルタリングとソートを行う
+  const publishedArticles = articles 
+    ? articles
+        .filter(a => a.isPublished)
+        .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
       
       <main className="flex-grow">
+        {/* Hero Section */}
         <section className="bg-slate-900 text-white py-20 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl">
@@ -67,6 +74,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
         </section>
 
+        {/* Ticker / Info Bar */}
         <div className="bg-white border-b sticky top-16 z-40 shadow-sm">
           <div className="container mx-auto px-4 h-14 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-8 no-scrollbar">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-600">
@@ -81,6 +89,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Article Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
@@ -100,9 +109,9 @@ export default function Home() {
                 <Loader2 className="animate-spin text-primary mb-4" size={48} />
                 <p className="text-slate-500 font-bold uppercase text-xs tracking-widest">Fetching Stories...</p>
               </div>
-            ) : articles && articles.length > 0 ? (
+            ) : publishedArticles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {articles.map((article) => (
+                {publishedArticles.map((article) => (
                   <ArticleCard key={article.id} article={article as any} />
                 ))}
               </div>
@@ -119,6 +128,7 @@ export default function Home() {
         </section>
       </main>
 
+      {/* Footer */}
       <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-800">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
