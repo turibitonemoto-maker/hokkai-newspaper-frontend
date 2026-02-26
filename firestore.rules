@@ -2,31 +2,26 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 許可された特定のメールアドレスまたはドメインのチェック
+    // 判定をより確実にするため、lower()を使用したCEL式での文字列マッチングを採用
     function isAuthorizedEditor() {
       return request.auth != null && (
-        request.auth.token.email == "admin@example.com" || 
+        request.auth.token.email.lower() == "admin@example.com" || 
         request.auth.token.email.lower().endsWith('@hgu.jp')
       );
     }
 
-    // 記事のルール: 閲覧およびリスト取得は全員に許可、書き込みは特定の認証済みユーザーのみ
     match /articles/{articleId} {
       allow read, list: if true;
       allow create, update, delete: if isAuthorizedEditor();
     }
 
-    // カテゴリー: 閲覧は全員、書き込みは特定の認証済みユーザーのみ
     match /categories/{categoryId} {
       allow read, list: if true;
       allow create, update, delete: if isAuthorizedEditor();
     }
 
-    // デフォルトで全てのアクセスを拒否
     match /{path=**} {
       allow read, write: if false;
     }
-    
-    // ルールデプロイ強制更新: 2024-05-24 17:50 - endsWithによるドメイン判定の安定化
   }
 }

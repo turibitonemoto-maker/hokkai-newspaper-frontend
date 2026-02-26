@@ -45,32 +45,33 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* ヒーローセクション */}
-        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[60vh]">
+        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[70vh]">
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-5xl">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-xs font-black uppercase tracking-[0.2em] mb-8 border border-primary/30 backdrop-blur-sm">
+            <div className="max-w-6xl">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-xs font-black uppercase tracking-[0.2em] mb-10 border border-primary/30 backdrop-blur-sm">
                 <Newspaper size={14} />
                 <span>北海学園大学新聞 公式サイト</span>
               </div>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter mb-10 leading-[0.9] text-balance">
-                キャンパスの <span className="text-primary italic">「いま」</span> を届ける。
+              <h1 className="text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] font-black tracking-tighter mb-12 leading-[0.85] text-pretty">
+                キャンパスの<br />
+                <span className="text-primary italic">「いま」</span> を届ける。
               </h1>
-              <p className="text-lg md:text-2xl text-slate-400 mb-12 leading-relaxed font-medium max-w-2xl text-pretty">
+              <p className="text-lg md:text-2xl text-slate-400 mb-14 leading-relaxed font-medium max-w-2xl">
                 学生の視点で、大学の鼓動を記録する。<br className="hidden md:block" />
                 ニュース、インタビュー、イベント情報をどこよりも深く。
               </p>
               <div className="flex flex-wrap gap-5">
-                <Button size="lg" className="rounded-2xl px-10 h-16 text-lg font-black shadow-2xl shadow-primary/40 hover:scale-105 transition-all" asChild>
+                <Button size="lg" className="rounded-2xl px-12 h-16 text-lg font-black shadow-2xl shadow-primary/40 hover:scale-105 transition-all" asChild>
                   <Link href="/category/Campus">記事を読む</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="rounded-2xl px-10 h-16 text-lg font-black border-white/20 hover:bg-white/10 backdrop-blur-sm transition-all" asChild>
+                <Button size="lg" variant="outline" className="rounded-2xl px-12 h-16 text-lg font-black border-white/20 hover:bg-white/10 backdrop-blur-sm transition-all" asChild>
                   <Link href="/login">管理コンソール</Link>
                 </Button>
               </div>
             </div>
           </div>
           {/* 背景の装飾 */}
-          <div className="absolute top-0 right-0 w-full lg:w-2/3 h-full bg-[radial-gradient(circle_at_70%_30%,rgba(51,102,153,0.2),transparent_70%)] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-full lg:w-2/3 h-full bg-[radial-gradient(circle_at_70%_30%,rgba(51,102,153,0.25),transparent_70%)] pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         </section>
 

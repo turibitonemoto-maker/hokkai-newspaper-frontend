@@ -54,13 +54,12 @@ export default function EditArticlePage() {
     if (!db || !articleRef || isSubmitting) return;
 
     setIsSubmitting(true);
-    // 非ブロッキングで更新を実行
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新リクエスト送信", description: "記事の更新を開始しました。" });
+    toast({ title: "更新完了", description: "記事の内容を保存しました。" });
     router.push('/admin');
     setIsSubmitting(false);
   };
