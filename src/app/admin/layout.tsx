@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, FileText, Settings, LogOut, Home, Users, Loader2, ShieldCheck } from 'lucide-react';
+import { Newspaper, LayoutDashboard, FileText, Home, LogOut, Loader2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,10 +47,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!user || !isAuthorized) return null;
 
+  // 各項目に一意のIDを持たせるか、ラベルをキーに使用して重複を避ける
   const menuItems = [
-    { label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
-    { label: '記事管理', icon: FileText, href: '/admin' },
-    { label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
+    { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
+    { id: 'articles', label: '記事管理', icon: FileText, href: '/admin' },
+    { id: 'new-article', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
   ];
 
   return (
@@ -71,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <SidebarContent className="p-3">
             <SidebarMenu>
               {menuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
+                <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     asChild 
                     isActive={pathname === item.href}
