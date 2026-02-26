@@ -7,27 +7,28 @@ service cloud.firestore {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
-               request.auth.token.email == "admin@example.com"
+               request.auth.token.email == "admin@example.com" ||
+               request.auth.token.email == "4325132k@hgu.jp"
              );
     }
 
     // 記事（articles）のルール
     match /articles/{articleId} {
       allow read: if true;
-      // write は create, update, delete すべてをカバーします
-      allow write: if isAuthorizedEditor();
+      // create, update, delete を明示的に許可
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // カテゴリー（categories）のルール
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // ヒーロー画像（hero-images）のルール
     match /hero-images/{imageId} {
       allow read: if true;
-      allow write: if isAuthorizedEditor();
+      allow create, update, delete: if isAuthorizedEditor();
     }
 
     // デフォルトはすべて拒否
