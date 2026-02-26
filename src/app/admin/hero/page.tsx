@@ -11,6 +11,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, Image as ImageIcon, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function HeroImageAdmin() {
   const db = useFirestore();
@@ -45,10 +56,10 @@ export default function HeroImageAdmin() {
   };
 
   const handleDelete = (id: string) => {
-    if (!db || !confirm('この画像を削除しますか？')) return;
+    if (!db) return;
     const docRef = doc(db, 'hero-images', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "削除リクエスト送信", description: "背景画像の削除を開始しました。" });
+    toast({ title: "削除リクエスト送信", description: "背景画像を削除しました。" });
   };
 
   return (
@@ -58,7 +69,7 @@ export default function HeroImageAdmin() {
           <Link href="/admin"><ArrowLeft size={20} /></Link>
         </Button>
         <div>
-          <h2 className="text-3xl font-black tracking-tight">ヒーロー画像管理</h2>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">ヒーロー画像管理</h2>
           <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Manage Top Page Background Slideshow</p>
         </div>
       </div>
@@ -100,9 +111,30 @@ export default function HeroImageAdmin() {
                   <div className="aspect-video relative">
                     <img src={img.imageUrl} alt="Hero" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <Button variant="destructive" size="icon" onClick={() => handleDelete(img.id)} className="rounded-xl">
-                        <Trash2 size={18} />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon" className="rounded-xl">
+                            <Trash2 size={18} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="rounded-[32px]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="font-black text-xl">画像を削除しますか？</AlertDialogTitle>
+                            <AlertDialogDescription className="font-medium">
+                              この操作は取り消せません。トップページの背景スライドショーからこの画像が削除されます。
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="rounded-xl font-bold">キャンセル</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDelete(img.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl font-bold"
+                            >
+                              削除する
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </Card>

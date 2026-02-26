@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 管理者権限の判定: @hgu.jp ドメインまたは指定の管理者メールアドレス
-    // lower() と endsWith() を使用して、大文字小文字に関わらず確実に判定されるように改善
+    // lower() を使用して、大文字小文字に関わらず確実に判定されるように設定
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
