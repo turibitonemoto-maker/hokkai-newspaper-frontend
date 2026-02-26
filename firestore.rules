@@ -10,7 +10,7 @@ service cloud.firestore {
       );
     }
 
-    // 記事のルール: 閲覧は全員に許可、書き込みは特定の認証済みユーザーのみ
+    // 記事のルール: 閲覧およびリスト取得は全員に許可、書き込みは特定の認証済みユーザーのみ
     match /articles/{articleId} {
       allow read, list: if true;
       allow write: if isAuthorizedEditor();
@@ -27,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // ルール更新強制コメント: 2024-05-24 12:45 - note同期機能の権限確認
+    // ルール更新強制コメント: 2024-05-24 15:30 - 北海学園大学新聞 ブランド統一 & パーミッション修正
   }
 }
