@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
@@ -22,25 +21,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示
+    // 5秒経っても読み込みが終わらない場合にリトライボタンを表示（接続不良や別タブ同期遅延対策）
     const timer = setTimeout(() => {
       if (isUserLoading) setShowRetry(true);
     }, 5000);
 
-    if (!isUserLoading) {
-      if (!user || !isAuthorized) {
+    // 認証状態の変更を直接監視（FirebaseProviderと連携しつつ、レイアウト側でも確実にハンドリング）
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser && !isUserLoading) {
+        // 未ログインが確定した場合
         router.replace('/login');
+      } else if (firebaseUser) {
+        // ログイン済みだが権限がない場合
+        const authorized = firebaseUser.email === 'admin@example.com' || firebaseUser.email?.endsWith('@hgu.jp');
+        if (!authorized) {
+          router.replace('/login');
+        }
       }
-    }
-    return () => clearTimeout(timer);
-  }, [user, isUserLoading, isAuthorized, router]);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [auth, isUserLoading, router]);
 
   const handleSignOut = async () => {
     await signOut(auth);
     router.replace('/login');
   };
 
-  // 認証チェック中
+  // 認証チェック中または未ログイン/未承認の場合
   if (isUserLoading || !user || !isAuthorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
