@@ -27,7 +27,7 @@ export default function Home() {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      limit(20)
+      limit(24)
     );
   }, [db]);
 
@@ -45,19 +45,18 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* ヒーローセクション */}
-        <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
+        <section className="bg-slate-900 text-white py-32 lg:py-48 relative overflow-hidden flex items-center min-h-[60vh]">
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl">
+            <div className="max-w-5xl">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-xs font-black uppercase tracking-[0.2em] mb-8 border border-primary/30 backdrop-blur-sm">
                 <Newspaper size={14} />
                 <span>北海学園大学新聞 公式サイト</span>
               </div>
-              <h1 className="text-6xl lg:text-8xl font-black tracking-tighter mb-10 leading-[0.95]">
-                キャンパスの<br />
-                <span className="text-primary italic">「いま」</span>を届ける。
+              <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter mb-10 leading-[0.9] text-balance">
+                キャンパスの <span className="text-primary italic">「いま」</span> を届ける。
               </h1>
-              <p className="text-xl text-slate-400 mb-12 leading-relaxed font-medium">
-                学生の視点で、大学の鼓動を記録する。<br />
+              <p className="text-lg md:text-2xl text-slate-400 mb-12 leading-relaxed font-medium max-w-2xl text-pretty">
+                学生の視点で、大学の鼓動を記録する。<br className="hidden md:block" />
                 ニュース、インタビュー、イベント情報をどこよりも深く。
               </p>
               <div className="flex flex-wrap gap-5">
@@ -70,7 +69,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-2/3 h-full bg-[radial-gradient(circle_at_70%_30%,rgba(51,102,153,0.15),transparent_70%)] pointer-events-none" />
+          {/* 背景の装飾 */}
+          <div className="absolute top-0 right-0 w-full lg:w-2/3 h-full bg-[radial-gradient(circle_at_70%_30%,rgba(51,102,153,0.2),transparent_70%)] pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         </section>
 
         {/* ニュースティッカー */}

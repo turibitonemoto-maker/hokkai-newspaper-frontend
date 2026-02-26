@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Save, ChevronLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function EditArticlePage() {
   const router = useRouter();
@@ -52,18 +54,15 @@ export default function EditArticlePage() {
     if (!db || !articleRef || isSubmitting) return;
 
     setIsSubmitting(true);
-    try {
-      await updateDoc(articleRef, {
-        ...formData,
-        lastSyncedDate: new Date().toISOString(),
-      });
-      toast({ title: "更新完了", description: "記事を更新しました。" });
-      router.push('/admin');
-    } catch (e) {
-      toast({ title: "エラー", description: "更新に失敗しました。", variant: "destructive" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    // 非ブロッキングで更新を実行
+    updateDocumentNonBlocking(articleRef, {
+      ...formData,
+      lastSyncedDate: new Date().toISOString(),
+    });
+    
+    toast({ title: "更新リクエスト送信", description: "記事の更新を開始しました。" });
+    router.push('/admin');
+    setIsSubmitting(false);
   };
 
   if (isFetching) return <div className="p-8 text-center">読み込み中...</div>;
