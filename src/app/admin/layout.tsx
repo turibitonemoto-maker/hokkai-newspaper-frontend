@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -10,19 +10,22 @@ import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck } from '
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from '@/components/ui/button';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // 権限チェック：特定のドメインまたはメールのみ許可
   const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp')));
 
   useEffect(() => {
-    // 認証チェックが終わり、ログインしていない、または権限がない場合は即座にログイン画面へ
+    // 認証チェックが終わり、ログインしていない、または権限がない場合はログイン画面へ
     if (!isUserLoading && (!user || !isAuthorized)) {
+      setIsRedirecting(true);
       router.replace('/login');
     }
   }, [user, isUserLoading, isAuthorized, router]);
@@ -32,8 +35,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace('/login');
   };
 
-  // 認証情報の読み込み中、または未承認でのアクセス時はローディングを表示
-  if (isUserLoading || !user || !isAuthorized) {
+  // 認証情報の読み込み中、または未承認・遷移中の表示
+  if (isUserLoading || !user || !isAuthorized || isRedirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-6">
@@ -43,9 +46,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ShieldCheck size={20} className="text-primary opacity-50" />
             </div>
           </div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
-            {isUserLoading ? "Authenticating..." : "Redirecting..."}
-          </p>
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
+              {isUserLoading ? "Checking Credentials..." : "Redirecting to Security Gate..."}
+            </p>
+            {!isUserLoading && !user && (
+              <Button variant="link" onClick={() => router.push('/login')} className="text-[9px] font-black text-primary p-0 h-auto uppercase tracking-widest">
+                If not redirecting, click here
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -121,13 +131,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-black text-slate-900 leading-none">{user.displayName || '新聞会 メンバー'}</p>
-                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">{user.email}</p>
+                <p className="text-sm font-black text-slate-900 leading-none">{user?.displayName || '新聞会 メンバー'}</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">{user?.email}</p>
               </div>
               <Avatar className="h-10 w-10 ring-2 ring-primary/10 shadow-lg">
-                <AvatarImage src={user.photoURL || undefined} />
+                <AvatarImage src={user?.photoURL || undefined} />
                 <AvatarFallback className="bg-primary text-white font-black">
-                  {user.email?.charAt(0).toUpperCase()}
+                  {user?.email?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>

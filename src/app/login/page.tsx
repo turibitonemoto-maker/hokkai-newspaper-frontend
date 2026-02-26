@@ -28,7 +28,11 @@ export default function LoginPage() {
   // すでにログインしていて権限がある場合は自動的に管理画面へ
   useEffect(() => {
     if (!isUserLoading && user && isAuthorized) {
-      router.replace('/admin');
+      // 少しだけ待機して状態を安定させてから遷移
+      const timer = setTimeout(() => {
+        router.replace('/admin');
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [user, isUserLoading, isAuthorized, router]);
 
@@ -48,6 +52,7 @@ export default function LoginPage() {
       
       if (checkIsAuthorized(loggedInUser)) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
+        // 直接遷移を試みる
         router.replace('/admin');
       } else {
         // 権限がない場合は即座にサインアウトして、ユーザーに知らせる
@@ -57,10 +62,10 @@ export default function LoginPage() {
           description: "新聞会のメールアドレス（@hgu.jp）を使用してください。", 
           variant: "destructive" 
         });
+        setIsLoggingIn(false);
       }
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {
-        // ユーザーが閉じた場合はエラーを出さない
         setIsLoggingIn(false);
         return;
       }
@@ -68,10 +73,9 @@ export default function LoginPage() {
       console.error("Login error:", error);
       toast({
         title: "ログイン失敗",
-        description: "認証中にエラーが発生しました。コンソールでGoogleログインが有効か確認してください。",
+        description: "認証中にエラーが発生しました。Googleログイン設定が有効か確認してください。",
         variant: "destructive",
       });
-    } finally {
       setIsLoggingIn(false);
     }
   };
@@ -86,7 +90,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-primary" size={48} />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">セッションを確認中...</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Checking Authentication...</p>
         </div>
       </div>
     );
@@ -128,7 +132,7 @@ export default function LoginPage() {
                 onClick={handleSignOut}
               >
                 <LogOut size={20} />
-                別のアカウントで入り直す
+                別のGoogleアカウントでログイン
               </Button>
             </div>
           ) : (
