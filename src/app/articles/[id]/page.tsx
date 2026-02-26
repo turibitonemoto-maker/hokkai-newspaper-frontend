@@ -8,7 +8,7 @@ import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from 'image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
