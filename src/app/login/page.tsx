@@ -25,22 +25,28 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // メールアドレスの制限チェック（ルール側でも制御していますが、UI側でメッセージを出すため）
+      // メールアドレスの制限チェック
       if (user.email && (user.email === 'admin@example.com' || user.email.endsWith('@hgu.jp'))) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });
         router.push('/admin');
       } else {
         toast({ 
           title: "アクセス権限なし", 
-          description: "このアカウントには管理権限が付与されていません。", 
+          description: "このアカウントには管理権限がありません。新聞会のメールアドレスを使用してください。", 
           variant: "destructive" 
         });
       }
     } catch (error: any) {
-      console.error(error);
+      console.error("Login error:", error);
+      
+      let errorMessage = "Google認証中にエラーが発生しました。";
+      if (error.code === 'auth/operation-not-allowed') {
+        errorMessage = "FirebaseコンソールでGoogleログインが有効になっていません。管理者に連絡してください。";
+      }
+
       toast({
         title: "ログイン失敗",
-        description: "Google認証中にエラーが発生しました。",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -68,7 +74,7 @@ export default function LoginPage() {
         <CardContent className="space-y-6 pb-10">
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
             <p className="text-xs text-slate-500 leading-relaxed font-medium text-center">
-              この記事管理システムには、承認された新聞会のGoogleアカウントでのみアクセスできます。
+              この記事管理システムには、承認された新聞会のGoogleアカウント（@hgu.jp）でのみアクセスできます。
             </p>
           </div>
 

@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 許可された特定のメールアドレスのリスト（ここに部員のメールアドレスを追加してください）
+    // 許可された特定のメールアドレスまたはドメインのチェック
     function isAuthorizedEditor() {
       return request.auth != null && (
         request.auth.token.email == "admin@example.com" || 
@@ -12,14 +12,13 @@ service cloud.firestore {
 
     // 記事のルール: 閲覧は全員に許可、書き込みは特定の認証済みユーザーのみ
     match /articles/{articleId} {
-      allow read: if true;
-      allow list: if true;
+      allow read, list: if true;
       allow write: if isAuthorizedEditor();
     }
 
     // カテゴリー: 閲覧は全員、書き込みは特定の認証済みユーザーのみ
     match /categories/{categoryId} {
-      allow read: if true;
+      allow read, list: if true;
       allow write: if isAuthorizedEditor();
     }
 
@@ -28,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // ルール更新強制コメント: 2024-05-23 23:00 - 特定メールアドレス権限の追加
+    // ルール更新強制コメント: 2024-05-24 10:00 - Googleログイン連携と権限の再確認
   }
 }
