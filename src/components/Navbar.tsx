@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -18,6 +19,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
+          <Link href="/" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">TOP</Link>
           <Link href="/category/Campus" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Campus</Link>
           <Link href="/category/Event" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Events</Link>
           <Link href="/category/Interview" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">Interviews</Link>
