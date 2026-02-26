@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,8 +17,12 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // あなたのメールアドレスを管理者として許可
-  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
+  // 管理者権限の判定
+  const isAuthorized = !!(user && (
+    user.email === 'turibitonemoto@gmail.com' || 
+    user.email === 'admin@example.com' || 
+    user.email?.toLowerCase().endsWith('@hgu.jp')
+  ));
 
   useEffect(() => {
     if (!isUserLoading && user && isAuthorized) {
@@ -37,7 +40,11 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const loggedInUser = result.user;
-      const loggedInAuthorized = !!(loggedInUser && (loggedInUser.email === 'admin@example.com' || loggedInUser.email?.toLowerCase().endsWith('@hgu.jp')));
+      const loggedInAuthorized = !!(loggedInUser && (
+        loggedInUser.email === 'turibitonemoto@gmail.com' || 
+        loggedInUser.email === 'admin@example.com' || 
+        loggedInUser.email?.toLowerCase().endsWith('@hgu.jp')
+      ));
       
       if (loggedInAuthorized) {
         toast({ title: "ログイン成功", description: "管理者として認証されました。" });

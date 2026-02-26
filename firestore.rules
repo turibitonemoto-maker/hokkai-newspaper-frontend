@@ -2,11 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 管理者権限の判定ロジック。
-    // @hgu.jpドメインのアカウント、または個別に指定された管理者のメールアドレスを許可。
+    // 指定された管理者メールアドレス、または @hgu.jp ドメインのアカウントを許可。
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
+               request.auth.token.email == "turibitonemoto@gmail.com" ||
                request.auth.token.email == "admin@example.com"
              );
     }

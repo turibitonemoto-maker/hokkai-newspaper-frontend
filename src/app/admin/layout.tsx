@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -18,8 +17,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [hasTimeout, setHasTimeout] = useState(false);
 
-  // あなたのメールアドレスを管理者として許可
-  const isAuthorized = !!(user && (user.email === 'admin@example.com' || user.email?.toLowerCase().endsWith('@hgu.jp')));
+  // 管理者権限の判定
+  const isAuthorized = !!(user && (
+    user.email === 'turibitonemoto@gmail.com' || 
+    user.email === 'admin@example.com' || 
+    user.email?.toLowerCase().endsWith('@hgu.jp')
+  ));
 
   useEffect(() => {
     const timer = setTimeout(() => {
