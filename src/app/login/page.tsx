@@ -41,12 +41,13 @@ export default function LoginPage() {
         });
       }
     } catch (error: any) {
-      // ユーザーがポップアップを閉じた場合はエラーを表示しない
+      // ユーザーがポップアップを自ら閉じた場合は、エラーとして扱わず静かに終了する
       if (error.code === 'auth/popup-closed-by-user') {
         setIsLoading(false);
         return;
       }
 
+      // その他のエラー（通信エラーや設定ミスなど）は通知する
       console.error("Login error:", error);
       
       let errorMessage = "Google認証中にエラーが発生しました。";
@@ -75,7 +76,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <CardTitle className="text-3xl font-black tracking-tighter uppercase italic">北海学園大学新聞</CardTitle>
+            <CardTitle className="text-3xl font-black tracking-tighter uppercase italic text-slate-900">北海学園大学新聞</CardTitle>
             <CardDescription className="text-slate-500 font-medium uppercase tracking-widest text-[10px] mt-2">
               管理者コンソール
             </CardDescription>

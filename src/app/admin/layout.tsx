@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, FileText, Home, LogOut, Loader2, ShieldCheck } from 'lucide-react';
+import { Newspaper, LayoutDashboard, Home, LogOut, Loader2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!user || !isAuthorized) return null;
 
+  // Reactのkeyエラーを避けるため、各項目に一意のidを付与
   const menuItems = [
     { id: 'dashboard', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'new-article', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
