@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ShieldCheck, Mail } from 'lucide-react';
+import { Loader2, ShieldCheck, Mail, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -41,7 +41,7 @@ export default function LoginPage() {
       
       let errorMessage = "Google認証中にエラーが発生しました。";
       if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = "FirebaseコンソールでGoogleログインが有効になっていません。管理者に連絡してください。";
+        errorMessage = "Googleログインが有効になっていません。Firebaseコンソールの [Authentication] > [Sign-in method] でGoogleを有効にしてください。";
       }
 
       toast({
@@ -72,8 +72,9 @@ export default function LoginPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pb-10">
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
-            <p className="text-xs text-slate-500 leading-relaxed font-medium text-center">
+          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
+            <AlertTriangle className="text-amber-600 shrink-0" size={20} />
+            <p className="text-xs text-amber-700 leading-relaxed font-medium">
               この記事管理システムには、承認された新聞会のGoogleアカウント（@hgu.jp）でのみアクセスできます。
             </p>
           </div>

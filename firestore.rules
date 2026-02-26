@@ -27,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // ルール更新強制コメント: 2024-05-24 10:00 - Googleログイン連携と権限の再確認
+    // ルール更新強制コメント: 2024-05-24 11:30 - Google Auth Provider設定の確認と同期
   }
 }
