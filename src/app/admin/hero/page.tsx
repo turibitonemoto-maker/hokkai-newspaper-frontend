@@ -48,7 +48,7 @@ export default function HeroImageAdmin() {
     if (!db || !confirm('この画像を削除しますか？')) return;
     const docRef = doc(db, 'hero-images', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "画像削除", description: "背景画像を削除しました。" });
+    toast({ title: "削除リクエスト送信", description: "背景画像の削除を開始しました。" });
   };
 
   return (
@@ -92,7 +92,7 @@ export default function HeroImageAdmin() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {isLoading ? (
               <div className="col-span-full py-20 flex justify-center">
-                <Loader2 className="animate-spin text-primary" size={40} />
+                <Loader2 className="animate-spin text-primary" size={40} strokeWidth={3} />
               </div>
             ) : heroImages && heroImages.length > 0 ? (
               heroImages.map((img) => (

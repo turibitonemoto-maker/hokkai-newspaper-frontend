@@ -2,10 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 管理者権限の判定: @hgu.jp ドメインまたは指定の管理者メールアドレス
+    // lower() と endsWith() を使用して、大文字小文字に関わらず確実に判定されるように改善
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
-               request.auth.token.email.matches("(?i).*@hgu\\.jp$") || 
+               request.auth.token.email.lower().endsWith('@hgu.jp') || 
                request.auth.token.email == "admin@example.com"
              );
     }
