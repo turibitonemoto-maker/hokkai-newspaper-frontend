@@ -79,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const menuItems = [
     { id: 'admin-dash', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'admin-new', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
-    { id: 'admin-hero', label: 'ヒーロー画像設定', icon: ImageIcon, href: '/admin/hero' },
+    { id: 'admin-hero', label: 'ヒーロー画像', icon: ImageIcon, href: '/admin/hero' },
   ];
 
   return (
@@ -137,28 +137,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Sidebar>
         
         <SidebarInset className="flex-grow flex flex-col bg-transparent">
-          <header className="h-20 border-b border-slate-100 bg-white/80 backdrop-blur-md flex items-center px-8 justify-between shrink-0 sticky top-0 z-30 shadow-sm shadow-slate-100/20">
-            <div className="flex items-center gap-6">
+          <header className="h-16 md:h-20 border-b border-slate-100 bg-white/80 backdrop-blur-md flex items-center px-4 md:px-8 justify-between shrink-0 sticky top-0 z-30 shadow-sm shadow-slate-100/20">
+            <div className="flex items-center gap-2 md:gap-6">
               <SidebarTrigger className="text-slate-400 hover:text-primary transition-colors" />
-              <div className="h-6 w-px bg-slate-100 hidden sm:block" />
-              <h1 className="text-lg font-black tracking-tight text-slate-900 hidden sm:block">
+              <div className="h-6 w-px bg-slate-100 hidden md:block" />
+              <h1 className="text-sm md:text-lg font-black tracking-tight text-slate-900 truncate max-w-[150px] md:max-w-none">
                 管理者コンソール
               </h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-black text-slate-900 leading-none">{user?.displayName || '新聞会 メンバー'}</p>
                 <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">{user?.email}</p>
               </div>
-              <Avatar className="h-10 w-10 ring-2 ring-primary/10 shadow-lg">
+              <Avatar className="h-8 w-8 md:h-10 md:w-10 ring-2 ring-primary/10 shadow-lg">
                 <AvatarImage src={user?.photoURL || undefined} />
-                <AvatarFallback className="bg-primary text-white font-black">
+                <AvatarFallback className="bg-primary text-white font-black text-xs">
                   {user?.email?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </div>
           </header>
-          <div className="flex-grow p-8 lg:p-12 overflow-auto">
+          <div className="flex-grow p-4 md:p-8 lg:p-12 overflow-auto">
             {children}
           </div>
         </SidebarInset>

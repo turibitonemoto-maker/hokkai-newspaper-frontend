@@ -61,41 +61,41 @@ export default function ArticlePage() {
       <Navbar />
       
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-8 md:py-12">
           <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" className="mb-10 gap-2 -ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl" asChild>
-              <Link href="/"><ChevronLeft size={18} /> BACK TO NEWSFEED</Link>
+            <Button variant="ghost" className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl" asChild>
+              <Link href="/"><ChevronLeft size={18} /> BACK</Link>
             </Button>
 
             <article>
-              <header className="mb-12">
-                <div className="flex items-center gap-3 mb-6">
+              <header className="mb-8 md:mb-12">
+                <div className="flex items-center gap-3 mb-4 md:mb-6">
                   <Badge className="bg-primary text-white hover:bg-primary border-none font-bold py-1 px-3">
                     {article.categoryId}
                   </Badge>
                   <div className="h-px flex-grow bg-slate-100" />
                 </div>
                 
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 leading-[1.15] text-slate-950">
+                <h1 className="text-2xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-6 md:mb-10 leading-[1.2] text-slate-950">
                   {article.title}
                 </h1>
                 
-                <div className="flex flex-wrap items-center gap-8 py-8 border-y border-slate-100 text-sm text-slate-500 font-medium uppercase tracking-wider">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 py-6 md:py-8 border-y border-slate-100 text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest">
                   <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-primary" />
-                    <span>PUBLISHED: {article.publishDate?.split('T')[0]}</span>
+                    <Calendar size={14} className="text-primary" />
+                    <span>{article.publishDate?.split('T')[0]}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <User size={16} className="text-primary" />
-                    <span>BY: {article.authorName || '北海学園大学新聞'}</span>
+                    <User size={14} className="text-primary" />
+                    <span>{article.authorName || '北海学園大学新聞'}</span>
                   </div>
-                  <div className="flex-grow" />
-                  <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border shadow-sm">
+                  <div className="md:flex-grow" />
+                  <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border shadow-sm w-fit">
                     <Button 
                       variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('base')}
-                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
+                      className="rounded-lg h-8 px-3 font-black text-[10px]"
                     >
                       標準
                     </Button>
@@ -103,7 +103,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'lg' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('lg')}
-                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
+                      className="rounded-lg h-8 px-3 font-black text-[10px]"
                     >
                       拡大
                     </Button>
@@ -111,7 +111,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'xl' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('xl')}
-                      className="rounded-xl h-9 w-14 px-0 font-black text-xs"
+                      className="rounded-lg h-8 px-3 font-black text-[10px]"
                     >
                       最大
                     </Button>
@@ -119,7 +119,7 @@ export default function ArticlePage() {
                 </div>
               </header>
 
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-16 shadow-2xl shadow-slate-200 ring-1 ring-slate-100">
+              <div className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden mb-10 md:mb-16 shadow-xl md:shadow-2xl shadow-slate-200 ring-1 ring-slate-100">
                 <Image
                   src={displayImage}
                   alt={article.title}
@@ -133,40 +133,39 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-lg text-lg md:text-xl", 
-                    fontSize === 'lg' && "prose-xl text-xl md:text-2xl",
-                    fontSize === 'xl' && "prose-2xl text-2xl md:text-3xl" 
+                    fontSize === 'base' && "prose-base text-base md:text-lg", 
+                    fontSize === 'lg' && "prose-lg text-lg md:text-xl",
+                    fontSize === 'xl' && "prose-xl text-xl md:text-2xl" 
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
 
                 {isExternal && article.noteUrl && (
-                  <div className="mt-20 pt-12 border-t-2 border-slate-100">
+                  <div className="mt-12 md:mt-20 pt-8 md:pt-12 border-t-2 border-slate-100">
                     <a 
                       href={article.noteUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center w-full h-24 text-2xl font-black rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-2xl shadow-green-200 transition-all active:scale-[0.98] gap-4"
+                      className="flex items-center justify-center w-full h-20 md:h-24 text-lg md:text-2xl font-black rounded-2xl md:rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-xl md:shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-3 md:gap-4 px-6 text-center"
                     >
                       note.comでこの記事の続きを読む
-                      <ExternalLink size={28} strokeWidth={3} />
+                      <ExternalLink size={24} className="shrink-0" />
                     </a>
-                    <p className="text-center mt-6 text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                    <p className="text-center mt-4 md:mt-6 text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest">
                       ※外部サイト（note.com）へ移動します
                     </p>
                   </div>
                 )}
 
-                <footer className="mt-20 pt-12 border-t border-slate-100">
-                  <div className="bg-slate-50 rounded-[32px] p-8 flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-black text-2xl uppercase">
+                <footer className="mt-12 md:mt-20 pt-8 md:pt-12 border-t border-slate-100">
+                  <div className="bg-slate-50 rounded-2xl md:rounded-[32px] p-6 md:p-8 flex items-center gap-4 md:gap-6">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-black text-xl md:text-2xl uppercase">
                       H
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 mb-1">北海学園大学新聞</h4>
-                      <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                      <h4 className="font-black text-slate-900 mb-1 text-sm md:text-base">北海学園大学新聞</h4>
+                      <p className="text-[10px] md:text-sm text-slate-500 leading-relaxed font-medium">
                         この記事は北海学園大学新聞 取材班によって執筆・編集されました。
-                        学内での出来事や学生の声をお届けしています。
                       </p>
                     </div>
                   </div>
@@ -177,9 +176,9 @@ export default function ArticlePage() {
         </div>
       </main>
 
-      <footer className="bg-slate-50 py-12 mt-12 border-t">
+      <footer className="bg-slate-50 py-8 md:py-12 mt-8 md:mt-12 border-t">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-xs text-slate-400 font-bold tracking-widest uppercase">
+          <p className="text-[9px] md:text-xs text-slate-400 font-bold tracking-widest uppercase">
             &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
           </p>
         </div>
