@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ArrowRight, Clock, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, ExternalLink } from 'lucide-react';
 
 interface ArticleCardProps {
   article: {
@@ -67,17 +67,11 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </h3>
         </CardHeader>
 
-        <CardContent className="px-8 py-0 flex-grow">
+        <CardContent className="px-8 pb-8 flex-grow">
           <p className="text-slate-500 text-sm line-clamp-3 leading-relaxed font-medium">
             {excerpt}
           </p>
         </CardContent>
-
-        <CardFooter className="p-8 pt-6 border-t border-slate-50 mt-4">
-          <div className="text-[11px] font-black text-primary tracking-[0.2em] uppercase flex items-center gap-3 group-hover:gap-5 transition-all duration-300">
-            {isExternal ? 'Read on note.com' : 'Read Full Story'} <ArrowRight size={14} />
-          </div>
-        </CardFooter>
       </Card>
     </Link>
   );

@@ -5,7 +5,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
-import { Newspaper, ArrowRight, Loader2, TrendingUp, Calendar, Ghost } from 'lucide-react';
+import { Newspaper, Loader2, TrendingUp, Calendar, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
