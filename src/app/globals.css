@@ -1,64 +1,46 @@
-/* 阿部寛のホームページ風 究極の軽量化設定 */
-:root {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 0%;
-  --primary: 240 100% 25%; /* 紺色 #000080 */
-  --primary-foreground: 0 0% 100%;
-  --border: 0 0% 0%;
-  --radius: 0px;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }
 
-body {
-  background-color: #ffffff;
-  color: #000000;
-  font-family: "MS PGothic", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
-  margin: 20px;
-  line-height: 1.2;
-}
-
-/* リンクの基本スタイル（青・下線） */
-a {
-  color: #0000ff;
-  text-decoration: underline;
-}
-
-a:visited {
-  color: #800080;
-}
-
-a:hover {
-  color: #ff0000;
-}
-
-/* フォーム要素の最低限の装飾 */
-input, textarea, select, button {
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-/* テーブルの基本スタイル */
-table {
-  border-collapse: collapse;
-}
-
-h1 {
-  font-size: 24pt;
-  margin: 0;
-  font-weight: bold;
-}
-
-ul {
-  margin: 10px 0;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #000;
-  height: 1px;
-}
-
-/* アニメーション停止 */
-* {
-  animation: none !important;
-  transition: none !important;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
 }
