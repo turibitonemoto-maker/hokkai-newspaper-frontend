@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -17,12 +18,12 @@ export default function ArticlePage() {
   const db = useFirestore();
   const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
 
-  const docRef = useMemoFirebase(() => {
+  const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
     return doc(db, 'articles', id as string);
   }, [db, id]);
 
-  const { data: article, isLoading } = useDoc(docRef);
+  const { data: article, isLoading } = useDoc(articleRef);
 
   if (isLoading) {
     return (
@@ -132,9 +133,9 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-base lg:prose-xl",
-                    fontSize === 'lg' && "prose-lg lg:prose-2xl",
-                    fontSize === 'xl' && "prose-xl lg:prose-3xl"
+                    fontSize === 'base' && "prose-base",
+                    fontSize === 'lg' && "prose-lg lg:prose-xl",
+                    fontSize === 'xl' && "prose-xl lg:prose-2xl"
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />

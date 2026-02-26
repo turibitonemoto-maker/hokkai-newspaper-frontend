@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -45,9 +46,9 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の不要なナビゲーションテキストを強力に削除
-      // 「続きをみる」「続きを見る」「続きを読む」「...」「…」「→」などを対象
-      // これにより、note側の仕様で付与される末尾のテキストをカットします
-      htmlContent = htmlContent.replace(/(\n|\s)*(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/s, '');
+      // note側の仕様で付与される末尾の「続きをみる」系のテキストを完全にカットします。
+      // また、HTMLタグが含まれている場合もあるため、より強力に処理します。
+      htmlContent = htmlContent.replace(/(\s|&nbsp;|<br\s*\/?>)*(続きを?見[るる][^<]*|続きを読む|→|…|\.\.\.|＞).*$/si, '');
       htmlContent = htmlContent.trim();
 
       const description = extract('description');
