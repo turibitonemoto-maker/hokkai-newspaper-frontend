@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -5,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
-import { Newspaper, LayoutDashboard, FileText, Settings, LogOut, Home, Users, Loader2 } from 'lucide-react';
+import { Newspaper, LayoutDashboard, FileText, Settings, LogOut, Home, Users, Loader2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -15,11 +17,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
+  // 特定のドメインまたはメールのみ許可するチェック
+  const isAuthorized = user && (user.email === 'admin@example.com' || user.email?.endsWith('@hgu.jp'));
+
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
+    } else if (!isUserLoading && user && !isAuthorized) {
+      // ログインはしているが権限がない場合
+      router.push('/login');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, isAuthorized]);
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -28,13 +36,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isUserLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-primary" size={48} />
+          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Checking Authentication</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) return null;
+  if (!user || !isAuthorized) return null;
 
   const menuItems = [
     { label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
@@ -44,17 +55,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-muted/30 w-full">
-        <Sidebar variant="sidebar" collapsible="icon">
-          <SidebarHeader className="p-4 border-b">
-            <Link href="/" className="flex items-center gap-2 group overflow-hidden">
-              <div className="bg-primary p-1.5 rounded-lg text-primary-foreground shrink-0">
-                <Newspaper size={20} />
+      <div className="flex min-h-screen bg-slate-50/50 w-full font-body">
+        <Sidebar variant="sidebar" collapsible="icon" className="border-r border-slate-100 shadow-xl shadow-slate-200/50">
+          <SidebarHeader className="p-6 border-b border-slate-50">
+            <Link href="/" className="flex items-center gap-3 group overflow-hidden">
+              <div className="bg-primary p-2 rounded-xl text-primary-foreground shrink-0 shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
+                <ShieldCheck size={20} strokeWidth={2.5} />
               </div>
-              <span className="font-bold truncate group-data-[state=collapsed]:hidden">北海学園大学新聞 管理</span>
+              <div className="group-data-[state=collapsed]:hidden flex flex-col">
+                <span className="font-black text-slate-900 leading-none text-sm tracking-tight">北海学園大学新聞</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Console</span>
+              </div>
             </Link>
           </SidebarHeader>
-          <SidebarContent className="p-2">
+          <SidebarContent className="p-3">
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -62,9 +76,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     asChild 
                     isActive={pathname === item.href}
                     tooltip={item.label}
+                    className="rounded-xl h-11 px-4 font-bold text-slate-600 data-[active=true]:bg-primary/5 data-[active=true]:text-primary transition-all"
                   >
                     <Link href={item.href}>
-                      <item.icon />
+                      <item.icon className={pathname === item.href ? "text-primary" : "text-slate-400"} />
                       <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -72,18 +87,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               ))}
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="p-4 border-t">
+          <SidebarFooter className="p-4 border-t border-slate-50">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="サイトを表示">
+                <SidebarMenuButton asChild tooltip="サイトを表示" className="rounded-xl font-bold text-slate-500">
                   <Link href="/">
                     <Home />
-                    <span>サイトを表示</span>
+                    <span>公開サイトを表示</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleSignOut} tooltip="ログアウト" className="text-destructive hover:text-destructive">
+                <SidebarMenuButton onClick={handleSignOut} tooltip="ログアウト" className="rounded-xl font-bold text-destructive hover:text-destructive hover:bg-destructive/5 transition-colors">
                   <LogOut />
                   <span>ログアウト</span>
                 </SidebarMenuButton>
@@ -92,23 +107,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </SidebarFooter>
         </Sidebar>
         
-        <SidebarInset className="flex-grow flex flex-col">
-          <header className="h-16 border-b bg-white flex items-center px-6 justify-between shrink-0">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              <h1 className="text-lg font-bold">管理者コンソール</h1>
+        <SidebarInset className="flex-grow flex flex-col bg-transparent">
+          <header className="h-20 border-b border-slate-100 bg-white/80 backdrop-blur-md flex items-center px-8 justify-between shrink-0 sticky top-0 z-30 shadow-sm shadow-slate-100/20">
+            <div className="flex items-center gap-6">
+              <SidebarTrigger className="text-slate-400 hover:text-primary transition-colors" />
+              <div className="h-6 w-px bg-slate-100 hidden sm:block" />
+              <h1 className="text-lg font-black tracking-tight text-slate-900 hidden sm:block">
+                管理者コンソール
+              </h1>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-right hidden sm:block">
-                <p className="font-medium text-primary">新聞会 メンバー</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-black text-slate-900 leading-none">{user.displayName || '新聞会 メンバー'}</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">{user.email}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-primary font-bold">
-                {user.email?.charAt(0).toUpperCase()}
-              </div>
+              <Avatar className="h-10 w-10 ring-2 ring-primary/10 shadow-lg">
+                <AvatarImage src={user.photoURL || undefined} />
+                <AvatarFallback className="bg-primary text-white font-black">
+                  {user.email?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </header>
-          <div className="flex-grow p-6 lg:p-10 overflow-auto">
+          <div className="flex-grow p-8 lg:p-12 overflow-auto">
             {children}
           </div>
         </SidebarInset>

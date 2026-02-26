@@ -1,22 +1,33 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 記事のルール: 閲覧は全員に許可（get/listの両方を明示的に許可）
+    // 許可された特定のメールアドレスのリスト（ここに部員のメールアドレスを追加してください）
+    function isAuthorizedEditor() {
+      return request.auth != null && (
+        request.auth.token.email == "admin@example.com" || 
+        request.auth.token.email.endsWith("@hgu.jp")
+      );
+    }
+
+    // 記事のルール: 閲覧は全員に許可、書き込みは特定の認証済みユーザーのみ
     match /articles/{articleId} {
       allow read: if true;
       allow list: if true;
-      allow write: if request.auth != null;
+      allow write: if isAuthorizedEditor();
     }
 
-    // カテゴリー: 閲覧は全員、書き込みは認証済みユーザーのみ
+    // カテゴリー: 閲覧は全員、書き込みは特定の認証済みユーザーのみ
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAuthorizedEditor();
     }
 
-    // ルール再適用のための強制コメント: 2024-05-23 セキュリティルールの最適化
+    // デフォルトで全てのアクセスを拒否
     match /{path=**} {
       allow read, write: if false;
     }
+    
+    // ルール更新強制コメント: 2024-05-23 23:00 - 特定メールアドレス権限の追加
   }
 }

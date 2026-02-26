@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Article": {
@@ -94,7 +95,7 @@
   },
   "auth": {
     "providers": [
-      "password"
+      "google.com"
     ]
   },
   "firestore": {
@@ -106,7 +107,7 @@
           "schema": {
             "$ref": "#/backend/entities/Article"
           },
-          "description": "Stores individual articles."
+          "description": "Stores individual articles. Restricted to specific authorized emails for writes."
         }
       },
       {
