@@ -59,7 +59,7 @@ export default function HeroImageAdmin() {
     if (!db) return;
     const docRef = doc(db, 'hero-images', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "削除リクエスト送信", description: "背景画像を削除しました。" });
+    toast({ title: "削除完了", description: "背景画像を削除しました。" });
   };
 
   return (
