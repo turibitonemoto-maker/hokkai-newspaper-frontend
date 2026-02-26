@@ -5,13 +5,13 @@
  */
 
 export async function fetchAndSyncNoteRss() {
-  const NOTE_RSS_URL = 'https://note.com/lucky_minnow287/rss'; // 適切なRSS URLに置き換えてください
+  const NOTE_RSS_URL = 'https://note.com/lucky_minnow287/rss';
   
   try {
-    const response = await fetch(NOTE_RSS_URL);
+    const response = await fetch(NOTE_RSS_URL, { next: { revalidate: 3600 } });
     const xmlText = await response.text();
     
-    // シンプルな正規表現によるXMLパース
+    // シンプルな正規表現によるXMLパース（ブラウザのDOMParserはサーバーサイドで使えないため）
     const items = xmlText.match(/<item>([\s\S]*?)<\/item>/g) || [];
     
     const parsedArticles = items.map(item => {
@@ -25,18 +25,21 @@ export async function fetchAndSyncNoteRss() {
       // noteのURLから一意のIDを抽出 (例: https://note.com/user/n/n12345 -> n12345)
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
 
+      // 簡単なHTMLタグ除去
+      const plainTextContent = description.replace(/<[^>]*>?/gm, '');
+
       return {
         id: noteId,
         title,
         noteUrl: link,
         source: 'note',
         htmlContent: description,
-        summary: description.replace(/<[^>]*>?/gm, '').substring(0, 200) + '...',
+        summary: plainTextContent.substring(0, 200) + '...',
         publishDate: new Date(pubDate).toISOString(),
         lastSyncedDate: new Date().toISOString(),
         isPublished: true,
         categoryId: 'Campus', // デフォルトカテゴリー
-        authorName: 'note.com'
+        authorName: '北海学園大学新聞 (note)'
       };
     });
 

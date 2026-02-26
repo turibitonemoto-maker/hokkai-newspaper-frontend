@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AdminDashboard() {
   const db = useFirestore();
@@ -53,6 +53,7 @@ export default function AdminDashboard() {
         let count = 0;
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
+          // 既存の記事を上書きまたは新規作成
           await setDoc(docRef, article, { merge: true });
           count++;
         }
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
+          <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理</h2>
           <p className="text-slate-500 mt-1">手動作成した記事とnoteから同期した記事を一覧で管理できます。</p>
         </div>
         <div className="flex gap-3">
@@ -156,7 +157,7 @@ export default function AdminDashboard() {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" asChild title="表示">
-                        <Link href={`/articles/${article.id}`} target="_blank">
+                        <Link href={`/articles/${article.id}`}>
                           <ExternalLink size={14} />
                         </Link>
                       </Button>
