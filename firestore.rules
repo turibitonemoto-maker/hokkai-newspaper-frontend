@@ -13,7 +13,7 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 閲覧（get, list）は一般公開
+      // 閲覧（get, list）は一般公開（これで権限エラーを回避）
       allow read: if true;
       // 書き込み（create, update, delete）は編集者のみ
       allow write: if isEditor();
@@ -35,5 +35,7 @@ service cloud.firestore {
     match /{path=**} {
       allow read, write: if false;
     }
+    
+    // Security Rules deployment trigger comment
   }
 }
