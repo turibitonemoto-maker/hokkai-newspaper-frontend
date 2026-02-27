@@ -62,8 +62,12 @@ export default function Home() {
               heroImages.map((img, idx) => (
                 <div
                   key={img.id}
-                  style={{ opacity: idx === currentHeroIndex ? 1 : 0, transition: 'opacity 2s ease-in-out' }}
-                  className="absolute inset-0"
+                  style={{ 
+                    opacity: idx === currentHeroIndex ? 1 : 0, 
+                    transition: 'opacity 2000ms ease-in-out',
+                    position: 'absolute',
+                    inset: 0
+                  }}
                 >
                   <Image
                     src={img.imageUrl}
