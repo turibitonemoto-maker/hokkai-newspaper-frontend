@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -69,7 +68,7 @@ export function Navbar() {
                     <span className="font-black text-xl tracking-tighter">メニュー</span>
                   </SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-2 p-4 overflow-y-auto grow">
+                <nav className="flex flex-col gap-2 p-4 grow overflow-y-auto">
                   {navLinks.map((link) => (
                     <Link 
                       key={link.href} 
