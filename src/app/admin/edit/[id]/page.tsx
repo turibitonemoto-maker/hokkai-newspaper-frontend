@@ -39,6 +39,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
+  // データの読み込み完了時にフォームに反映
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -62,16 +63,22 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // updateDocumentNonBlocking を使用して「部分更新」を行うことで、既存のフィールドを保持する
+    
+    // updateDocumentNonBlocking は内部で updateDoc を使用するため、指定したフィールドのみを更新し
+    // Firestore上の既存の他のフィールド（id, publishDate, source等）を保持します。
     updateDocumentNonBlocking(articleRef, {
-      ...formData,
+      title: formData.title,
+      htmlContent: formData.htmlContent,
+      categoryId: formData.categoryId,
+      isPublished: formData.isPublished,
+      mainImageUrl: formData.mainImageUrl,
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新保存中", description: "バックグラウンドで保存しています。" });
+    toast({ title: "更新保存中", description: "変更を保存しています。" });
     setTimeout(() => {
       router.push('/admin');
-    }, 500);
+    }, 800);
   };
 
   if (isFetching && !isInitialized) {
