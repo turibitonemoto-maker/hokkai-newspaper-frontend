@@ -149,6 +149,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      {/* PC版: 表形式で表示 */}
       <div className="hidden md:block">
         <Card className="border-none shadow-2xl shadow-slate-200/60 overflow-hidden bg-white rounded-[40px]">
           <Table>
@@ -251,6 +252,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      {/* スマホ版: カード形式で表示（見やすさ向上のため） */}
       <div className="md:hidden space-y-4">
         {isLoading ? (
           <div className="py-20 flex flex-col items-center gap-4">
