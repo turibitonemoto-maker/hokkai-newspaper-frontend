@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
- * 文末の「続きをみる」というリンクテキスト、<a>タグ形式、およびその前の<br/>タグを確実に削除するようにロジックを最適化。
+ * 文末の「続きをみる」に関連するタグやリンクをより確実に削除するようにロジックを最適化。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -44,7 +44,7 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストを強力に削除
-      // <br/> <a> </a> や <p> <a> </a> など様々なパターンに対応
+      // 様々なHTMLパターン（<br/>の有無など）に対応
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.trim();

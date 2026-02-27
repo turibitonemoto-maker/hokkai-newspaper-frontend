@@ -64,7 +64,8 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // 既存のデータを破壊しないよう、提供されたフィールドのみを部分更新（updateDoc）
+    // CRITICAL: setDoc(merge)ではなくupdateDocumentNonBlocking(updateDoc)を使用
+    // これにより、フォームにないフィールド（noteUrl等）を保持し、データ消失を防ぎます
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -76,7 +77,6 @@ export default function EditArticlePage() {
     
     toast({ title: "更新保存中", description: "変更を保存しています。" });
     
-    // 保存処理の完了を待たずに遷移（Firestoreのオフライン機能を活用）
     setTimeout(() => {
       router.push('/admin');
     }, 800);
