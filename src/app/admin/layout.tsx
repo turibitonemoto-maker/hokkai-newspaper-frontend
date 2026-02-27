@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [hasTimeout, setHasTimeout] = useState(false);
 
-  // 管理者権限の判定（小文字で統一して確実に判定）
+  // 管理者権限の判定
   const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
     userEmail === 'turibitonemoto@gmail.com' || 

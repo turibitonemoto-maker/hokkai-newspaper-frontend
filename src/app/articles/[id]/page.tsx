@@ -15,7 +15,7 @@ export default function ArticlePage() {
   const { id } = useParams();
   const router = useRouter();
   const db = useFirestore();
-  // フォントサイズのスケール調整（以前の「拡大」を標準に）
+  // フォントサイズのスケール調整
   const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
 
   const articleRef = useMemoFirebase(() => {
@@ -67,7 +67,7 @@ export default function ArticlePage() {
             <Button 
               variant="ghost" 
               className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl"
-              onClick={() => router.back()} // ブラウザの履歴を戻る（スクロール位置復元のため）
+              onClick={() => router.back()} // ブラウザの履歴を戻る
             >
               <ChevronLeft size={18} /> BACK
             </Button>
@@ -138,7 +138,6 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    // デカすぎず見やすいスケールに再調整
                     fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
                     fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
                     fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 

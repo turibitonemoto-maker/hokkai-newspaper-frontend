@@ -17,7 +17,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // 管理者権限の判定（小文字で統一して確実に判定）
+  // 管理者権限の判定
   const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
     userEmail === 'turibitonemoto@gmail.com' || 
