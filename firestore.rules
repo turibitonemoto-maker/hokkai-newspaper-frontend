@@ -12,7 +12,7 @@ service cloud.firestore {
              );
     }
 
-    // 記事（articles）: 読み取りは全員許可、書き込みは編集者のみ
+    // 記事（articles）: 読み取り（get/list）は全員許可、書き込みは編集者のみ
     match /articles/{articleId} {
       allow read: if true;
       allow write: if isEditor();

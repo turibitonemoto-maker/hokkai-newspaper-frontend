@@ -63,7 +63,7 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking を使用して、既存のフィールドを保持しつつ指定したフィールドのみを更新
+    // updateDocumentNonBlocking を使用して、指定したフィールドのみを部分更新（既存の本文などが消えないようにする）
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
