@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
- * 文末の不要な「続きをみる」に関連するタグやリンクをより確実に削除するようにロジックを最適化。
+ * 文末の不要な「続きをみる」に関連するタグやリンクを完全に削除するようにロジックを最適化。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -44,11 +44,12 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストをより強力に削除
-      // HTMLタグ、brタグ、pタグの中に含まれるパターンを網羅
-      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>(?:\s*<\/p>)?\s*$/gi, '');
-      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)(?:\s*<\/p>)?\s*$/gi, '');
-      // 末尾の空行や余計なタグをさらにトリミング
-      htmlContent = htmlContent.replace(/(?:<br\s*\/?>|\s)*$/gi, '').trim();
+      // さまざまなパターンを想定した正規表現
+      htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>/gi, '');
+      htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む|続きを見る)/gi, '');
+      
+      // 末尾に残った空のタグや改行をクリーンアップ
+      htmlContent = htmlContent.replace(/(?:<p[^>]*>\s*<\/p>|<br\s*\/?>|\s)*$/gi, '').trim();
 
       const description = extract('description');
 
