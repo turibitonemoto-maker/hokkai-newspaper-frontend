@@ -8,26 +8,28 @@ service cloud.firestore {
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
                request.auth.token.email.lower() == "turibitonemoto@gmail.com" ||
-               request.auth.token.email.lower() == "admin@example.com"
+               request.auth.token.email.lower() == "admin@example.com" ||
+               request.auth.token.email.lower() == "4325132k@hgu.jp"
              );
     }
 
-    // 記事（articles）：読み取りは全員（list/get含む）、書き込みは編集者のみ
+    // 記事（articles）：読み取りは全員、書き込みは編集者のみ
+    // get（単一取得）と list（一覧取得）を明示的に許可
     match /articles/{articleId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
-    // カテゴリー（categories）：読み取りは全員、書き込みは編集者のみ
+    // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
-    // ヒーロー画像（hero-images）：読み取りは全員、書き込みは編集者のみ
+    // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
     // デフォルトはすべて拒否

@@ -74,7 +74,7 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // updateDoc を使用した部分更新により、既存のフィールド（id等）を保持し、データ消失を防ぐ
+    // updateDocumentNonBlocking を使用して「部分更新」を行うことで、既存のフィールドを保持する
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
@@ -175,34 +175,6 @@ export default function EditArticlePage() {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
-            <CardHeader className="bg-slate-50/30 border-b border-slate-50">
-              <CardTitle className="text-lg font-black">画像埋め込みツール</CardTitle>
-              <CardDescription className="text-xs font-bold">本文内に画像を挿入するタグを作成します。</CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URL</Label>
-                <Input
-                  placeholder="画像のURLを入力"
-                  value={helperImageUrl}
-                  className="rounded-xl bg-slate-50 border-slate-100"
-                  onChange={(e) => setHelperImageUrl(e.target.value)}
-                />
-              </div>
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full h-12 rounded-xl gap-2 font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
-                onClick={copyImageTag}
-                disabled={!helperImageUrl}
-              >
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                埋め込みタグをコピー
-              </Button>
             </CardContent>
           </Card>
 
