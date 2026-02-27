@@ -125,7 +125,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="py-20 min-h-[800px]">
+        <section className="py-20 min-h-[1000px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
               <div className="space-y-2">
