@@ -1,8 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 大学関係者（@hgu.jp）または指定の管理者の判定
-    function isAuthorized() {
+    // 大学メール（@hgu.jp）または指定の管理者の判定
+    function isHguUser() {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
@@ -12,22 +12,18 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 閲覧（get, list）は一般公開（誰でも読めるように設定）
-      allow read: if true;
-      // 書き込み（作成・更新・削除）は許可されたアカウントのみ
-      allow write: if isAuthorized();
+      // 大学関係者のみ読み取り・書き込みを許可（list権限エラー対策）
+      allow read, write: if isHguUser();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if isAuthorized();
+      allow read, write: if isHguUser();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow read: if true;
-      allow write: if isAuthorized();
+      allow read, write: if isHguUser();
     }
 
     // デフォルトはすべて拒否
@@ -35,6 +31,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-20T15:30:00Z (Updated for explicit list permission)
+    // Security Rules deployment trigger: 2024-05-20T16:00:00Z (Updated for explicit list permission and restricted access)
   }
 }
