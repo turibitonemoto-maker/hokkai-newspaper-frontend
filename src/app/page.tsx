@@ -172,7 +172,7 @@ export default function Home() {
             <p className="text-[9px] font-bold tracking-[0.5em] uppercase opacity-30">
               &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
             </p>
-            <Link href="/login" className="text-[8px] font-bold text-slate-800 hover:text-slate-600 transition-colors uppercase tracking-widest opacity-20 hover:opacity-100">
+            <Link href="/login" className="text-[10px] font-bold text-slate-800 hover:text-slate-600 transition-colors uppercase tracking-widest opacity-20 hover:opacity-100">
               Admin Login
             </Link>
           </div>
