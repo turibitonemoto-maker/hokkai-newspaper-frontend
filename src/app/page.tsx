@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -116,7 +117,7 @@ export default function Home() {
                 <TrendingUp size={14} />
                 <span className="uppercase tracking-widest text-[9px]">Latest</span>
               </div>
-              <span className="hidden sm:inline">全ニュース一覧</span>
+              <span className="hidden sm:inline">最新の記事一覧</span>
             </div>
             <div className="flex items-center gap-3 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
               <Calendar size={14} className="text-primary" />
@@ -125,7 +126,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="py-20 min-h-[1000px]">
+        <section id="latest-articles" className="py-20 min-h-[1000px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
               <div className="space-y-2">

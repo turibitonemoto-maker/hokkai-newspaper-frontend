@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,10 +41,10 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データが読み込まれたらフォームに確実にセットする
+  // データがロードされたら確実にフォームを初期化する
   useEffect(() => {
     if (article) {
-      console.log('Article loaded for editing:', article.id);
+      console.log('Synchronizing article data to form:', article.id);
       setFormData({
         title: article.title || '',
         htmlContent: article.htmlContent || '',

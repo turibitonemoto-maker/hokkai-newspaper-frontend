@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -51,7 +52,7 @@ export function Navbar() {
             <Search size={20} />
           </Button>
           
-          {/* モバイル用ナビゲーション */}
+          {/* モバイル用ナビゲーション（蛇腹バー） */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden text-slate-600 hover:bg-slate-50 rounded-xl">
