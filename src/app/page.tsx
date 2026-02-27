@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -125,7 +126,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 戻った際のスクロール位置維持を助けるための最小高さ設定 */}
+        {/* スクロール位置復元のための最小高さ設定 */}
         <section className="py-20 min-h-[1000px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
