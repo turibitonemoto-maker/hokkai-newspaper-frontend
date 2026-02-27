@@ -2,8 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
- * 内容が途中で切れないよう、content:encoded（全文）を優先的に取得。
- * 文末の「続きをみる」などの不要なアンカーリンクのみを狙い撃ちで削除します。
+ * 文末の特定の「続きをみる」というリンクテキストのみを確実に削除するようにロジックを最適化しました。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -44,7 +43,7 @@ export async function fetchAndSyncNoteRss() {
         htmlContent = extract('description');
       }
 
-      // 記事末尾の「続きをみる」系リンクおよびテキストを削除
+      // 記事末尾の「続きをみる」に関連するリンクおよびテキストのみを削除
       // <a>タグ形式とプレーンテキストの両方を狙い撃ちで削除します
       htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む)<\/a>\s*$/gi, '');
       htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む)\s*$/gi, '');

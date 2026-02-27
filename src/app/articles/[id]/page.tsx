@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 
 export default function ArticlePage() {
   const { id } = useParams();
+  const router = useRouter();
   const db = useFirestore();
   const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
 
@@ -63,8 +64,13 @@ export default function ArticlePage() {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8 md:py-12">
           <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl" asChild>
-              <Link href="/"><ChevronLeft size={18} /> BACK</Link>
+            {/* 履歴を戻ることで、前のページのスクロール位置を維持します */}
+            <Button 
+              variant="ghost" 
+              className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl"
+              onClick={() => router.back()}
+            >
+              <ChevronLeft size={18} /> BACK
             </Button>
 
             <article>
@@ -76,7 +82,7 @@ export default function ArticlePage() {
                   <div className="h-px flex-grow bg-slate-100" />
                 </div>
                 
-                <h1 className="text-2xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-6 md:mb-10 leading-[1.2] text-slate-950">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-6 md:mb-10 leading-[1.2] text-slate-950">
                   {article.title}
                 </h1>
                 
@@ -133,9 +139,9 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-lg text-lg md:text-xl", 
-                    fontSize === 'lg' && "prose-xl text-xl md:text-2xl",
-                    fontSize === 'xl' && "prose-2xl text-2xl md:text-3xl" 
+                    fontSize === 'base' && "prose-xl text-xl md:text-2xl", 
+                    fontSize === 'lg' && "prose-2xl text-2xl md:text-3xl",
+                    fontSize === 'xl' && "text-3xl md:text-4xl lg:text-5xl" 
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
@@ -146,10 +152,10 @@ export default function ArticlePage() {
                       href={article.noteUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center w-full h-20 md:h-24 text-lg md:text-2xl font-black rounded-2xl md:rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-xl md:shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-3 md:gap-4 px-6 text-center"
+                      className="flex items-center justify-center w-full h-20 md:h-24 text-xl md:text-2xl font-black rounded-2xl md:rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-xl md:shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-3 md:gap-4 px-6 text-center"
                     >
                       note.comでこの記事の続きを読む
-                      <ExternalLink size={24} className="shrink-0" />
+                      <ExternalLink size={28} className="shrink-0" />
                     </a>
                     <p className="text-center mt-4 md:mt-6 text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest">
                       ※外部サイト（note.com）へ移動します
