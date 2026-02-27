@@ -43,8 +43,7 @@ export async function fetchAndSyncNoteRss() {
         htmlContent = extract('description');
       }
 
-      // 記事末尾の「続きをみる」に関連するリンクおよびテキストのみを削除
-      // <a>タグ形式とプレーンテキストの両方を狙い撃ちで削除します
+      // 記事末尾の「続きをみる」に関連するリンクおよびテキストを強力に削除
       htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む)<\/a>\s*$/gi, '');
       htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む)\s*$/gi, '');
       htmlContent = htmlContent.trim();

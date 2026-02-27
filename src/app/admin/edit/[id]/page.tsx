@@ -29,7 +29,7 @@ export default function EditArticlePage() {
     return doc(db, 'articles', id);
   }, [db, id]);
 
-  const { data: article, isLoading: isFetching, error } = useDoc(articleRef);
+  const { data: article, isLoading: isFetching } = useDoc(articleRef);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,9 +40,10 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データが読み込まれたらフォームにセット
+  // 記事データが読み込まれたらフォームに確実にセットする
   useEffect(() => {
     if (article) {
+      console.log('Article loaded for editing:', article.id);
       setFormData({
         title: article.title || '',
         htmlContent: article.htmlContent || '',
