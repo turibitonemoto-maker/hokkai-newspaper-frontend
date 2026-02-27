@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ChevronLeft, Loader2, Copy, Check } from 'lucide-react';
+import { Save, ChevronLeft, Loader2, Copy, Check, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -29,7 +29,7 @@ export default function EditArticlePage() {
     return doc(db, 'articles', id);
   }, [db, id]);
 
-  const { data: article, isLoading: isFetching } = useDoc(articleRef);
+  const { data: article, isLoading: isFetching, error } = useDoc(articleRef);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,6 +40,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
+  // 記事データが読み込まれたらフォームにセット
   useEffect(() => {
     if (article) {
       setFormData({
@@ -61,9 +62,14 @@ export default function EditArticlePage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db || !articleRef || isSubmitting) return;
+
+    if (!formData.title || !formData.htmlContent) {
+      toast({ title: "入力エラー", description: "タイトルと本文は必須です。", variant: "destructive" });
+      return;
+    }
 
     setIsSubmitting(true);
     updateDocumentNonBlocking(articleRef, {
@@ -73,42 +79,70 @@ export default function EditArticlePage() {
     
     toast({ title: "更新完了", description: "記事の内容を保存しました。" });
     router.push('/admin');
-    setIsSubmitting(false);
   };
 
-  if (isFetching) return <div className="p-8 text-center flex flex-col items-center gap-4"><Loader2 className="animate-spin text-primary" size={32} /> 読み込み中...</div>;
+  if (isFetching) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">記事データを読み込んでいます...</p>
+      </div>
+    );
+  }
+
+  if (!article && !isFetching) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 p-8 text-center bg-white rounded-[40px] shadow-xl">
+        <div className="bg-destructive/10 p-5 rounded-full text-destructive">
+          <AlertCircle size={48} />
+        </div>
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">記事が見つかりません</h2>
+          <p className="text-slate-500 font-bold mb-8">URLが間違っているか、削除された可能性があります。</p>
+          <Button variant="outline" className="rounded-xl px-8 h-12" asChild>
+            <Link href="/admin">管理画面に戻る</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" asChild className="rounded-xl">
+        <Button variant="outline" size="icon" asChild className="rounded-xl shadow-sm">
           <Link href="/admin"><ChevronLeft size={20} /></Link>
         </Button>
-        <h2 className="text-3xl font-black tracking-tight">記事編集</h2>
+        <div>
+          <h2 className="text-3xl font-black tracking-tight text-slate-950 italic uppercase">記事編集</h2>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Hokkai Gakuen University Newspaper CMS</p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="rounded-[32px] border-none shadow-xl bg-white">
-            <CardHeader>
-              <CardTitle>内容の編集</CardTitle>
+          <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="border-b border-slate-50 bg-slate-50/30">
+              <CardTitle className="text-lg font-black">内容の編集</CardTitle>
+              <CardDescription className="font-bold">タイトルと本文の内容を調整してください。</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="title">記事タイトル</Label>
+            <CardContent className="p-8 space-y-8">
+              <div className="space-y-3">
+                <Label htmlFor="title" className="font-black text-slate-900 ml-1 uppercase text-[10px] tracking-widest">記事タイトル</Label>
                 <Input
                   id="title"
                   value={formData.title}
-                  className="rounded-xl h-12"
+                  placeholder="記事のタイトルを入力..."
+                  className="rounded-2xl h-14 text-lg font-bold border-slate-100 bg-slate-50/50 focus:bg-white transition-all"
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">本文 (HTML使用可)</Label>
+              <div className="space-y-3">
+                <Label htmlFor="content" className="font-black text-slate-900 ml-1 uppercase text-[10px] tracking-widest">本文 (HTML使用可)</Label>
                 <Textarea
                   id="content"
-                  className="min-h-[500px] font-mono text-sm rounded-xl leading-relaxed"
+                  className="min-h-[600px] font-mono text-sm rounded-2xl p-6 border-slate-100 bg-slate-50/50 focus:bg-white transition-all leading-relaxed"
                   value={formData.htmlContent}
                   onChange={(e) => setFormData({ ...formData, htmlContent: e.target.value })}
                 />
@@ -118,22 +152,22 @@ export default function EditArticlePage() {
         </div>
 
         <div className="space-y-6">
-          <Card className="rounded-[32px] border-none shadow-xl bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg">メイン画像設定</CardTitle>
+          <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="bg-slate-50/30 border-b border-slate-50">
+              <CardTitle className="text-lg font-black">メイン画像設定</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="mainImageUrl">アイキャッチ画像URL</Label>
+                <Label htmlFor="mainImageUrl" className="text-[10px] font-black uppercase tracking-widest text-slate-400">アイキャッチ画像URL</Label>
                 <Input
                   id="mainImageUrl"
                   placeholder="https://images.unsplash.com/..."
                   value={formData.mainImageUrl}
-                  className="rounded-xl"
+                  className="rounded-xl bg-slate-50 border-slate-100"
                   onChange={(e) => setFormData({ ...formData, mainImageUrl: e.target.value })}
                 />
                 {formData.mainImageUrl && (
-                  <div className="mt-2 aspect-video relative rounded-xl overflow-hidden border">
+                  <div className="mt-4 aspect-video relative rounded-2xl overflow-hidden shadow-inner border border-slate-100 bg-slate-50">
                     <img src={formData.mainImageUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -141,25 +175,25 @@ export default function EditArticlePage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[32px] border-none shadow-xl bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg">本文内の画像埋め込み</CardTitle>
-              <CardDescription>画像を本文の中に差し込むためのタグを作成します。</CardDescription>
+          <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="bg-slate-50/30 border-b border-slate-50">
+              <CardTitle className="text-lg font-black">本文内の画像埋め込み</CardTitle>
+              <CardDescription className="text-xs font-bold">画像を本文の中に差し込むためのタグを作成します。</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label>画像URLを貼り付け</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URLを貼り付け</Label>
                 <Input
                   placeholder="画像のURLを入力"
                   value={helperImageUrl}
-                  className="rounded-xl"
+                  className="rounded-xl bg-slate-50 border-slate-100"
                   onChange={(e) => setHelperImageUrl(e.target.value)}
                 />
               </div>
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full rounded-xl gap-2 font-bold"
+                className="w-full h-12 rounded-xl gap-2 font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
                 onClick={copyImageTag}
                 disabled={!helperImageUrl}
               >
@@ -169,18 +203,18 @@ export default function EditArticlePage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[32px] border-none shadow-xl bg-white">
-            <CardHeader>
-              <CardTitle className="text-lg">設定</CardTitle>
+          <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
+            <CardHeader className="bg-slate-50/30 border-b border-slate-50">
+              <CardTitle className="text-lg font-black">設定</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-6 space-y-6">
               <div className="space-y-2">
-                <Label>カテゴリー</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">カテゴリー</Label>
                 <Select
                   value={formData.categoryId}
                   onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-slate-100 font-bold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -194,12 +228,12 @@ export default function EditArticlePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>公開ステータス</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">公開ステータス</Label>
                 <Select
                   value={formData.isPublished ? "true" : "false"}
                   onValueChange={(val) => setFormData({ ...formData, isPublished: val === "true" })}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl h-11 bg-slate-50 border-slate-100 font-bold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -211,8 +245,8 @@ export default function EditArticlePage() {
             </CardContent>
           </Card>
 
-          <Button type="submit" className="w-full h-14 text-lg font-bold rounded-2xl shadow-xl shadow-primary/20" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 animate-spin" size={20} /> : <Save className="mr-2" size={20} />}
+          <Button type="submit" className="w-full h-16 text-lg font-black rounded-2xl shadow-2xl shadow-primary/30 active:scale-[0.98] transition-all" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="mr-2 animate-spin" size={24} /> : <Save className="mr-2" size={24} />}
             更新を保存する
           </Button>
         </div>
