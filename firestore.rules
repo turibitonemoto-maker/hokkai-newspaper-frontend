@@ -14,21 +14,20 @@ service cloud.firestore {
     // 記事（articles）
     match /articles/{articleId} {
       // 閲覧（get, list）は一般公開
-      // listエラー回避のため明示的に許可
-      allow get, list: if true;
+      allow read: if true;
       // 書き込み（create, update, delete）は編集者のみ
       allow write: if isEditor();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isEditor();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isEditor();
     }
 
