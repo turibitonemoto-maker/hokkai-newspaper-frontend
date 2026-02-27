@@ -41,7 +41,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // データがロードされたら確実にフォームを初期化する
+  // 記事データがロードされたら、下書き状態に関わらずフォームに確実にセットする
   useEffect(() => {
     if (article) {
       setFormData({
@@ -73,6 +73,7 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
+    // 部分更新（updateDoc）を使用して、既存のフィールドを保持しながら更新
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
