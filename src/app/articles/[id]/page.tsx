@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ChevronLeft, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,8 +45,8 @@ export default function ArticlePage() {
         <div className="flex-grow flex flex-col items-center justify-center p-4">
           <Badge variant="destructive" className="mb-4">404 NOT FOUND</Badge>
           <h1 className="text-3xl font-black mb-6 tracking-tight">記事が見つかりませんでした</h1>
-          <Button asChild className="rounded-full px-8">
-            <Link href="/">トップページへ戻る</Link>
+          <Button onClick={() => router.push('/')} className="rounded-full px-8">
+            トップページへ戻る
           </Button>
         </div>
       </div>
@@ -64,7 +63,6 @@ export default function ArticlePage() {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8 md:py-12">
           <div className="max-w-4xl mx-auto">
-            {/* 履歴を戻ることで、前のページのスクロール位置を維持します */}
             <Button 
               variant="ghost" 
               className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl"
@@ -139,9 +137,9 @@ export default function ArticlePage() {
                 <div 
                   className={cn(
                     "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
-                    fontSize === 'base' && "prose-xl text-xl md:text-2xl", 
-                    fontSize === 'lg' && "prose-2xl text-2xl md:text-3xl",
-                    fontSize === 'xl' && "text-3xl md:text-4xl lg:text-5xl" 
+                    fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
+                    fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
+                    fontSize === 'xl' && "prose-2xl text-2xl md:text-3xl lg:text-4xl" 
                   )}
                   dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
                 />
@@ -152,7 +150,7 @@ export default function ArticlePage() {
                       href={article.noteUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center w-full h-20 md:h-24 text-xl md:text-2xl font-black rounded-2xl md:rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-xl md:shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-3 md:gap-4 px-6 text-center"
+                      className="flex items-center justify-center w-full h-20 md:h-24 text-xl md:text-2xl font-black rounded-2xl md:rounded-[32px] bg-green-600 hover:bg-green-700 text-white shadow-xl md:shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-3 md:gap-4 px-6 text-center no-underline"
                     >
                       note.comでこの記事の続きを読む
                       <ExternalLink size={28} className="shrink-0" />

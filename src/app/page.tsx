@@ -62,10 +62,8 @@ export default function Home() {
               heroImages.map((img, idx) => (
                 <div
                   key={img.id}
-                  style={{ transitionDuration: '2000ms' }}
-                  className={`absolute inset-0 transition-opacity ease-in-out ${
-                    idx === currentHeroIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  style={{ opacity: idx === currentHeroIndex ? 1 : 0, transition: 'opacity 2s ease-in-out' }}
+                  className="absolute inset-0"
                 >
                   <Image
                     src={img.imageUrl}
@@ -123,7 +121,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* スクロール位置復元時にコンテンツがまだ読み込まれていない場合のジャンプを防ぐため、最小高さを設定 */}
         <section className="py-20 min-h-[1000px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
