@@ -2,8 +2,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 管理者権限の判定ロジック
-    function isAuthorizedEditor() {
+    // 認証済みユーザーが学内ドメイン（@hgu.jp）または指定の管理者か判定
+    function isEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
@@ -12,22 +12,22 @@ service cloud.firestore {
              );
     }
 
-    // 記事：読み取りは全員（一覧取得 list も明示的に許可）
+    // 記事（articles）：読み取りは全員、書き込みは編集者のみ
     match /articles/{articleId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
-    // カテゴリー：読み取りは全員
+    // カテゴリー（categories）：読み取りは全員、書き込みは編集者のみ
     match /categories/{categoryId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
-    // ヒーロー画像：読み取りは全員
+    // ヒーロー画像（hero-images）：読み取りは全員、書き込みは編集者のみ
     match /hero-images/{imageId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAuthorizedEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
     // デフォルトはすべて拒否

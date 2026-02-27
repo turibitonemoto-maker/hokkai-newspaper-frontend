@@ -75,7 +75,7 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // updateDoc を使用した部分更新により、既存のフィールドを保持し、データ消失を防ぐ
+    // updateDoc を使用した部分更新により、既存のフィールド（id等）を保持し、データ消失を防ぐ
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
