@@ -44,7 +44,6 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストをより強力に削除
-      // <br/> などの様々なHTMLパターンに対応
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.trim();
@@ -53,7 +52,8 @@ export async function fetchAndSyncNoteRss() {
 
       let imageUrl = item.match(/<media:thumbnail>(.*?)<\/media:thumbnail>/)?.[1] || "";
       if (!imageUrl) {
-        imageUrl = description.match(/<img[^+]+src="([^">]+)"/)?.[1] || "";
+        const imgMatch = description.match(/<img[^+]+src="([^">]+)"/);
+        imageUrl = imgMatch ? imgMatch[1] : "";
       }
 
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);

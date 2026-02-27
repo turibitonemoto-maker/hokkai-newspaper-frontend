@@ -75,9 +75,8 @@ export default function EditArticlePage() {
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新中", description: "変更を保存しています。" });
+    toast({ title: "更新完了", description: "変更を保存しました。" });
     
-    // 非同期更新のため、少し待ってから戻ります
     setTimeout(() => {
       router.push('/admin');
     }, 800);
