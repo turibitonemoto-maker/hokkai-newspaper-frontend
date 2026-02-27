@@ -49,7 +49,8 @@ export default function Home() {
     }
   }, [heroImages]);
 
-  const publishedArticles = articles ? articles.filter(a => a.isPublished) : [];
+  // 公開設定（isPublished: true）の記事のみを表示
+  const publishedArticles = articles ? articles.filter(a => a.isPublished === true) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
@@ -125,6 +126,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* スクロール復元を安定させるため、最小高さを設定 */}
         <section id="latest-articles" className="py-20 min-h-[1000px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">

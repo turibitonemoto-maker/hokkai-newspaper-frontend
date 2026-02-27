@@ -43,7 +43,6 @@ export default function EditArticlePage() {
   // データがロードされたら確実にフォームを初期化する
   useEffect(() => {
     if (article) {
-      console.log('Synchronizing article data to form:', article.id);
       setFormData({
         title: article.title || '',
         htmlContent: article.htmlContent || '',
