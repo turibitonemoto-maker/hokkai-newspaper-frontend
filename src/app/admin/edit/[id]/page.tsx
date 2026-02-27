@@ -39,7 +39,6 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // データの読み込み完了時にフォームに反映
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -64,8 +63,7 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking は内部で updateDoc を使用するため、指定したフィールドのみを更新し
-    // Firestore上の既存の他のフィールド（id, publishDate, source等）を保持します。
+    // updateDocumentNonBlocking を使用して、既存のフィールドを保持しつつ指定したフィールドのみを更新
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
