@@ -2,7 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 編集者権限の判定関数
-    // 学内ドメイン（@hgu.jp）または指定の管理者メールアドレスを許可
     function isEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
@@ -13,22 +12,21 @@ service cloud.firestore {
              );
     }
 
-    // 記事（articles）：読み取りは全員、書き込みは編集者のみ
-    // get（単一取得）と list（一覧取得）を明示的に許可
+    // 記事（articles）
     match /articles/{articleId} {
-      allow get, list: if true;
+      allow read: if true;
       allow create, update, delete: if isEditor();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow get, list: if true;
+      allow read: if true;
       allow create, update, delete: if isEditor();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow get, list: if true;
+      allow read: if true;
       allow create, update, delete: if isEditor();
     }
 

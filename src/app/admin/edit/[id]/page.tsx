@@ -24,6 +24,7 @@ export default function EditArticlePage() {
   const [copied, setCopied] = useState(false);
   const [helperImageUrl, setHelperImageUrl] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
@@ -32,7 +33,6 @@ export default function EditArticlePage() {
 
   const { data: article, isLoading: isFetching } = useDoc(articleRef);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     htmlContent: '',
@@ -41,7 +41,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データがロードされたら、初回のみフォームに確実にセットする
+  // 記事データがロードされたら、初回のみフォームにセットする
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -81,7 +81,10 @@ export default function EditArticlePage() {
     });
     
     toast({ title: "更新保存中", description: "バックグラウンドで保存しています。" });
-    router.push('/admin');
+    // 保存開始を通知した後、ダッシュボードへ戻る
+    setTimeout(() => {
+      router.push('/admin');
+    }, 500);
   };
 
   if (isFetching && !isInitialized) {

@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
@@ -25,10 +24,12 @@ export default function Home() {
     }));
   }, []);
 
+  // 公開されている記事のみを取得するクエリ
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
+      where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
   }, [db]);
@@ -38,7 +39,7 @@ export default function Home() {
     return query(collection(db, 'hero-images'), orderBy('order', 'asc'));
   }, [db]);
 
-  const { data: articles, isLoading: isArticlesLoading } = useCollection(latestArticlesRef);
+  const { data: publishedArticles, isLoading: isArticlesLoading } = useCollection(latestArticlesRef);
   const { data: heroImages, isLoading: isHeroLoading } = useCollection(heroImagesRef);
 
   useEffect(() => {
@@ -49,9 +50,6 @@ export default function Home() {
       return () => clearInterval(interval);
     }
   }, [heroImages]);
-
-  // 公開設定（isPublished: true）の記事のみを表示
-  const publishedArticles = articles ? articles.filter(a => a.isPublished === true) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
@@ -141,7 +139,7 @@ export default function Home() {
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
                 <p className="text-slate-400 font-black uppercase text-[9px] tracking-[0.4em]">Database Synchronizing</p>
               </div>
-            ) : publishedArticles.length > 0 ? (
+            ) : publishedArticles && publishedArticles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {publishedArticles.map((article) => (
                   <ArticleCard key={article.id} article={article as any} />
