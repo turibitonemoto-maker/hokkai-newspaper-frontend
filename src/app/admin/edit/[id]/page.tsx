@@ -75,11 +75,11 @@ export default function EditArticlePage() {
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新リクエスト送信", description: "記事の更新処理を開始しました。" });
+    toast({ title: "更新完了", description: "記事の更新をリクエストしました。" });
     
     setTimeout(() => {
       router.push('/admin');
-    }, 1000);
+    }, 1500);
   };
 
   if (isFetching && !isInitialized) {

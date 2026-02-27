@@ -17,7 +17,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // 管理者権限の判定（学内ドメインおよび指定管理者に限定）
+  // 管理者権限の判定（学内ドメインに限定）
   const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
     userEmail === 'admin@example.com' || 

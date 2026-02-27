@@ -1,40 +1,38 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 大学メール（@hgu.jp）の判定
-    function isHguUser() {
+    // 大学メール（@hgu.jp）または管理者メールの判定
+    function isAuthorizedUser() {
       return request.auth != null && 
              request.auth.token.email != null && 
-             request.auth.token.email.lower().endsWith('@hgu.jp');
+             (request.auth.token.email.toLower().endsWith('@hgu.jp') || request.auth.token.email == 'admin@example.com');
     }
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 読み取り（get, list）
-      // 管理画面での一覧取得(list)を含め、大学アカウントを保持していれば許可
-      // 公開ページでの閲覧も考慮し、本来は true が望ましいですが、ユーザーの制限リクエストに従います。
-      allow read: if isHguUser() || (request.auth == null && resource.data.isPublished == true);
-      // 書き込み（create, update, delete）
-      allow write: if isHguUser();
+      // 読み取り: ログイン済みの学内ユーザーなら全件OK。未ログインなら公開済み記事のみ。
+      allow read: if isAuthorizedUser() || (resource != null && resource.data.isPublished == true);
+      // 書き込み: 学内ユーザーのみ
+      allow write: if isAuthorizedUser();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isHguUser();
+      allow write: if isAuthorizedUser();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
       allow read: if true;
-      allow write: if isHguUser();
+      allow write: if isAuthorizedUser();
     }
 
-    // デフォルトはすべて拒否
+    // デフォルト拒否
     match /{path=**} {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-20T18:00:00Z (Updated to fix list permission and personal email removal)
+    // Security Rules deployment trigger: 2024-05-21T10:00:00Z (Fix list permission and remove personal email)
   }
 }
