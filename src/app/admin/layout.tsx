@@ -17,11 +17,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [hasTimeout, setHasTimeout] = useState(false);
 
-  // 管理者権限の判定
+  // 管理者権限の判定（小文字で統一して確実に判定）
+  const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
-    user.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
-    user.email?.toLowerCase() === 'admin@example.com' || 
-    user.email?.toLowerCase().endsWith('@hgu.jp')
+    userEmail === 'turibitonemoto@gmail.com' || 
+    userEmail === 'admin@example.com' || 
+    userEmail.endsWith('@hgu.jp')
   ));
 
   useEffect(() => {

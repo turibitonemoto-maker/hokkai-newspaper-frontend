@@ -62,7 +62,8 @@ export default function Home() {
               heroImages.map((img, idx) => (
                 <div
                   key={img.id}
-                  className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${
+                  style={{ transitionDuration: '2000ms' }}
+                  className={`absolute inset-0 transition-opacity ease-in-out ${
                     idx === currentHeroIndex ? 'opacity-100' : 'opacity-0'
                   }`}
                 >

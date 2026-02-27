@@ -17,11 +17,12 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // 管理者権限の判定
+  // 管理者権限の判定（小文字で統一して確実に判定）
+  const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
-    user.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
-    user.email?.toLowerCase() === 'admin@example.com' || 
-    user.email?.toLowerCase().endsWith('@hgu.jp')
+    userEmail === 'turibitonemoto@gmail.com' || 
+    userEmail === 'admin@example.com' || 
+    userEmail.endsWith('@hgu.jp')
   ));
 
   useEffect(() => {
@@ -40,10 +41,12 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const loggedInUser = result.user;
+      const loggedInEmail = loggedInUser?.email?.toLowerCase() || '';
+      
       const loggedInAuthorized = !!(loggedInUser && (
-        loggedInUser.email?.toLowerCase() === 'turibitonemoto@gmail.com' || 
-        loggedInUser.email?.toLowerCase() === 'admin@example.com' || 
-        loggedInUser.email?.toLowerCase().endsWith('@hgu.jp')
+        loggedInEmail === 'turibitonemoto@gmail.com' || 
+        loggedInEmail === 'admin@example.com' || 
+        loggedInEmail.endsWith('@hgu.jp')
       ));
       
       if (loggedInAuthorized) {
