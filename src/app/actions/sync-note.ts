@@ -45,8 +45,9 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストを強力に削除
-      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>\s*$/gi, '');
-      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)\s*$/gi, '');
+      // <br/> <a> </a> や <p> <a> </a> など様々なパターンに対応
+      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>(?:\s*<\/p>)?\s*$/gi, '');
+      htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.trim();
 
       const description = extract('description');

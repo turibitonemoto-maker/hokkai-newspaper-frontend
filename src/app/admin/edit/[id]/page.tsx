@@ -67,7 +67,7 @@ export default function EditArticlePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!db || !articleRef || isSubmitting) return;
+    if (!db || !articleRef || isSubmitting || !isInitialized) return;
 
     if (!formData.title || !formData.htmlContent) {
       toast({ title: "入力エラー", description: "タイトルと本文は必須です。", variant: "destructive" });
@@ -85,7 +85,7 @@ export default function EditArticlePage() {
     router.push('/admin');
   };
 
-  if (isFetching) {
+  if (isFetching && !isInitialized) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
@@ -249,7 +249,11 @@ export default function EditArticlePage() {
             </CardContent>
           </Card>
 
-          <Button type="submit" className="w-full h-16 text-lg font-black rounded-2xl shadow-2xl shadow-primary/30 active:scale-[0.98] transition-all" disabled={isSubmitting}>
+          <Button 
+            type="submit" 
+            className="w-full h-16 text-lg font-black rounded-2xl shadow-2xl shadow-primary/30 active:scale-[0.98] transition-all" 
+            disabled={isSubmitting || !isInitialized}
+          >
             {isSubmitting ? <Loader2 className="mr-2 animate-spin" size={24} /> : <Save className="mr-2" size={24} />}
             変更を保存する
           </Button>
