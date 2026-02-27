@@ -12,8 +12,8 @@ service cloud.firestore {
     }
 
     // 記事（articles）
-    // 閲覧（get, list）は一般公開。書き込み（create, update, delete）は編集者のみ。
-    // list権限を明示的に許可し、大学アカウントでの一覧表示を確実にします。
+    // 閲覧（get, list）は一般公開。
+    // 書き込み（create, update, delete）は編集者のみ。
     match /articles/{articleId} {
       allow read: if true;
       allow write: if isEditor();

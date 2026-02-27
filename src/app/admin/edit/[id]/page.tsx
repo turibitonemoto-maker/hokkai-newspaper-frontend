@@ -40,7 +40,6 @@ export default function EditArticlePage() {
   });
 
   // 記事データがロードされたらフォームを初期化
-  // 下書き（isPublished: false）の記事でも確実にデータをフォームにセットします
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -65,8 +64,8 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking(updateDoc)を使用して部分更新を行うことで、
-    // フォームにない既存のフィールド（noteUrlやsourceなど）が消去されるのを防ぎます。
+    // updateDocumentNonBlocking(updateDoc)を使用して部分更新を行います。
+    // これにより、フォームにない既存のフィールド（noteUrlやsourceなど）が保持されます。
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -76,7 +75,7 @@ export default function EditArticlePage() {
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新保存中", description: "変更を保存しています。" });
+    toast({ title: "更新中", description: "変更を保存しています。" });
     
     // 非同期更新のため、少し待ってから戻ります
     setTimeout(() => {
