@@ -125,8 +125,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* スクロール位置復元のための最小高さ設定 */}
-        <section className="py-20 min-h-[1000px]">
+        <section className="py-20 min-h-[800px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
               <div className="space-y-2">

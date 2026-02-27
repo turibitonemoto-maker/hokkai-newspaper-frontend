@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Save, ChevronLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function NewArticlePage() {
     isPublished: true,
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db || isSubmitting) return;
 
@@ -37,21 +38,24 @@ export default function NewArticlePage() {
     }
 
     setIsSubmitting(true);
-    try {
-      await addDoc(collection(db, 'articles'), {
-        ...formData,
-        publishDate: new Date().toISOString(),
-        lastSyncedDate: new Date().toISOString(),
-        authorName: '北海学園大学新聞',
-        source: 'internal'
-      });
-      toast({ title: "保存完了", description: "記事を保存しました。" });
-      router.push('/admin');
-    } catch (e) {
-      toast({ title: "エラー", description: "保存に失敗しました。", variant: "destructive" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    
+    // Firestoreドキュメント参照を生成してIDを取得
+    const articlesCol = collection(db, 'articles');
+    const newDocRef = doc(articlesCol);
+    const id = newDocRef.id;
+
+    // スキーマ（backend.json）に従い、データ内にidを含めて保存
+    setDocumentNonBlocking(newDocRef, {
+      ...formData,
+      id: id,
+      publishDate: new Date().toISOString(),
+      lastSyncedDate: new Date().toISOString(),
+      authorName: '北海学園大学新聞',
+      source: 'internal'
+    }, { merge: true });
+
+    toast({ title: "保存開始", description: "記事の保存処理を開始しました。まもなく一覧に反映されます。" });
+    router.push('/admin');
   };
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Newspaper, Menu, Search, X } from 'lucide-react';
+import { Newspaper, Menu, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -54,38 +54,40 @@ export function Navbar() {
           {/* モバイル用ナビゲーション（蛇腹バー） */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-slate-600">
+              <Button variant="ghost" size="icon" className="md:hidden text-slate-600 hover:bg-slate-50 rounded-xl">
                 <Menu size={24} />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] rounded-l-[40px] border-none shadow-2xl">
-              <SheetHeader className="pb-8 border-b border-slate-50">
-                <SheetTitle className="flex items-center gap-2">
-                  <div className="bg-primary p-1.5 rounded-lg text-white">
-                    <Newspaper size={20} />
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] rounded-l-[40px] border-none shadow-2xl p-0">
+              <div className="flex flex-col h-full bg-white">
+                <SheetHeader className="p-8 border-b border-slate-50 shrink-0">
+                  <SheetTitle className="flex items-center gap-2">
+                    <div className="bg-primary p-1.5 rounded-lg text-white">
+                      <Newspaper size={20} />
+                    </div>
+                    <span className="font-black text-xl tracking-tighter">メニュー</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-2 p-4 overflow-y-auto grow">
+                  {navLinks.map((link) => (
+                    <Link 
+                      key={link.href} 
+                      href={link.href}
+                      className="flex items-center h-16 px-6 rounded-2xl text-sm font-black uppercase tracking-widest text-slate-600 hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="mt-8 pt-8 border-t border-slate-50">
+                    <Link 
+                      href="/login" 
+                      className="flex items-center h-16 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-slate-500 transition-colors"
+                    >
+                      Admin Login
+                    </Link>
                   </div>
-                  <span className="font-black text-xl tracking-tighter">メニュー</span>
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-2 pt-8">
-                {navLinks.map((link) => (
-                  <Link 
-                    key={link.href} 
-                    href={link.href}
-                    className="flex items-center h-16 px-6 rounded-2xl text-sm font-black uppercase tracking-widest text-slate-600 hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <div className="mt-8 pt-8 border-t border-slate-50">
-                  <Link 
-                    href="/login" 
-                    className="flex items-center h-16 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 hover:text-slate-500 transition-colors"
-                  >
-                    Admin Login
-                  </Link>
-                </div>
-              </nav>
+                </nav>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
