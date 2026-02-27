@@ -24,6 +24,7 @@ export default function EditArticlePage() {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [helperImageUrl, setHelperImageUrl] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
   
   const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
@@ -41,9 +42,9 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データがロードされたら、下書き状態に関わらずフォームに確実にセットする
+  // 記事データがロードされたら、初回のみフォームに確実にセットする
   useEffect(() => {
-    if (article) {
+    if (article && !isInitialized) {
       setFormData({
         title: article.title || '',
         htmlContent: article.htmlContent || '',
@@ -51,8 +52,9 @@ export default function EditArticlePage() {
         isPublished: article.isPublished ?? true,
         mainImageUrl: article.mainImageUrl || '',
       });
+      setIsInitialized(true);
     }
-  }, [article]);
+  }, [article, isInitialized]);
 
   const copyImageTag = () => {
     if (!helperImageUrl) return;
@@ -73,7 +75,7 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // updateDoc を使用した部分更新により、既存のフィールド（authorName等）を保持し、データ消失を防ぐ
+    // updateDoc を使用した部分更新により、既存のフィールドを保持し、データ消失を防ぐ
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
