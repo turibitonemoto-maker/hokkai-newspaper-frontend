@@ -39,6 +39,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
+  // 記事データがロードされたらフォームを初期化
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -63,7 +64,7 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking を使用して、指定したフィールドのみを部分更新（既存の本文などが消えないようにする）
+    // 既存のデータを壊さないよう、提供されたフィールドのみを部分更新（updateDoc）
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -74,6 +75,8 @@ export default function EditArticlePage() {
     });
     
     toast({ title: "更新保存中", description: "変更を保存しています。" });
+    
+    // 保存処理の完了を待たずに遷移（Firestoreのオフライン機能を活用）
     setTimeout(() => {
       router.push('/admin');
     }, 800);

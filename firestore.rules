@@ -1,33 +1,33 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 編集者権限の判定関数
+    // 編集者権限の判定関数（大学ドメインおよび個別許可メール）
     function isEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
                request.auth.token.email.lower() == "turibitonemoto@gmail.com" ||
-               request.auth.token.email.lower() == "admin@example.com" ||
-               request.auth.token.email.lower() == "4325132k@hgu.jp"
+               request.auth.token.email.lower() == "admin@example.com"
              );
     }
 
-    // 記事（articles）: 読み取り（get/list）は全員許可、書き込みは編集者のみ
+    // 記事（articles）: 
+    // get（単体）と list（一覧）を明示的に許可
     match /articles/{articleId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow read: if true;
-      allow write: if isEditor();
+      allow get, list: if true;
+      allow create, update, delete: if isEditor();
     }
 
     // デフォルトはすべて拒否

@@ -1,4 +1,3 @@
-
 'use client';
     
 import {
@@ -11,7 +10,7 @@ import {
   SetOptions,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
-import {FirestorePermissionError} from '@/firebase/errors';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 /**
  * Initiates a setDoc operation for a document reference.
@@ -55,6 +54,7 @@ export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
  * Using updateDoc ensures only specified fields are modified, preventing data loss.
  */
 export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) {
+  // CRITICAL: Use updateDoc for partial updates to avoid overwriting existing fields.
   updateDoc(docRef, data)
     .catch(error => {
       errorEmitter.emit(
