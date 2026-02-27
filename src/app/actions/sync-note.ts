@@ -46,6 +46,7 @@ export async function fetchAndSyncNoteRss() {
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストを強力に削除
       // <br/> <a> </a> や <p> <a> </a> など様々なパターンに対応
+      // 文末の不要なHTML要素を再帰的に削除する正規表現
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.replace(/(?:<br\s*\/?>\s*|<p[^>]*>\s*)*(?:続きを?見[るる]|続きを読む|続きを見る)(?:\s*<\/p>)?\s*$/gi, '');
       htmlContent = htmlContent.trim();

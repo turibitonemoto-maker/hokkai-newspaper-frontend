@@ -2,7 +2,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 認証済みユーザーが学内ドメイン（@hgu.jp）または指定の管理者か判定
+    // 編集者権限の判定関数
+    // 学内ドメイン（@hgu.jp）または指定の管理者メールアドレスを許可
     function isEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
@@ -12,7 +13,7 @@ service cloud.firestore {
              );
     }
 
-    // 記事（articles）：読み取りは全員、書き込みは編集者のみ
+    // 記事（articles）：読み取りは全員（list/get含む）、書き込みは編集者のみ
     match /articles/{articleId} {
       allow read: if true;
       allow write: if isEditor();
