@@ -73,7 +73,7 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // 部分更新（updateDoc）を使用して、既存のフィールドを保持しながら更新
+    // updateDoc を使用した部分更新。既存のフィールド（authorName, source等）を保持
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
