@@ -54,6 +54,7 @@ export default function NewArticlePage() {
     const newDocRef = doc(articlesCol);
     const id = newDocRef.id;
 
+    // backend.json のスキーマに合わせて id を含めて保存
     setDocumentNonBlocking(newDocRef, {
       ...formData,
       id: id,
