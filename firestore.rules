@@ -12,7 +12,7 @@ service cloud.firestore {
     }
 
     // 記事（articles）: 
-    // 公開閲覧を許可し、編集者にはすべての操作（list含む）を許可
+    // 公開閲覧を許可し、編集者にはすべての操作（get, list, write）を許可
     match /articles/{articleId} {
       allow read: if true;
       allow write: if isEditor();
