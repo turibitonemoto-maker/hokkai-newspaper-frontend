@@ -17,10 +17,9 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // 管理者権限の判定
+  // 管理者権限の判定（指定されたドメインおよび管理者に限定）
   const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (
-    userEmail === 'turibitonemoto@gmail.com' || 
     userEmail === 'admin@example.com' || 
     userEmail.endsWith('@hgu.jp')
   ));
@@ -44,7 +43,6 @@ export default function LoginPage() {
       const loggedInEmail = loggedInUser?.email?.toLowerCase() || '';
       
       const loggedInAuthorized = !!(loggedInUser && (
-        loggedInEmail === 'turibitonemoto@gmail.com' || 
         loggedInEmail === 'admin@example.com' || 
         loggedInEmail.endsWith('@hgu.jp')
       ));
@@ -56,7 +54,7 @@ export default function LoginPage() {
         await signOut(auth);
         toast({ 
           title: "アクセス権限なし", 
-          description: "許可された管理者メールアドレスを使用してください。", 
+          description: "許可された管理者メールアドレス（@hgu.jp 等）を使用してください。", 
           variant: "destructive" 
         });
         setIsLoggingIn(false);

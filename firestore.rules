@@ -6,16 +6,15 @@ service cloud.firestore {
       return request.auth != null && 
              request.auth.token.email != null && (
                request.auth.token.email.lower().endsWith('@hgu.jp') || 
-               request.auth.token.email.lower() == "turibitonemoto@gmail.com" ||
                request.auth.token.email.lower() == "admin@example.com"
              );
     }
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 閲覧（get, list）は一般公開。管理画面での一覧取得も許可。
+      // 閲覧（get, list）は一般公開（誰でも読めるように設定）
       allow read: if true;
-      // 書き込みは許可されたアカウントのみ
+      // 書き込み（作成・更新・削除）は許可されたアカウントのみ
       allow write: if isAuthorized();
     }
 
@@ -36,6 +35,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-20T10:00:00Z (Optimized for @hgu.jp access)
+    // Security Rules deployment trigger: 2024-05-20T12:00:00Z (Cleaned authorization)
   }
 }
