@@ -73,13 +73,13 @@ export default function EditArticlePage() {
     }
 
     setIsSubmitting(true);
-    // updateDoc を使用した部分更新。既存のフィールド（authorName, source等）を保持
+    // updateDoc を使用した部分更新により、既存のフィールド（authorName等）を保持し、データ消失を防ぐ
     updateDocumentNonBlocking(articleRef, {
       ...formData,
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新完了", description: "記事の内容を保存しました。" });
+    toast({ title: "更新保存中", description: "バックグラウンドで保存しています。" });
     router.push('/admin');
   };
 
@@ -156,11 +156,11 @@ export default function EditArticlePage() {
         <div className="space-y-6">
           <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
             <CardHeader className="bg-slate-50/30 border-b border-slate-50">
-              <CardTitle className="text-lg font-black">メイン画像設定</CardTitle>
+              <CardTitle className="text-lg font-black">アイキャッチ画像</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="mainImageUrl" className="text-[10px] font-black uppercase tracking-widest text-slate-400">アイキャッチ画像URL</Label>
+                <Label htmlFor="mainImageUrl" className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URL</Label>
                 <Input
                   id="mainImageUrl"
                   placeholder="https://images.unsplash.com/..."
@@ -179,12 +179,12 @@ export default function EditArticlePage() {
 
           <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
             <CardHeader className="bg-slate-50/30 border-b border-slate-50">
-              <CardTitle className="text-lg font-black">本文内の画像埋め込み</CardTitle>
-              <CardDescription className="text-xs font-bold">画像を本文の中に差し込むためのタグを作成します。</CardDescription>
+              <CardTitle className="text-lg font-black">画像埋め込みツール</CardTitle>
+              <CardDescription className="text-xs font-bold">本文内に画像を挿入するタグを作成します。</CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URLを貼り付け</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URL</Label>
                 <Input
                   placeholder="画像のURLを入力"
                   value={helperImageUrl}
@@ -207,7 +207,7 @@ export default function EditArticlePage() {
 
           <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
             <CardHeader className="bg-slate-50/30 border-b border-slate-50">
-              <CardTitle className="text-lg font-black">設定</CardTitle>
+              <CardTitle className="text-lg font-black">公開設定</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="space-y-2">
@@ -230,7 +230,7 @@ export default function EditArticlePage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">公開ステータス</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">ステータス</Label>
                 <Select
                   value={formData.isPublished ? "true" : "false"}
                   onValueChange={(val) => setFormData({ ...formData, isPublished: val === "true" })}
@@ -239,8 +239,8 @@ export default function EditArticlePage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    <SelectItem value="true">公開</SelectItem>
-                    <SelectItem value="false">下書き</SelectItem>
+                    <SelectItem value="true">公開（Live）</SelectItem>
+                    <SelectItem value="false">下書き（Draft）</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -249,7 +249,7 @@ export default function EditArticlePage() {
 
           <Button type="submit" className="w-full h-16 text-lg font-black rounded-2xl shadow-2xl shadow-primary/30 active:scale-[0.98] transition-all" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 animate-spin" size={24} /> : <Save className="mr-2" size={24} />}
-            更新を保存する
+            変更を保存する
           </Button>
         </div>
       </form>

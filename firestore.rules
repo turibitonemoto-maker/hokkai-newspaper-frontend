@@ -2,30 +2,31 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 管理者権限の判定ロジック。
-    // 指定のメールアドレスおよび@hgu.jpドメインを許可。
+    // 管理者権限の判定ロジック
+    // 1. 指定の個別メールアドレス
+    // 2. @hgu.jp ドメインのメールアドレス（大文字小文字を区別せず判定）
     function isAuthorizedEditor() {
       return request.auth != null && 
              request.auth.token.email != null && (
-               request.auth.token.email.lower().matches('.*@hgu[.]jp$') || 
+               request.auth.token.email.lower().endsWith('@hgu.jp') || 
                request.auth.token.email.lower() == "turibitonemoto@gmail.com" ||
                request.auth.token.email.lower() == "admin@example.com"
              );
     }
 
-    // 記事：読み取りは全員、書き込み・削除は許可されたメンバーのみ
+    // 記事：読み取り（get, list）は全員、書き込み・削除（create, update, delete）は許可されたメンバーのみ
     match /articles/{articleId} {
       allow read: if true;
       allow create, update, delete: if isAuthorizedEditor();
     }
 
-    // カテゴリー：読み取りは全員、書き込み・削除は許可されたメンバーのみ
+    // カテゴリー：読み取りは全員、書き込みは許可されたメンバーのみ
     match /categories/{categoryId} {
       allow read: if true;
       allow create, update, delete: if isAuthorizedEditor();
     }
 
-    // ヒーロー画像：読み取りは全員、書き込み・削除は許可されたメンバーのみ
+    // ヒーロー画像：読み取りは全員、書き込みは許可されたメンバーのみ
     match /hero-images/{imageId} {
       allow read: if true;
       allow create, update, delete: if isAuthorizedEditor();

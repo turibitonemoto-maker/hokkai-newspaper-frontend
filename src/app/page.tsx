@@ -116,9 +116,9 @@ export default function Home() {
             <div className="flex items-center gap-4 text-xs font-black text-slate-900 shrink-0">
               <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg flex items-center gap-2">
                 <TrendingUp size={14} />
-                <span className="uppercase tracking-widest text-[9px]">Latest</span>
+                <span className="uppercase tracking-widest text-[9px]">Latest Stories</span>
               </div>
-              <span className="hidden sm:inline">最新の記事一覧</span>
+              <span className="hidden sm:inline">最新の記事</span>
             </div>
             <div className="flex items-center gap-3 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
               <Calendar size={14} className="text-primary" />
@@ -127,7 +127,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section id="latest-articles" className="py-20 min-h-[1000px]">
+        <section id="latest-articles" className="py-20 min-h-[800px]">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-12 border-b border-slate-200 pb-6">
               <div className="space-y-2">
