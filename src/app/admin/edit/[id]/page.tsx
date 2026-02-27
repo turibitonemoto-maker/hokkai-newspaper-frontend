@@ -64,7 +64,7 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // 既存のデータを壊さないよう、提供されたフィールドのみを部分更新（updateDoc）
+    // 既存のデータを破壊しないよう、提供されたフィールドのみを部分更新（updateDoc）
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,

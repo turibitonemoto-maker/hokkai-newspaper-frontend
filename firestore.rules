@@ -12,22 +12,22 @@ service cloud.firestore {
     }
 
     // 記事（articles）: 
-    // get（単体）と list（一覧）を明示的に許可
+    // 公開閲覧を許可し、編集者にはすべての操作（list含む）を許可
     match /articles/{articleId} {
-      allow get, list: if true;
-      allow create, update, delete: if isEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow get, list: if true;
-      allow create, update, delete: if isEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow get, list: if true;
-      allow create, update, delete: if isEditor();
+      allow read: if true;
+      allow write: if isEditor();
     }
 
     // デフォルトはすべて拒否
