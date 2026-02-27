@@ -44,7 +44,6 @@ export async function fetchAndSyncNoteRss() {
       }
 
       // 記事末尾の「続きをみる」に関連するリンクおよびテキストをより強力に削除
-      // さまざまなパターンを想定した正規表現
       htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>/gi, '');
       htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む|続きを見る)/gi, '');
       
