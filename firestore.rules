@@ -12,21 +12,21 @@ service cloud.firestore {
              );
     }
 
-    // 記事（articles）
+    // 記事（articles）: 全員読み取り可能、編集者のみ書き込み可能
     match /articles/{articleId} {
-      allow read: if true;
+      allow read, get, list: if true;
       allow create, update, delete: if isEditor();
     }
 
-    // カテゴリー（categories）
+    // カテゴリー（categories）: 全員読み取り可能、編集者のみ書き込み可能
     match /categories/{categoryId} {
-      allow read: if true;
+      allow read, get, list: if true;
       allow create, update, delete: if isEditor();
     }
 
-    // ヒーロー画像（hero-images）
+    // ヒーロー画像（hero-images）: 全員読み取り可能、編集者のみ書き込み可能
     match /hero-images/{imageId} {
-      allow read: if true;
+      allow read, get, list: if true;
       allow create, update, delete: if isEditor();
     }
 

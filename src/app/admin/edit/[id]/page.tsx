@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ChevronLeft, Loader2, Copy, Check, AlertCircle } from 'lucide-react';
+import { Save, ChevronLeft, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -21,8 +21,6 @@ export default function EditArticlePage() {
   const id = params?.id as string;
   const db = useFirestore();
   const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
-  const [helperImageUrl, setHelperImageUrl] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -41,7 +39,6 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データがロードされたら、初回のみフォームにセットする
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -54,15 +51,6 @@ export default function EditArticlePage() {
       setIsInitialized(true);
     }
   }, [article, isInitialized]);
-
-  const copyImageTag = () => {
-    if (!helperImageUrl) return;
-    const tag = `<img src="${helperImageUrl}" alt="記事内画像" className="rounded-2xl w-full my-8 shadow-lg" />`;
-    navigator.clipboard.writeText(tag);
-    setCopied(true);
-    toast({ title: "コピー完了", description: "本文に貼り付けて使用してください。" });
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +69,6 @@ export default function EditArticlePage() {
     });
     
     toast({ title: "更新保存中", description: "バックグラウンドで保存しています。" });
-    // 保存開始を通知した後、ダッシュボードへ戻る
     setTimeout(() => {
       router.push('/admin');
     }, 500);
