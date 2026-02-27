@@ -12,18 +12,22 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 大学関係者のみ読み取り・書き込みを許可（list権限エラー対策）
-      allow read, write: if isHguUser();
+      // 読み取りは一般公開（誰でもOK）
+      allow read: if true;
+      // 書き込み（作成・更新・削除）は大学関係者のみ
+      allow write: if isHguUser();
     }
 
     // カテゴリー（categories）
     match /categories/{categoryId} {
-      allow read, write: if isHguUser();
+      allow read: if true;
+      allow write: if isHguUser();
     }
 
     // ヒーロー画像（hero-images）
     match /hero-images/{imageId} {
-      allow read, write: if isHguUser();
+      allow read: if true;
+      allow write: if isHguUser();
     }
 
     // デフォルトはすべて拒否
@@ -31,6 +35,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-20T16:00:00Z (Updated for explicit list permission and restricted access)
+    // Security Rules deployment trigger: 2024-05-20T17:00:00Z (Updated for explicit list permission and domain-only access)
   }
 }
