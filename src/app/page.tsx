@@ -1,18 +1,17 @@
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
-import { Newspaper, Loader2, TrendingUp, Calendar, Ghost, AlertTriangle, Lock } from 'lucide-react';
+import { Newspaper, Loader2, TrendingUp, Calendar, Ghost, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
   const db = useFirestore();
-  const { user, isUserLoading } = useUser();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
@@ -25,15 +24,15 @@ export default function Home() {
     }));
   }, []);
 
-  // 🔥 ログインしているときだけ参照を作る（エラー回避のためユーザー必須とするモード）
+  // 認証チェックなしでデータを取得
   const latestArticlesRef = useMemoFirebase(() => {
-    if (!db || isUserLoading || !user) return null;
+    if (!db) return null;
     return query(
       collection(db, 'articles'),
       where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
-  }, [db, user, isUserLoading]);
+  }, [db]);
 
   const heroImagesRef = useMemoFirebase(() => {
     if (!db) return null;
@@ -135,23 +134,10 @@ export default function Home() {
               </div>
             </div>
 
-            {isUserLoading || (user && isArticlesLoading) ? (
+            {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-32">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
                 <p className="text-slate-400 font-black uppercase text-[9px] tracking-[0.4em]">Synchronizing</p>
-              </div>
-            ) : !user ? (
-              <div className="bg-white rounded-[40px] p-24 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
-                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <Lock className="text-slate-200" size={40} />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">記事を閲覧するにはログインが必要です</h3>
-                <p className="text-slate-500 font-bold max-w-sm mx-auto text-sm leading-relaxed mb-8">
-                  エラー回避のため、現在は認証済みのユーザーのみ記事を閲覧可能です。
-                </p>
-                <Button asChild className="rounded-xl h-12 px-8">
-                  <Link href="/login">ログインする</Link>
-                </Button>
               </div>
             ) : articlesError ? (
               <div className="bg-white rounded-[40px] p-24 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
@@ -197,7 +183,7 @@ export default function Home() {
               &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
             </p>
             <Link href="/login" className="text-[10px] font-bold text-slate-800 hover:text-slate-600 transition-colors uppercase tracking-widest opacity-20 hover:opacity-100">
-              Admin Login
+              Admin Access
             </Link>
           </div>
         </div>

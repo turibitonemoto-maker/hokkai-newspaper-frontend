@@ -1,6 +1,6 @@
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2, RefreshCw, Loader2, Newspaper, Eye, LayoutDashboard } from 'lucide-react';
@@ -32,19 +32,14 @@ import {
 
 export default function AdminDashboard() {
   const db = useFirestore();
-  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者権限のチェック
-  const userEmail = user?.email?.toLowerCase() || '';
-  const isAuthorized = !!(user && (userEmail.endsWith('@hgu.jp') || userEmail === 'admin@example.com'));
-
-  // 🔥 認証が完全に確定し、かつ管理権限が確認されたときだけ参照を作る
+  // 認証チェックなしで全記事を取得
   const articlesRef = useMemoFirebase(() => {
-    if (!db || isUserLoading || !user || !isAuthorized) return null;
+    if (!db) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
-  }, [db, user, isUserLoading, isAuthorized]);
+  }, [db]);
 
   const { data: articles, isLoading: isCollectionLoading } = useCollection(articlesRef);
 
@@ -100,12 +95,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const isLoading = isUserLoading || (user && isCollectionLoading);
-
-  if (!isUserLoading && (!user || !isAuthorized)) {
-    return null; // 認証前は何も表示しない（エラー回避）
-  }
-
   return (
     <div className="space-y-10 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -115,7 +104,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h2 className="text-3xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
-            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
+            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS (Auth Disabled)</p>
           </div>
         </div>
         <div className="flex gap-3">
@@ -177,7 +166,7 @@ export default function AdminDashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {isCollectionLoading ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-32">
                   <div className="flex flex-col items-center gap-6">
