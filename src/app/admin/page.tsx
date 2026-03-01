@@ -36,9 +36,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者向けクエリ: 認証が完全に完了し、かつ権限があることが確定した場合のみ作成
+  // 管理者向けクエリ: 認証が完全に確定し、かつ権限があることが確定した場合のみクエリを発行
   const articlesRef = useMemoFirebase(() => {
-    // auth: null でのエラーを防ぐため、認証中またはユーザー不在時は null を返す
+    // 認証状態が未確定、またはユーザーが存在しない場合はクエリを投げない（auth: nullエラー防止）
     if (!db || isUserLoading || !user) return null;
     
     const email = user.email?.toLowerCase() || '';
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
     
     if (!isAuthorized) return null;
     
-    // 権限がある場合のみ、全記事（下書き含む）を取得するクエリを返す
+    // 権限がある場合のみ、全記事を取得するクエリを返す
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading]);
 
@@ -80,6 +80,7 @@ export default function AdminDashboard() {
 
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
+          // 同期は既存のメタデータを保護するため merge: true で行う
           setDocumentNonBlocking(docRef, article, { merge: true });
         }
         
