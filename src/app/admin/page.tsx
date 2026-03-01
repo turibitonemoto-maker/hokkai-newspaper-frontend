@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, RefreshCw, Loader2, Newspaper, Eye, LayoutDashboard } from 'lucide-react';
+import { Plus, Edit, Trash2, RefreshCw, Loader2, LayoutDashboard, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import {
   AlertDialog,
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 認証状態に依存せず、DBが利用可能なら即座に全記事を取得
+  // 認証に依存せず、Firestoreが利用可能なら即座に全記事を取得
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
@@ -62,7 +63,6 @@ export default function AdminDashboard() {
         for (const article of result.articles) {
           if (!article.htmlContent) continue;
           const docRef = doc(db, 'articles', article.id);
-          // NOTE同期も部分更新で行い、既存のフィールドを破壊しないようにする
           setDocumentNonBlocking(docRef, article, { merge: true });
           updateCount++;
         }
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h2 className="text-3xl font-black tracking-tight">記事管理</h2>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Admin Console (Public Access Mode)</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Admin Console (Public Access)</p>
           </div>
         </div>
         <div className="flex gap-3">

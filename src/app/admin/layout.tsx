@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
@@ -9,7 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // 認証ガードを完全に削除。誰でもアクセス可能な状態にする。
+  // 認証ガードを完全に撤廃。誰でも /admin にアクセス可能。
   const menuItems = [
     { id: 'admin-dash', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'admin-new', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
@@ -70,17 +71,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarTrigger className="text-slate-400 hover:text-primary transition-colors" />
               <div className="h-6 w-px bg-slate-100 hidden md:block" />
               <h1 className="text-sm md:text-lg font-black tracking-tight text-slate-900 truncate max-w-[150px] md:max-w-none">
-                管理者コンソール（パブリックアクセス）
+                管理者コンソール (認証不要)
               </h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-black text-slate-900 leading-none">新聞会 編集部</p>
-                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Authentication Disabled</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Public Access Mode</p>
               </div>
               <Avatar className="h-8 w-8 md:h-10 md:w-10 ring-2 ring-primary/10 shadow-lg">
                 <AvatarFallback className="bg-primary text-white font-black text-xs">
-                  GUEST
+                  ADM
                 </AvatarFallback>
               </Avatar>
             </div>

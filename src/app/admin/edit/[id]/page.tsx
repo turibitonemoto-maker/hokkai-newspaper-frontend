@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -9,16 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Save, ChevronLeft, Loader2, AlertCircle, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
-export default function EditArticlePage() {
+export default function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const params = useParams();
-  const id = params?.id as string;
+  const { id } = use(params);
   const db = useFirestore();
   const { toast } = useToast();
   
@@ -39,7 +39,7 @@ export default function EditArticlePage() {
     mainImageUrl: '',
   });
 
-  // 記事データがロードされたらフォームを初期化
+  // 初回ロード時のみフォームを初期化
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -65,7 +65,7 @@ export default function EditArticlePage() {
     setIsSubmitting(true);
     
     // updateDocumentNonBlocking を使用して「部分更新」
-    // これにより、フォームにない既存のフィールド（noteUrl, publishDateなど）が完全に保護されます
+    // これにより、下書き保存時でも他のフィールド（noteUrl等）を破壊しません
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -75,7 +75,7 @@ export default function EditArticlePage() {
       lastSyncedDate: new Date().toISOString(),
     });
     
-    toast({ title: "更新完了", description: "記事を保存しました。" });
+    toast({ title: "更新開始", description: "保存処理を開始しました。" });
     
     setTimeout(() => {
       router.push('/admin');
@@ -112,7 +112,7 @@ export default function EditArticlePage() {
         </div>
         <Button variant="outline" asChild className="rounded-xl h-12 gap-2">
           <Link href={`/admin/preview/${id}`} target="_blank">
-            <Eye size={16} /> プレビュー
+            <Eye size={16} /> プレビューを表示
           </Link>
         </Button>
       </div>
