@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 大学メール（@hgu.jp）または管理者メールの判定
+    // 権限チェック: 大学ドメイン（@hgu.jp）または指定の管理者
     function isAuthorizedUser() {
       return request.auth != null && 
              request.auth.token.email != null && 
@@ -10,10 +10,9 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 読み取り: 公開記事は誰でも、未公開（下書き）は権限者のみ
-      // listはクエリがisPublished == trueでフィルタされている必要がある
-      allow get: if isAuthorizedUser() || (resource != null && resource.data.isPublished == true);
-      allow list: if isAuthorizedUser() || (resource != null && resource.data.isPublished == true);
+      // 読み取り: 公開済み記事は誰でも(auth == null含む)、それ以外は権限者のみ
+      // getとlistを包括的に許可
+      allow read: if (resource != null && resource.data.isPublished == true) || isAuthorizedUser();
       
       // 書き込み: 学内ユーザーのみ
       allow write: if isAuthorizedUser();
@@ -36,6 +35,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-23T00:00:00Z (Optimized for list/get and auth check)
+    // Security Rules deployment trigger: 2024-05-23T15:30:00Z (Fixed public list and auth logic)
   }
 }

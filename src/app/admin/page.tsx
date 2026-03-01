@@ -36,17 +36,16 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // ユーザーの認証状態と権限が完全に確定するまでクエリを作成しない
-  // auth: null でのリクエストを防止するための防衛的ロジック
+  // 管理者向けクエリ: 認証が完了し、かつ権限がある場合のみ作成
   const articlesRef = useMemoFirebase(() => {
     if (!db || isUserLoading || !user) return null;
     
     const email = user.email?.toLowerCase() || '';
     const isAuthorized = email.endsWith('@hgu.jp') || email === 'admin@example.com';
     
-    // 権限がない場合はクエリを実行しない
     if (!isAuthorized) return null;
     
+    // 権限がある場合のみ、全記事（下書き含む）を取得するクエリを返す
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading]);
 
