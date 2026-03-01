@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者向けクエリ: 認証が完了し、かつ権限があることが確定した場合のみ作成
+  // 管理者向けクエリ: 認証が完全に完了し、かつ権限があることが確定した場合のみ作成
   const articlesRef = useMemoFirebase(() => {
     // auth: null でのエラーを防ぐため、認証中またはユーザー不在時は null を返す
     if (!db || isUserLoading || !user) return null;
