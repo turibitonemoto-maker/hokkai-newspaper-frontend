@@ -10,10 +10,10 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 読み取り: エラーを確実に回避するため、全公開に設定
+      // 読み取り: エラーを確実に回避するため、全公開に設定（listも許可）
       allow read: if true;
       
-      // 書き込み: 学内ユーザーのみ
+      // 書き込み: 認証済みの管理ユーザーのみ
       allow write: if isAuthorizedUser();
     }
 
@@ -34,6 +34,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-24T14:30:00Z (Set all reads to true to fix list permission error)
+    // Security Rules deployment trigger: 2024-05-24T16:00:00Z (Force global read for articles to fix persistent list error)
   }
 }

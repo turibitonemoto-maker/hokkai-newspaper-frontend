@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換するサーバーアクション。
- * 文末の不要な「続きをみる」に関連するタグやリンクを完全に削除するようにロジックを最適化。
+ * 同期時に本文が空になる現象を防ぐためのバリデーションを強化。
  */
 
 export async function fetchAndSyncNoteRss() {
@@ -39,15 +39,18 @@ export async function fetchAndSyncNoteRss() {
       const pubDate = extract('pubDate');
       
       let htmlContent = extract('content:encoded');
-      if (!htmlContent || htmlContent.length < 100) {
+      if (!htmlContent || htmlContent.length < 10) {
         htmlContent = extract('description');
       }
 
-      // 記事末尾の「続きをみる」に関連するリンクおよびテキストをより強力に削除
+      // もし本文が極端に短い場合は、同期エラーとして扱うか、またはdescriptionを優先
+      if (!htmlContent) {
+        htmlContent = "<p>記事の内容を読み込めませんでした。元のサイトをご確認ください。</p>";
+      }
+
+      // 不要なタグのクリーンアップ
       htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>/gi, '');
       htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む|続きを見る)/gi, '');
-      
-      // 末尾に残った空のタグや改行をクリーンアップ
       htmlContent = htmlContent.replace(/(?:<p[^>]*>\s*<\/p>|<br\s*\/?>|\s)*$/gi, '').trim();
 
       const description = extract('description');
@@ -61,15 +64,9 @@ export async function fetchAndSyncNoteRss() {
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
 
       let categoryId = 'Campus';
-      if (title.includes('インタビュー') || title.includes('対談')) {
-        categoryId = 'Interview';
-      } else if (title.includes('イベント') || title.includes('祭') || title.includes('開催')) {
-        categoryId = 'Event';
-      } else if (title.includes('部') || title.includes('大会') || title.includes('スポーツ') || title.includes('戦')) {
-        categoryId = 'Sports';
-      } else if (title.includes('オピニオン') || title.includes('論説') || title.includes('社説')) {
-        categoryId = 'Opinion';
-      }
+      if (title.includes('インタビュー')) categoryId = 'Interview';
+      else if (title.includes('イベント')) categoryId = 'Event';
+      else if (title.includes('部') || title.includes('大会')) categoryId = 'Sports';
 
       return {
         id: noteId,

@@ -36,9 +36,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者向けクエリ: 認証が完全に確定し、かつ権限があることが確定した場合のみクエリを発行
+  // 管理者向けクエリ: 認証と権限が完全に確定した場合のみクエリを発行
   const articlesRef = useMemoFirebase(() => {
-    // 認証状態が未確定、またはユーザーが存在しない場合はクエリを投げない（auth: nullエラー防止）
+    // 認証待ち、または未ログイン時はnullを返してクエリを停止する
     if (!db || isUserLoading || !user) return null;
     
     const email = user.email?.toLowerCase() || '';
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
     
     if (!isAuthorized) return null;
     
-    // 権限がある場合のみ、全記事を取得するクエリを返す
+    // 権限がある場合のみ全件取得（rulesでread: if trueにしているので安全）
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading]);
 
@@ -80,13 +80,13 @@ export default function AdminDashboard() {
 
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
-          // 同期は既存のメタデータを保護するため merge: true で行う
+          // merge: true を使用して既存のフィールドを破壊せずに更新
           setDocumentNonBlocking(docRef, article, { merge: true });
         }
         
         toast({ 
           title: "同期リクエスト完了", 
-          description: `${result.articles.length}件の記事の保存処理を開始しました。`,
+          description: `${result.articles.length}件の記事の同期処理を開始しました。`,
         });
       } else {
         throw new Error(result.error || '不明なエラーが発生しました');
