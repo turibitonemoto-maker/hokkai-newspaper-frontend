@@ -11,7 +11,6 @@ service cloud.firestore {
     // 記事（articles）
     match /articles/{articleId} {
       // 読み取り: 公開済み記事は誰でも(auth == null含む)、それ以外は権限者のみ
-      // getとlistを包括的に許可
       allow read: if (resource != null && resource.data.isPublished == true) || isAuthorizedUser();
       
       // 書き込み: 学内ユーザーのみ
@@ -35,6 +34,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-23T15:30:00Z (Fixed public list and auth logic)
+    // Security Rules deployment trigger: 2024-05-24T10:00:00Z (Fixed toLower vs lower and simplified public access)
   }
 }
