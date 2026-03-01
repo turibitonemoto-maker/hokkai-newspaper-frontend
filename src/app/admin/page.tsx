@@ -32,22 +32,23 @@ import {
 
 export default function AdminDashboard() {
   const db = useFirestore();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // ユーザーが認証され、権限があることが確実になるまでクエリを実行しないことで auth: null エラーを防ぐ
+  // ユーザーの認証状態と権限が完全に確定するまでクエリを作成しない
   const articlesRef = useMemoFirebase(() => {
-    if (!db || !user) return null;
+    if (!db || !user || isUserLoading) return null;
     
-    // メールアドレスが学内ドメインか管理者かチェックしてからクエリを作成
     const email = user.email?.toLowerCase() || '';
-    if (!email.endsWith('@hgu.jp') && email !== 'admin@example.com') return null;
+    const isAuthorized = email.endsWith('@hgu.jp') || email === 'admin@example.com';
+    
+    if (!isAuthorized) return null;
     
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
-  }, [db, user]);
+  }, [db, user, isUserLoading]);
 
-  const { data: articles, isLoading } = useCollection(articlesRef);
+  const { data: articles, isLoading: isCollectionLoading } = useCollection(articlesRef);
 
   const handleDelete = (id: string) => {
     if (!db) return;
@@ -97,6 +98,8 @@ export default function AdminDashboard() {
       setIsSyncing(false);
     }
   };
+
+  const isLoading = isUserLoading || isCollectionLoading;
 
   return (
     <div className="space-y-10 animate-fade-in">
