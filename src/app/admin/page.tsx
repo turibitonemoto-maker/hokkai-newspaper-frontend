@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 認証チェックなしで全記事を取得
+  // ログイン状態を待たずに即座に全記事を取得（認証ガードを解除）
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
@@ -47,49 +47,30 @@ export default function AdminDashboard() {
     if (!db) return;
     const docRef = doc(db, 'articles', id);
     deleteDocumentNonBlocking(docRef);
-    toast({ title: "削除完了", description: "記事を完全に削除しました。" });
+    toast({ title: "削除完了", description: "記事を削除しました。" });
   };
 
   const handleSyncNote = async () => {
     if (!db || isSyncing) return;
     setIsSyncing(true);
-    
-    toast({ 
-      title: "同期開始", 
-      description: "noteから最新記事を読み込んでいます...",
-    });
+    toast({ title: "同期開始", description: "noteから最新記事を読み込んでいます..." });
 
     try {
       const result = await fetchAndSyncNoteRss();
-      
       if (result.success && result.articles) {
-        if (result.articles.length === 0) {
-          toast({ title: "同期完了", description: "新しい記事はありませんでした。" });
-          setIsSyncing(false);
-          return;
-        }
-
         let updateCount = 0;
         for (const article of result.articles) {
-          if (!article.htmlContent || article.htmlContent.length < 5) continue;
+          if (!article.htmlContent) continue;
           const docRef = doc(db, 'articles', article.id);
           setDocumentNonBlocking(docRef, article, { merge: true });
           updateCount++;
         }
-        
-        toast({ 
-          title: "同期完了", 
-          description: `${updateCount}件の記事を更新しました。`,
-        });
+        toast({ title: "同期完了", description: `${updateCount}件の記事を更新しました。` });
       } else {
-        throw new Error(result.error || '不明なエラーが発生しました');
+        throw new Error(result.error);
       }
     } catch (e: any) {
-      toast({ 
-        title: "同期エラー", 
-        description: e.message || "noteとの通信に失敗しました。", 
-        variant: "destructive" 
-      });
+      toast({ title: "同期エラー", description: e.message, variant: "destructive" });
     } finally {
       setIsSyncing(false);
     }
@@ -97,139 +78,59 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-10 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-4">
-          <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/20">
+          <div className="bg-primary p-3 rounded-2xl text-white">
             <LayoutDashboard size={24} />
           </div>
           <div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
-            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS (Access Fully Open)</p>
+            <h2 className="text-3xl font-black tracking-tight">記事管理</h2>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Admin Console (Access Open)</p>
           </div>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            onClick={handleSyncNote} 
-            disabled={isSyncing} 
-            className="gap-2 h-14 px-8 border-slate-200 bg-white hover:bg-slate-50 transition-all rounded-2xl font-black text-xs"
-          >
-            {isSyncing ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+          <Button variant="outline" onClick={handleSyncNote} disabled={isSyncing} className="rounded-2xl h-12 px-6 font-black text-xs">
+            {isSyncing ? <Loader2 className="animate-spin" /> : <RefreshCw className="mr-2" size={16} />}
             NOTE同期
           </Button>
-          <Button asChild className="gap-2 h-14 px-10 shadow-2xl shadow-primary/30 active:scale-95 transition-all rounded-2xl font-black text-xs">
-            <Link href="/admin/new">
-              <Plus size={18} strokeWidth={3} />
-              新規作成
-            </Link>
+          <Button asChild className="rounded-2xl h-12 px-8 font-black text-xs shadow-xl shadow-primary/20">
+            <Link href="/admin/new"><Plus className="mr-2" size={18} /> 新規作成</Link>
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="bg-primary text-primary-foreground border-none shadow-2xl shadow-primary/20 overflow-hidden relative rounded-[32px]">
-          <CardHeader className="pb-2 relative z-10">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] opacity-70">Total Stories</CardTitle>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div className="text-7xl font-black tracking-tighter">{articles?.length || 0}</div>
-          </CardContent>
-          <Newspaper className="absolute -right-6 -bottom-6 opacity-10 rotate-12" size={140} />
-        </Card>
-        <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
-          <CardHeader className="pb-2 p-8">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Live (Public)</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 pt-0">
-            <div className="text-7xl font-black text-slate-900 tracking-tighter">{articles?.filter(a => a.isPublished).length || 0}</div>
-          </CardContent>
-        </Card>
-        <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
-          <CardHeader className="pb-2 p-8">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Drafts (Private)</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 pt-0">
-            <div className="text-7xl font-black text-slate-900 tracking-tighter">{articles?.filter(a => !a.isPublished).length || 0}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="border-none shadow-2xl shadow-slate-200/60 overflow-hidden bg-white rounded-[40px]">
+      <Card className="border-none shadow-2xl overflow-hidden bg-white rounded-[40px]">
         <Table>
           <TableHeader className="bg-slate-50/50">
-            <TableRow className="hover:bg-transparent border-none">
-              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 pl-10 text-slate-400">Story Title</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Platform</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Date</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Status</TableHead>
-              <TableHead className="text-right font-black text-[10px] uppercase tracking-[0.2em] py-8 pr-10 text-slate-400">Manage</TableHead>
+            <TableRow>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-8 pl-10">記事タイトル</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-8">元サイト</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-8">日付</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-widest py-8 text-right pr-10">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isCollectionLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-32">
-                  <div className="flex flex-col items-center gap-6">
-                    <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Synchronizing</p>
-                  </div>
-                </TableCell>
-              </TableRow>
+              <TableRow><TableCell colSpan={4} className="text-center py-20"><Loader2 className="animate-spin mx-auto text-primary" /></TableCell></TableRow>
             ) : articles && articles.length > 0 ? (
               articles.map((article) => (
-                <TableRow key={article.id} className="hover:bg-slate-50/50 transition-colors border-slate-50 group">
-                  <TableCell className="font-black text-slate-900 max-w-md py-6 pl-10">
-                    <div className="truncate group-hover:text-primary transition-colors text-base">{article.title}</div>
-                  </TableCell>
+                <TableRow key={article.id} className="hover:bg-slate-50/50">
+                  <TableCell className="font-black py-6 pl-10 truncate max-w-md">{article.title}</TableCell>
                   <TableCell>
-                    <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm ${article.source === 'note' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {article.source?.toUpperCase() || 'INTERNAL'}
-                    </span>
+                    <span className="px-3 py-1 rounded-xl text-[9px] font-black bg-slate-100 uppercase">{article.source || 'INTERNAL'}</span>
                   </TableCell>
-                  <TableCell className="text-slate-500 text-sm font-bold">
-                    {article.publishDate?.split('T')[0]}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2.5 h-2.5 rounded-full ${article.isPublished ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.6)]' : 'bg-slate-300'}`} />
-                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${article.isPublished ? 'text-green-600' : 'text-slate-400'}`}>
-                        {article.isPublished ? 'Live' : 'Draft'}
-                      </span>
-                    </div>
-                  </TableCell>
+                  <TableCell className="text-slate-500 text-sm font-bold">{article.publishDate?.split('T')[0]}</TableCell>
                   <TableCell className="text-right pr-10">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
-                        <Link href={`/admin/preview/${article.id}`} target="_blank" title="プレビュー">
-                          <Eye size={18} />
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
-                        <Link href={`/admin/edit/${article.id}`} title="編集">
-                          <Edit size={18} />
-                        </Link>
-                      </Button>
+                      <Button variant="ghost" size="icon" asChild><Link href={`/admin/preview/${article.id}`} target="_blank"><Eye size={18} /></Link></Button>
+                      <Button variant="ghost" size="icon" asChild><Link href={`/admin/edit/${article.id}`}><Edit size={18} /></Link></Button>
                       <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl text-destructive hover:bg-destructive/10 transition-all" title="削除">
-                            <Trash2 size={18} />
-                          </Button>
-                        </AlertDialogTrigger>
+                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive"><Trash2 size={18} /></Button></AlertDialogTrigger>
                         <AlertDialogContent className="rounded-[32px]">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="font-black text-xl">記事を削除しますか？</AlertDialogTitle>
-                            <AlertDialogDescription className="font-medium">
-                              この操作は取り消せません。サイトからこの記事が完全に削除されます。
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter className="gap-2">
-                            <AlertDialogCancel className="rounded-xl font-bold">キャンセル</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleDelete(article.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl font-bold"
-                            >
-                              削除する
-                            </AlertDialogAction>
+                          <AlertDialogHeader><AlertDialogTitle>記事を削除しますか？</AlertDialogTitle></AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(article.id)} className="bg-destructive">削除する</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -238,17 +139,7 @@ export default function AdminDashboard() {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-48 bg-slate-50/20">
-                  <div className="flex flex-col items-center">
-                    <div className="w-24 h-24 bg-white shadow-xl shadow-slate-200/50 rounded-[32px] flex items-center justify-center mb-8">
-                      <Newspaper className="text-slate-200" size={40} />
-                    </div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">記事がありません</h3>
-                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Create your first story or sync from Note</p>
-                  </div>
-                </TableCell>
-              </TableRow>
+              <TableRow><TableCell colSpan={4} className="text-center py-20 text-slate-400">記事がありません</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

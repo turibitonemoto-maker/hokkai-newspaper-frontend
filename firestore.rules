@@ -1,11 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 全てのドキュメントに対して、認証なしで読み書きを完全に許可（エラー停止のための最終措置）
+    // 【重要】エラーを停止させるための最終措置。
+    // 全てのドキュメントに対して、認証の有無に関わらず読み書きを完全に許可します。
     match /{document=**} {
       allow read, write: if true;
     }
     
-    // Deployment trigger: 2024-05-25T00:00:10Z (Access Fully Open)
+    // Deployment trigger: 2024-05-25T16:00:00Z (Emergency Reset: Fully Open)
   }
 }
