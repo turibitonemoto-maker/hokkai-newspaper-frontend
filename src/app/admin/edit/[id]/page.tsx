@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Save, ChevronLeft, Loader2, AlertCircle } from 'lucide-react';
+import { Save, ChevronLeft, Loader2, AlertCircle, Eye, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -111,13 +111,29 @@ export default function EditArticlePage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" asChild className="rounded-xl shadow-sm">
-          <Link href="/admin"><ChevronLeft size={20} /></Link>
-        </Button>
-        <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-950 italic uppercase">記事編集</h2>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Manage Story Details</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" asChild className="rounded-xl shadow-sm">
+            <Link href="/admin"><ChevronLeft size={20} /></Link>
+          </Button>
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-slate-950 italic uppercase">記事編集</h2>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Manage Story Details</p>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" asChild className="rounded-xl h-12 px-6 font-black text-xs gap-2">
+            <Link href={`/admin/preview/${id}`} target="_blank">
+              <Eye size={16} />
+              プレビューを表示
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild className="rounded-xl h-12 px-6 font-black text-xs gap-2 text-slate-400">
+            <Link href={`/articles/${id}`} target="_blank">
+              <ExternalLink size={16} />
+              公開ページ
+            </Link>
+          </Button>
         </div>
       </div>
 
