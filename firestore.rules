@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 記事 (articles): 表示側のエラーを完全に防ぐため、読み取りを誰でも許可
+    // 記事 (articles): 表示側のエラー（Insufficient permissions）を完全に防ぐため、読み取りを誰でも許可
     match /articles/{articleId} {
       allow read: if true;
       // 書き込みは管理権限（@hgu.jp）を持つユーザーのみ
@@ -27,6 +27,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-24T18:00:00Z (Force global read access for stabilization)
+    // Security Rules deployment trigger: 2024-05-24T18:30:00Z (Ensuring global read access is applied)
   }
 }

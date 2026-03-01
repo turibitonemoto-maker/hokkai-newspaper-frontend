@@ -3,7 +3,7 @@
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, doc, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -204,8 +204,8 @@ export default function AdminDashboard() {
                   <TableCell className="text-right pr-10">
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
-                        <Link href={`/articles/${article.id}`}>
-                          <ExternalLink size={18} />
+                        <Link href={`/admin/preview/${article.id}`} target="_blank">
+                          <Eye size={18} />
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
