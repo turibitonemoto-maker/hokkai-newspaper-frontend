@@ -36,9 +36,14 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // ユーザーが認証されるまでクエリを実行しないことで、Permission Denied (auth: null) を防ぐ
+  // ユーザーが認証され、権限があることが確実になるまでクエリを実行しないことで auth: null エラーを防ぐ
   const articlesRef = useMemoFirebase(() => {
     if (!db || !user) return null;
+    
+    // メールアドレスが学内ドメインか管理者かチェックしてからクエリを作成
+    const email = user.email?.toLowerCase() || '';
+    if (!email.endsWith('@hgu.jp') && email !== 'admin@example.com') return null;
+    
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user]);
 
