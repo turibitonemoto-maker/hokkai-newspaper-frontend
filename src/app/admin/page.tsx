@@ -44,6 +44,7 @@ export default function AdminDashboard() {
     const email = user.email?.toLowerCase() || '';
     const isAuthorized = email.endsWith('@hgu.jp') || email === 'admin@example.com';
     
+    // 権限がない場合はクエリを実行しない
     if (!isAuthorized) return null;
     
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
