@@ -4,8 +4,7 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Newspaper, Loader2, Calendar, Ghost } from 'lucide-react';
-import Image from 'next/image';
+import { Newspaper, Loader2, Calendar, Ghost, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -18,7 +17,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 認証チェックを完全に排除し、即座にデータを取得
+  // 認証チェックを完全に排除。DBが利用可能なら即座にデータを取得。
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -28,14 +27,14 @@ export default function Home() {
     );
   }, [db]);
 
-  const { data: articles, isLoading: isArticlesLoading } = useCollection(latestArticlesRef);
+  const { data: articles, isLoading: isArticlesLoading, error } = useCollection(latestArticlesRef);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
       <Navbar />
       
       <main className="flex-grow">
-        <section className="relative h-[60vh] flex items-center overflow-hidden bg-slate-900 text-white">
+        <section className="relative h-[40vh] md:h-[60vh] flex items-center overflow-hidden bg-slate-900 text-white">
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 to-primary/20" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl">
@@ -59,7 +58,13 @@ export default function Home() {
               </div>
             </div>
 
-            {isArticlesLoading ? (
+            {error ? (
+              <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
+                <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
+                <p className="text-slate-600 font-bold">記事の読み込みに失敗しました。</p>
+                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest">Firestore Permission Reset Required</p>
+              </div>
+            ) : isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="animate-spin text-primary" size={48} />
               </div>
