@@ -42,10 +42,10 @@ export default function AdminDashboard() {
 
   // 管理者向けクエリ: 認証が確定し、かつ管理権限が確認された場合のみリクエストを発行
   const articlesRef = useMemoFirebase(() => {
-    // 認証ロード中、または未ログイン、または権限不足の場合は絶対にクエリを発行しない
+    // 認証ロード中、または未ログイン、または権限不足の場合はクエリを発行しない（auth: nullエラー防止）
     if (!db || isUserLoading || !user || !isAuthorized) return null;
     
-    // 管理者のみ全件（下書き含む）を表示
+    // 管理者のみ全件を表示
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading, isAuthorized]);
 
@@ -79,12 +79,12 @@ export default function AdminDashboard() {
 
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
-          // merge: true を使用して既存のフィールド（手動編集内容など）を保護
+          // merge: true を使用して既存のフィールドを保護
           setDocumentNonBlocking(docRef, article, { merge: true });
         }
         
         toast({ 
-          title: "同期リクエスト完了", 
+          title: "同期完了", 
           description: `${result.articles.length}件の記事を更新しました。`,
         });
       } else {
