@@ -10,8 +10,9 @@ service cloud.firestore {
 
     // 記事（articles）
     match /articles/{articleId} {
-      // 読み取り: ログイン済みの学内ユーザーなら全件OK。未ログインなら公開済み記事のみ。
+      // 読み取り: 公開記事は誰でも、未公開（下書き）は権限者のみ
       allow get: if isAuthorizedUser() || (resource != null && resource.data.isPublished == true);
+      // listはクエリがisPublished == trueでフィルタされているか、権限者である必要がある
       allow list: if isAuthorizedUser() || (resource != null && resource.data.isPublished == true);
       
       // 書き込み: 学内ユーザーのみ
@@ -35,6 +36,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-22T00:00:00Z (Optimized for list permission and lower() method)
+    // Security Rules deployment trigger: 2024-05-22T00:00:00Z (Fixed toLower to lower() and optimized list)
   }
 }
