@@ -1,22 +1,20 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 記事 (articles): 公開サイト・管理画面でのエラーを確実に防ぐため、読み取りを完全に開放
+    // 記事 (articles) & カテゴリー (categories): 
+    // 表示側のエラーを確実に止めるため、読み取り権限を完全に開放
     match /articles/{articleId} {
       allow read: if true;
-      // 書き込みは管理権限（@hgu.jp）を持つユーザーのみ
       allow write: if request.auth != null && 
                    (request.auth.token.email.lower().endsWith('@hgu.jp') || 
                     request.auth.token.email == 'admin@example.com');
     }
 
-    // カテゴリー (categories): 読み取りを完全に開放
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    // ヒーロー画像 (hero-images): 読み取りを完全に開放
     match /hero-images/{imageId} {
       allow read: if true;
       allow write: if request.auth != null;
@@ -27,6 +25,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-24T22:30:00Z (Fixed .lower() and enforced read access)
+    // Security Rules deployment trigger: 2024-05-24T23:30:00Z (Emergency Fix: Enforce Public Read)
   }
 }

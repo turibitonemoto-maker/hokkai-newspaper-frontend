@@ -5,7 +5,7 @@ import { collection, query, orderBy, where } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Button } from '@/components/ui/button';
-import { Newspaper, Loader2, TrendingUp, Calendar, Ghost } from 'lucide-react';
+import { Newspaper, Loader2, TrendingUp, Calendar, Ghost, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -24,9 +24,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 公開されている記事のみを取得するクエリ
   const latestArticlesRef = useMemoFirebase(() => {
-    // データベースが準備できるまでクエリを発行しない
     if (!db) return null;
     return query(
       collection(db, 'articles'),
@@ -40,7 +38,7 @@ export default function Home() {
     return query(collection(db, 'hero-images'), orderBy('order', 'asc'));
   }, [db]);
 
-  const { data: publishedArticles, isLoading: isArticlesLoading } = useCollection(latestArticlesRef);
+  const { data: publishedArticles, isLoading: isArticlesLoading, error: articlesError } = useCollection(latestArticlesRef);
   const { data: heroImages, isLoading: isHeroLoading } = useCollection(heroImagesRef);
 
   useEffect(() => {
@@ -91,7 +89,7 @@ export default function Home() {
                 <Newspaper size={14} />
                 <span>Hokkai Gakuen University Newspaper</span>
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[1.1] flex flex-col">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[1.1] flex flex-col text-white">
                 <span className="block mb-2 opacity-90">キャンパスの</span>
                 <span className="whitespace-nowrap">
                   <span className="text-primary italic bg-white/10 px-4 rounded-2xl mr-2">「いま」</span>を届ける。
@@ -138,7 +136,17 @@ export default function Home() {
             {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-32">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
-                <p className="text-slate-400 font-black uppercase text-[9px] tracking-[0.4em]">Database Synchronizing</p>
+                <p className="text-slate-400 font-black uppercase text-[9px] tracking-[0.4em]">Synchronizing</p>
+              </div>
+            ) : articlesError ? (
+              <div className="bg-white rounded-[40px] p-24 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
+                <div className="bg-amber-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <AlertTriangle className="text-amber-500" size={40} />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">データの読み込みに失敗しました</h3>
+                <p className="text-slate-500 font-bold max-w-sm mx-auto text-sm leading-relaxed">
+                  ネットワーク接続を確認するか、しばらく経ってから再度お試しください。
+                </p>
               </div>
             ) : publishedArticles && publishedArticles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
