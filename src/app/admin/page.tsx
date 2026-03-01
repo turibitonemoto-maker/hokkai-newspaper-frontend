@@ -37,8 +37,9 @@ export default function AdminDashboard() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   // ユーザーの認証状態と権限が完全に確定するまでクエリを作成しない
+  // auth: null でのリクエストを防止するための防衛的ロジック
   const articlesRef = useMemoFirebase(() => {
-    if (!db || !user || isUserLoading) return null;
+    if (!db || isUserLoading || !user) return null;
     
     const email = user.email?.toLowerCase() || '';
     const isAuthorized = email.endsWith('@hgu.jp') || email === 'admin@example.com';
