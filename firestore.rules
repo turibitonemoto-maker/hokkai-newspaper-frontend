@@ -2,12 +2,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 全てのドキュメントに対して、認証の有無を問わず読み書きを完全に許可します。
+    // 全てのドキュメントに対して、認証・ユーザー状態を一切問わず、
+    // 読み取り（get, list）および書き込み（create, update, delete）を完全に許可します。
     // これにより Insufficient permissions エラーを物理的に停止させます。
     match /{document=**} {
       allow read, write: if true;
     }
     
-    // Deployment trigger: 2024-05-26T00:00:00Z (Emergency Overhaul: Fully Open & Public Access)
+    // Deployment trigger: 2024-05-26T00:00:00Z (Universal Open Access - Force Redeploy)
   }
 }

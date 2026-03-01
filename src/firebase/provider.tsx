@@ -62,13 +62,16 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   useEffect(() => {
     if (!auth) return;
 
-    // ログイン機能を「消す」ため、未ログイン時はバックグラウンドで匿名ログインを実行
-    // これにより auth: null による Firestore 側の拒否を回避しつつ、UI上はログイン不要にする
+    // 認証エラーを物理的に停止させるため、匿名ログインを自動でバックグラウンド実行
+    // これにより auth: null による Firestore 拒否を回避し、かつユーザーの手間をゼロにする
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => {
         if (!firebaseUser) {
-          signInAnonymously(auth).catch(err => console.error("Anonymous Sign-in failed", err));
+          // ログインしていない場合は即座に匿名ログイン
+          signInAnonymously(auth).catch(err => {
+            console.warn("Silent login fallback triggered", err);
+          });
         }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
