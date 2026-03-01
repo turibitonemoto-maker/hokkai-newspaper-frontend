@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // 認証ガードを完全に撤廃。誰でも /admin にアクセス可能。
   const menuItems = [
     { id: 'admin-dash', label: 'ダッシュボード', icon: LayoutDashboard, href: '/admin' },
     { id: 'admin-new', label: '新規記事作成', icon: Newspaper, href: '/admin/new' },
@@ -75,10 +74,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-black text-slate-900 leading-none">新聞会 編集部</p>
-                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Public Access Mode</p>
-              </div>
               <Avatar className="h-8 w-8 md:h-10 md:w-10 ring-2 ring-primary/10 shadow-lg">
                 <AvatarFallback className="bg-primary text-white font-black text-xs">
                   ADM

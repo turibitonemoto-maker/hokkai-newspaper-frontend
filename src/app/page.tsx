@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -17,7 +18,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 認証チェックを完全に排除。DBが利用可能なら即座にデータを取得。
+  // ログイン状態を待たずに即座にデータを取得
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -62,7 +63,7 @@ export default function Home() {
               <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
                 <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
                 <p className="text-slate-600 font-bold">記事の読み込みに失敗しました。</p>
-                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest">Firestore Permission Reset Required</p>
+                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest">Public Access Enabled</p>
               </div>
             ) : isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">

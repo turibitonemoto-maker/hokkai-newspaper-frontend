@@ -4,7 +4,7 @@
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
-import { Auth, User, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
 
 interface FirebaseProviderProps {
@@ -62,17 +62,10 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   useEffect(() => {
     if (!auth) return;
 
-    // 認証エラーを物理的に停止させるため、匿名ログインを自動でバックグラウンド実行
-    // これにより auth: null による Firestore 拒否を回避し、かつユーザーの手間をゼロにする
+    // 認証状態の監視のみ行い、リダイレクトやガードは行わない
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => {
-        if (!firebaseUser) {
-          // ログインしていない場合は即座に匿名ログイン
-          signInAnonymously(auth).catch(err => {
-            console.warn("Silent login fallback triggered", err);
-          });
-        }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
       (error) => {

@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 認証状態に関わらず、DBが利用可能なら即座にリクエストを開始
+  // DBが利用可能なら認証状態に関わらず即座にリクエスト
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
@@ -63,7 +63,6 @@ export default function AdminDashboard() {
         for (const article of result.articles) {
           if (!article.htmlContent) continue;
           const docRef = doc(db, 'articles', article.id);
-          // 同期時も既存データを保護するため merge: true で保存
           setDocumentNonBlocking(docRef, article, { merge: true });
           updateCount++;
         }
@@ -87,7 +86,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h2 className="text-3xl font-black tracking-tight uppercase italic">記事管理</h2>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Free Access Mode</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Open Access Mode</p>
           </div>
         </div>
         <div className="flex gap-3">
