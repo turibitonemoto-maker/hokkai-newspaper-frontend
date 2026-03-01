@@ -40,12 +40,9 @@ export default function AdminDashboard() {
   const userEmail = user?.email?.toLowerCase() || '';
   const isAuthorized = !!(user && (userEmail.endsWith('@hgu.jp') || userEmail === 'admin@example.com'));
 
-  // 管理者向けクエリ: 認証が確定し、かつ管理権限が確認された場合のみリクエストを発行
+  // 🔥 認証が完全に確定し、かつ管理権限が確認されたときだけ参照を作る
   const articlesRef = useMemoFirebase(() => {
-    // 認証ロード中、または未ログイン、または権限不足の場合はクエリを発行しない（auth: nullエラー防止）
     if (!db || isUserLoading || !user || !isAuthorized) return null;
-    
-    // 管理者のみ全件を表示
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading, isAuthorized]);
 
@@ -79,11 +76,8 @@ export default function AdminDashboard() {
 
         let updateCount = 0;
         for (const article of result.articles) {
-          // 本文が極端に短い場合は同期エラーを避けるためにスキップ（またはデフォルトメッセージを表示）
           if (!article.htmlContent || article.htmlContent.length < 5) continue;
-
           const docRef = doc(db, 'articles', article.id);
-          // merge: true を使用して、管理画面で編集したカテゴリや公開設定を保護
           setDocumentNonBlocking(docRef, article, { merge: true });
           updateCount++;
         }
@@ -106,18 +100,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const isLoading = isUserLoading || isCollectionLoading;
+  const isLoading = isUserLoading || (user && isCollectionLoading);
 
-  if (!isAuthorized && !isUserLoading) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white rounded-[40px] shadow-xl">
-        <h2 className="text-2xl font-black text-slate-900 mb-2">アクセス権限がありません</h2>
-        <p className="text-slate-500 font-bold mb-8">管理者アカウントでログインしてください。</p>
-        <Button asChild className="rounded-xl h-12 px-8">
-          <Link href="/login">ログイン画面へ</Link>
-        </Button>
-      </div>
-    );
+  if (!isUserLoading && (!user || !isAuthorized)) {
+    return null; // 認証前は何も表示しない（エラー回避）
   }
 
   return (
