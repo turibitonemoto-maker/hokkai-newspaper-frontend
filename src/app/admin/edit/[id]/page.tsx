@@ -65,7 +65,7 @@ export default function EditArticlePage() {
     setIsSubmitting(true);
     
     // updateDocumentNonBlockingを使用して部分更新を行います。
-    // これにより、既存のフィールド（noteUrlなど）が保持され、本文が消えるのを防ぎます。
+    // これにより、既存のフィールド（noteUrlやsourceなど）が保持され、データ消失を防ぎます。
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
