@@ -5,6 +5,7 @@ service cloud.firestore {
     match /articles/{articleId} {
       allow read: if true;
       // 書き込みは管理権限（@hgu.jp）を持つユーザーのみ
+      // .lower() を使用して正確に比較
       allow write: if request.auth != null && 
                    (request.auth.token.email.lower().endsWith('@hgu.jp') || 
                     request.auth.token.email == 'admin@example.com');
@@ -27,6 +28,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-24T18:30:00Z (Ensuring global read access is applied)
+    // Security Rules deployment trigger: 2024-05-24T20:45:00Z (Fixed toLower() to lower() and ensured global read)
   }
 }

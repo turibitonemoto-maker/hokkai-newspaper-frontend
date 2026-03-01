@@ -26,6 +26,7 @@ export default function Home() {
 
   // 公開されている記事のみを取得するクエリ
   const latestArticlesRef = useMemoFirebase(() => {
+    // データベースが準備できるまでクエリを発行しない
     if (!db) return null;
     return query(
       collection(db, 'articles'),

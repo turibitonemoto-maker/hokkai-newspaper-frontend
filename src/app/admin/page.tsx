@@ -3,7 +3,7 @@
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, doc, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, RefreshCw, Loader2, Newspaper, Eye, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -36,19 +36,18 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者向けクエリ: 認証が確定し、かつ管理者権限（@hgu.jp等）が確認された場合のみリクエストを発行
+  // 管理者権限のチェック
+  const userEmail = user?.email?.toLowerCase() || '';
+  const isAuthorized = !!(user && (userEmail.endsWith('@hgu.jp') || userEmail === 'admin@example.com'));
+
+  // 管理者向けクエリ: 認証が確定し、かつ管理権限が確認された場合のみリクエストを発行
   const articlesRef = useMemoFirebase(() => {
-    // 認証ロード中、または未ログインの場合は絶対にクエリを発行しない（権限エラーを未然に防ぐ）
-    if (!db || isUserLoading || !user) return null;
-    
-    const email = user.email?.toLowerCase() || '';
-    const isAuthorized = email.endsWith('@hgu.jp') || email === 'admin@example.com';
-    
-    if (!isAuthorized) return null;
+    // 認証ロード中、または未ログイン、または権限不足の場合は絶対にクエリを発行しない
+    if (!db || isUserLoading || !user || !isAuthorized) return null;
     
     // 管理者のみ全件（下書き含む）を表示
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
-  }, [db, user, isUserLoading]);
+  }, [db, user, isUserLoading, isAuthorized]);
 
   const { data: articles, isLoading: isCollectionLoading } = useCollection(articlesRef);
 
@@ -104,19 +103,36 @@ export default function AdminDashboard() {
 
   const isLoading = isUserLoading || isCollectionLoading;
 
+  if (!isAuthorized && !isUserLoading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center bg-white rounded-[40px] shadow-xl">
+        <h2 className="text-2xl font-black text-slate-900 mb-2">アクセス権限がありません</h2>
+        <p className="text-slate-500 font-bold mb-8">管理者アカウントでログインしてください。</p>
+        <Button asChild className="rounded-xl h-12 px-8">
+          <Link href="/login">ログイン画面へ</Link>
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-10 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理</h2>
-          <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
+        <div className="flex items-center gap-4">
+          <div className="bg-primary p-3 rounded-2xl text-white shadow-xl shadow-primary/20">
+            <LayoutDashboard size={24} />
+          </div>
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
+            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
+          </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <Button 
             variant="outline" 
             onClick={handleSyncNote} 
             disabled={isSyncing} 
-            className="gap-2 h-14 px-8 border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-95 rounded-2xl font-black text-xs"
+            className="gap-2 h-14 px-8 border-slate-200 bg-white hover:bg-slate-50 transition-all rounded-2xl font-black text-xs"
           >
             {isSyncing ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
             NOTE同期
@@ -142,7 +158,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
           <CardHeader className="pb-2 p-8">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Live</CardTitle>
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Live (Public)</CardTitle>
           </CardHeader>
           <CardContent className="p-8 pt-0">
             <div className="text-7xl font-black text-slate-900 tracking-tighter">{articles?.filter(a => a.isPublished).length || 0}</div>
@@ -150,7 +166,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="border-none bg-white shadow-xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
           <CardHeader className="pb-2 p-8">
-            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Drafts</CardTitle>
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Drafts (Private)</CardTitle>
           </CardHeader>
           <CardContent className="p-8 pt-0">
             <div className="text-7xl font-black text-slate-900 tracking-tighter">{articles?.filter(a => !a.isPublished).length || 0}</div>
@@ -164,7 +180,7 @@ export default function AdminDashboard() {
             <TableRow className="hover:bg-transparent border-none">
               <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 pl-10 text-slate-400">Story Title</TableHead>
               <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Platform</TableHead>
-              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Publish Date</TableHead>
+              <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Date</TableHead>
               <TableHead className="font-black text-[10px] uppercase tracking-[0.2em] py-8 text-slate-400">Status</TableHead>
               <TableHead className="text-right font-black text-[10px] uppercase tracking-[0.2em] py-8 pr-10 text-slate-400">Manage</TableHead>
             </TableRow>
@@ -204,18 +220,18 @@ export default function AdminDashboard() {
                   <TableCell className="text-right pr-10">
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
-                        <Link href={`/admin/preview/${article.id}`} target="_blank">
+                        <Link href={`/admin/preview/${article.id}`} target="_blank" title="プレビュー">
                           <Eye size={18} />
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all" asChild>
-                        <Link href={`/admin/edit/${article.id}`}>
+                        <Link href={`/admin/edit/${article.id}`} title="編集">
                           <Edit size={18} />
                         </Link>
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl text-destructive hover:bg-destructive/10 transition-all">
+                          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-2xl text-destructive hover:bg-destructive/10 transition-all" title="削除">
                             <Trash2 size={18} />
                           </Button>
                         </AlertDialogTrigger>
