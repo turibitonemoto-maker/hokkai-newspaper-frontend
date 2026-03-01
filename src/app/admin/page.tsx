@@ -1,6 +1,6 @@
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, doc, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2, ExternalLink, RefreshCw, Loader2, Newspaper } from 'lucide-react';
@@ -32,13 +32,15 @@ import {
 
 export default function AdminDashboard() {
   const db = useFirestore();
+  const { user } = useUser();
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // ユーザーが認証されるまでクエリを実行しないことで、Permission Denied (auth: null) を防ぐ
   const articlesRef = useMemoFirebase(() => {
-    if (!db) return null;
+    if (!db || !user) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
-  }, [db]);
+  }, [db, user]);
 
   const { data: articles, isLoading } = useCollection(articlesRef);
 
