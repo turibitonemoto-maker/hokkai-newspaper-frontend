@@ -55,7 +55,7 @@ export default function EditArticlePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 初期化未完了の場合は絶対に保存させない
+    // 初期化未完了の場合は絶対に保存させない（データ消失防止）
     if (!db || !articleRef || isSubmitting || !isInitialized) return;
 
     if (!formData.title || !formData.htmlContent) {
@@ -66,7 +66,7 @@ export default function EditArticlePage() {
     setIsSubmitting(true);
     
     // updateDocumentNonBlocking を使用して「部分更新」
-    // これにより既存のフィールドが保護されます
+    // これにより、フォームにない既存のフィールド（noteUrl, publishDateなど）が保護されます
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,

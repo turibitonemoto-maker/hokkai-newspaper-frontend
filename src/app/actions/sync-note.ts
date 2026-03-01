@@ -43,9 +43,10 @@ export async function fetchAndSyncNoteRss() {
         htmlContent = extract('description');
       }
 
-      // もし本文が極端に短い場合は、同期エラーとして扱うか、またはdescriptionを優先
+      // もし本文が空の場合は、同期時に既存データを消さないように空文字列以外を返すか、
+      // 呼び出し側でスキップするように判定材料を提供
       if (!htmlContent) {
-        htmlContent = "<p>記事の内容を読み込めませんでした。元のサイトをご確認ください。</p>";
+        htmlContent = ""; 
       }
 
       // 不要なタグのクリーンアップ

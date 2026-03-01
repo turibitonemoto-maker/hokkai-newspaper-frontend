@@ -77,15 +77,20 @@ export default function AdminDashboard() {
           return;
         }
 
+        let updateCount = 0;
         for (const article of result.articles) {
+          // 本文が極端に短い場合は同期エラーを避けるためにスキップ（またはデフォルトメッセージを表示）
+          if (!article.htmlContent || article.htmlContent.length < 5) continue;
+
           const docRef = doc(db, 'articles', article.id);
-          // merge: true を使用して既存のフィールドを保護
+          // merge: true を使用して、管理画面で編集したカテゴリや公開設定を保護
           setDocumentNonBlocking(docRef, article, { merge: true });
+          updateCount++;
         }
         
         toast({ 
           title: "同期完了", 
-          description: `${result.articles.length}件の記事を更新しました。`,
+          description: `${updateCount}件の記事を更新しました。`,
         });
       } else {
         throw new Error(result.error || '不明なエラーが発生しました');
