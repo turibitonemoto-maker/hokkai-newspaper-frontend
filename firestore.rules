@@ -1,32 +1,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 権限チェック: 大学ドメイン（@hgu.jp）または指定の管理者
-    function isAuthorizedUser() {
-      return request.auth != null && 
-             request.auth.token.email != null && 
-             (request.auth.token.email.lower().endsWith('@hgu.jp') || request.auth.token.email == 'admin@example.com');
-    }
-
-    // 記事（articles）
+    // 記事 (articles): 公開記事の一覧取得エラーを確実に防ぐため、読み取りを完全開放
     match /articles/{articleId} {
-      // 読み取り: エラーを確実に回避するため、全公開に設定（listも許可）
       allow read: if true;
-      
-      // 書き込み: 認証済みの管理ユーザーのみ
-      allow write: if isAuthorizedUser();
+      // 書き込みは学内アカウント（@hgu.jp）または指定の管理者に限定
+      allow write: if request.auth != null && 
+                   (request.auth.token.email.lower().endsWith('@hgu.jp') || 
+                    request.auth.token.email == 'admin@example.com');
     }
 
-    // カテゴリー（categories）
+    // カテゴリー (categories)
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isAuthorizedUser();
+      allow write: if request.auth != null && 
+                   (request.auth.token.email.lower().endsWith('@hgu.jp') || 
+                    request.auth.token.email == 'admin@example.com');
     }
 
-    // ヒーロー画像（hero-images）
+    // ヒーロー画像 (hero-images)
     match /hero-images/{imageId} {
       allow read: if true;
-      allow write: if isAuthorizedUser();
+      allow write: if request.auth != null && 
+                   (request.auth.token.email.lower().endsWith('@hgu.jp') || 
+                    request.auth.token.email == 'admin@example.com');
     }
 
     // デフォルト拒否
@@ -34,6 +31,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     
-    // Security Rules deployment trigger: 2024-05-24T16:00:00Z (Force global read for articles to fix persistent list error)
+    // Security Rules deployment trigger: 2024-05-24T16:25:00Z (Force global read for all articles)
   }
 }
