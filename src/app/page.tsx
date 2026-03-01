@@ -24,7 +24,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 認証チェックなしでデータを取得
+  // 認証チェックなしでデータを即座に取得
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(

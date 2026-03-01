@@ -104,7 +104,7 @@ export default function AdminDashboard() {
           </div>
           <div>
             <h2 className="text-3xl font-black tracking-tight text-slate-900">記事管理ダッシュボード</h2>
-            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS (Auth Disabled)</p>
+            <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS (Access Fully Open)</p>
           </div>
         </div>
         <div className="flex gap-3">

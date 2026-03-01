@@ -1,24 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 全てのコレクションに対して、認証なしで読み書きを許可（エラー停止のための緊急措置）
-    match /articles/{articleId} {
+    // 全てのドキュメントに対して、認証なしで読み書きを完全に許可（エラー停止のための最終措置）
+    match /{document=**} {
       allow read, write: if true;
-    }
-
-    match /categories/{categoryId} {
-      allow read, write: if true;
-    }
-
-    match /hero-images/{imageId} {
-      allow read, write: if true;
-    }
-
-    // デフォルト拒否（上記以外のパス）
-    match /{path=**} {
-      allow read, write: if false;
     }
     
-    // Deployment trigger: 2024-05-25T00:00:03Z (Auth Disabled)
+    // Deployment trigger: 2024-05-25T00:00:10Z (Access Fully Open)
   }
 }
