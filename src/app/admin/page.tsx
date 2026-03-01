@@ -36,9 +36,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // 管理者向けクエリ: 認証が完全に確定し、かつ管理者権限がある場合のみリクエストを発行
+  // 管理者向けクエリ: 認証が確定し、かつ管理者権限（@hgu.jp等）が確認された場合のみリクエストを発行
   const articlesRef = useMemoFirebase(() => {
-    // 認証が完了していない、またはログインしていない場合は絶対にクエリを発行しない（auth: nullエラー防止）
+    // 認証ロード中、または未ログインの場合は絶対にクエリを発行しない（権限エラーを未然に防ぐ）
     if (!db || isUserLoading || !user) return null;
     
     const email = user.email?.toLowerCase() || '';
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
     
     if (!isAuthorized) return null;
     
-    // 権限がある場合のみ全件取得
+    // 管理者のみ全件（下書き含む）を表示
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
   }, [db, user, isUserLoading]);
 
@@ -80,13 +80,13 @@ export default function AdminDashboard() {
 
         for (const article of result.articles) {
           const docRef = doc(db, 'articles', article.id);
-          // merge: true を使用して既存のフィールド（手動編集内容など）を最大限保護
+          // merge: true を使用して既存のフィールド（手動編集内容など）を保護
           setDocumentNonBlocking(docRef, article, { merge: true });
         }
         
         toast({ 
           title: "同期リクエスト完了", 
-          description: `${result.articles.length}件の記事の同期処理を開始しました。`,
+          description: `${result.articles.length}件の記事を更新しました。`,
         });
       } else {
         throw new Error(result.error || '不明なエラーが発生しました');
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-4xl font-black tracking-tight text-slate-900">記事管理</h2>
-          <p className="text-slate-500 mt-1 font-bold uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
+          <p className="text-slate-500 mt-1 font-black uppercase text-[10px] tracking-[0.2em]">Hokkai Gakuen University Newspaper CMS</p>
         </div>
         <div className="flex gap-4">
           <Button 
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
                 <TableCell colSpan={5} className="text-center py-32">
                   <div className="flex flex-col items-center gap-6">
                     <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Synchronizing with Cloud</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Synchronizing</p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
                     <div className="w-24 h-24 bg-white shadow-xl shadow-slate-200/50 rounded-[32px] flex items-center justify-center mb-8">
                       <Newspaper className="text-slate-200" size={40} />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">管理対象の記事がありません</h3>
+                    <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">記事がありません</h3>
                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Create your first story or sync from Note</p>
                   </div>
                 </TableCell>

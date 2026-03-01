@@ -55,7 +55,7 @@ export default function EditArticlePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 初期化未完了の場合は保存させない（データ消失防止）
+    // 初期化未完了（データ読み込み中）の場合は絶対に保存させない（データ消失防止の鉄則）
     if (!db || !articleRef || isSubmitting || !isInitialized) return;
 
     if (!formData.title || !formData.htmlContent) {
@@ -65,8 +65,8 @@ export default function EditArticlePage() {
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking（内部でupdateDoc）を使用して部分更新
-    // これにより、既存のフィールド（noteUrlなど）が保持されます。
+    // updateDocumentNonBlocking を使用して、変更したフィールドのみを「部分更新」
+    // これにより、既存のフィールド（noteUrlや作成日など）が上書きされずに保持されます。
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -87,7 +87,7 @@ export default function EditArticlePage() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">記事データを読み込んでいます...</p>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">記事データを同期中...</p>
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function EditArticlePage() {
         </Button>
         <div>
           <h2 className="text-3xl font-black tracking-tight text-slate-950 italic uppercase">記事編集</h2>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Hokkai Gakuen University Newspaper CMS</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Manage Story Details</p>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ export default function EditArticlePage() {
           <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
             <CardHeader className="border-b border-slate-50 bg-slate-50/30">
               <CardTitle className="text-lg font-black">内容の編集</CardTitle>
-              <CardDescription className="font-bold">タイトルと本文の内容を調整してください。</CardDescription>
+              <CardDescription className="font-bold text-xs uppercase tracking-wider">Title and Main Content (HTML Support)</CardDescription>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
               <div className="space-y-3">
@@ -141,7 +141,7 @@ export default function EditArticlePage() {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="content" className="font-black text-slate-900 ml-1 uppercase text-[10px] tracking-widest">本文 (HTML使用可)</Label>
+                <Label htmlFor="content" className="font-black text-slate-900 ml-1 uppercase text-[10px] tracking-widest">本文 (HTML形式)</Label>
                 <Textarea
                   id="content"
                   className="min-h-[600px] font-mono text-sm rounded-2xl p-6 border-slate-100 bg-slate-50/50 focus:bg-white transition-all leading-relaxed"
@@ -156,11 +156,11 @@ export default function EditArticlePage() {
         <div className="space-y-6">
           <Card className="rounded-[32px] border-none shadow-xl bg-white overflow-hidden">
             <CardHeader className="bg-slate-50/30 border-b border-slate-50">
-              <CardTitle className="text-lg font-black">アイキャッチ画像</CardTitle>
+              <CardTitle className="text-lg font-black">メディア</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="mainImageUrl" className="text-[10px] font-black uppercase tracking-widest text-slate-400">画像URL</Label>
+                <Label htmlFor="mainImageUrl" className="text-[10px] font-black uppercase tracking-widest text-slate-400">アイキャッチ画像URL</Label>
                 <Input
                   id="mainImageUrl"
                   placeholder="https://images.unsplash.com/..."
