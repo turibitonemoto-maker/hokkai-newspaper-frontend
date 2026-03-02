@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【重要】ログイン機能の廃止に伴い、全てのドキュメントへの読み書きを完全に許可します。
+    // ログイン機能の廃止に伴い、全てのドキュメントへの読み書きを完全に許可します。
     // これにより auth: null のリクエストも全て受理され、権限エラーを物理的に停止させます。
     match /{document=**} {
       allow read, write: if true;
