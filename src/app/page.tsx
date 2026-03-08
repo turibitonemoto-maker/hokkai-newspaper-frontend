@@ -2,16 +2,16 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Newspaper, Loader2, Calendar, ChevronRight, Hash } from 'lucide-react';
+import { Newspaper, Loader2, Calendar, Hash, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 /**
  * 権限概念を完全に排除したトップページ。
- * 最新記事セクションの下に、カテゴリー別のセクションを配置。
+ * 「最新の記事」見出しの直下に、カテゴリー（新聞記事の分類）を配置。
  */
 export default function Home() {
   const db = useFirestore();
@@ -36,16 +36,16 @@ export default function Home() {
 
   // カテゴリーリスト
   const categories = [
-    { id: 'Announcements', label: 'お知らせ', description: '大学からの公式な通知' },
-    { id: 'Campus', label: 'キャンパス', description: '学内の日常とニュース' },
-    { id: 'Event', label: 'イベント', description: '行事・企画のレポート' },
-    { id: 'Interview', label: 'インタビュー', description: '学生・教職員の声' },
-    { id: 'Sports', label: 'スポーツ', description: '部活動・大会の結果' },
-    { id: 'Opinion', label: 'オピニオン', description: '学生による論説' },
+    { id: 'Announcements', label: 'お知らせ', color: 'bg-blue-500' },
+    { id: 'Campus', label: 'キャンパス', color: 'bg-emerald-500' },
+    { id: 'Event', label: 'イベント', color: 'bg-amber-500' },
+    { id: 'Interview', label: 'インタビュー', color: 'bg-purple-500' },
+    { id: 'Sports', label: 'スポーツ', color: 'bg-red-500' },
+    { id: 'Opinion', label: 'オピニオン', color: 'bg-slate-600' },
   ];
 
-  // 最新記事（上位3件）
-  const latestArticles = articles?.slice(0, 3) || [];
+  // 最新記事（上位6件を表示）
+  const latestArticles = articles?.slice(0, 6) || [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
@@ -53,102 +53,85 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* ヒーローセクション */}
-        <section className="relative h-[50vh] md:h-[70vh] flex items-center overflow-hidden bg-slate-900 text-white">
+        <section className="relative h-[40vh] md:h-[60vh] flex items-center overflow-hidden bg-slate-900 text-white">
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 to-primary/20" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-[10px] font-black uppercase tracking-widest mb-6 border border-white/20 backdrop-blur-md">
                 <Newspaper size={14} /> <span>Hokkai Gakuen University Newspaper</span>
               </div>
-              <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] italic">
+              <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9] italic">
                 キャンパスの<br />
                 <span className="text-primary not-italic">「いま」</span>を届ける。
               </h1>
-              <p className="text-lg md:text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
-                学生の視点で記録する。学内のニュース、インタビュー、イベント情報をどこよりも深く。
-              </p>
             </div>
           </div>
         </section>
 
-        {/* 最新の記事セクション */}
-        <section className="py-24 border-b border-slate-200">
+        {/* メインコンテンツセクション */}
+        <section className="py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="flex items-end justify-between mb-16">
+            {/* 見出し */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic uppercase text-slate-900">最新の記事</h2>
-                <div className="h-2 w-20 bg-primary mt-4 rounded-full" />
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic uppercase text-slate-900 leading-none">最新の記事</h2>
+                <div className="h-2 w-24 bg-primary mt-4 rounded-full" />
               </div>
-              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-[0.2em] bg-white px-6 py-3 rounded-2xl shadow-sm border">
+              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-[0.2em] bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
                 <Calendar size={14} className="text-primary" /> <span>{currentTime || '...'}</span>
               </div>
             </div>
 
+            {/* 見出しのすぐ下に配置される分類（カテゴリーナビゲーション） */}
+            <div className="mb-16">
+              <div className="flex items-center gap-2 mb-6">
+                <Hash size={18} className="text-primary" />
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">新聞記事の分類</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {categories.map((cat) => (
+                  <Link 
+                    key={cat.id} 
+                    href={`/category/${cat.id}`}
+                    className="group relative flex flex-col items-center justify-center p-6 bg-white rounded-[24px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                  >
+                    <span className="text-sm font-black text-slate-900 mb-1">{cat.label}</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{cat.id}</span>
+                    <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 ${cat.color} rounded-t-full group-hover:w-1/2 transition-all duration-300`} />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* 記事グリッド */}
             {isArticlesLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
-                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Loading Feed...</p>
+              <div className="flex flex-col items-center justify-center py-32">
+                <Loader2 className="animate-spin text-primary mb-6" size={64} strokeWidth={3} />
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Feed</p>
               </div>
             ) : latestArticles.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 animate-fade-in">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-14 animate-fade-in">
                 {latestArticles.map((article) => (
                   <ArticleCard key={article.id} article={article as any} />
                 ))}
               </div>
             ) : (
-              <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-dashed border-slate-200">
-                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No stories found</p>
+              <div className="py-32 text-center bg-white rounded-[40px] shadow-sm border border-dashed border-slate-200">
+                <p className="text-slate-400 font-bold uppercase text-xs tracking-[0.3em]">No stories found in the archives</p>
               </div>
             )}
-          </div>
-        </section>
 
-        {/* カテゴリー別セクション */}
-        <section className="py-24 bg-slate-100/50">
-          <div className="container mx-auto px-4 space-y-32">
-            <div className="text-center max-w-2xl mx-auto mb-20">
-              <span className="text-primary font-black text-[10px] uppercase tracking-[0.5em] mb-4 block">Categories</span>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 mb-6 italic">新聞記事の分類</h2>
-              <p className="text-slate-500 font-medium">各分野の最新ニュースをご覧いただけます。</p>
-            </div>
-
-            {categories.map((cat) => {
-              const catArticles = articles?.filter(a => a.categoryId === cat.id).slice(0, 3) || [];
-              
-              return (
-                <div key={cat.id} className="space-y-12">
-                  <div className="flex items-end justify-between border-b-2 border-slate-200 pb-6">
-                    <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 rounded-3xl bg-white shadow-xl flex items-center justify-center text-primary border-2 border-primary/10">
-                        <Hash size={32} />
-                      </div>
-                      <div>
-                        <h3 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">{cat.label}</h3>
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">{cat.description}</p>
-                      </div>
-                    </div>
-                    <Link 
-                      href={`/category/${cat.id}`}
-                      className="group flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest hover:translate-x-1 transition-transform"
-                    >
-                      VIEW ALL <ChevronRight size={16} className="bg-primary text-white rounded-lg p-0.5" />
-                    </Link>
-                  </div>
-
-                  {catArticles.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                      {catArticles.map((article) => (
-                        <ArticleCard key={article.id} article={article as any} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="py-16 text-center bg-white/50 rounded-[32px] border border-dashed border-slate-300">
-                      <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">このカテゴリーの記事は準備中です</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {/* もっと見るボタン（任意） */}
+            {articles && articles.length > 6 && (
+              <div className="mt-20 text-center">
+                <Link 
+                  href="/category/Campus" 
+                  className="inline-flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-primary transition-colors shadow-2xl"
+                >
+                  View More Stories <ChevronRight size={16} />
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       </main>
