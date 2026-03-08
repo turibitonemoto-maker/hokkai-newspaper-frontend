@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 /**
  * 権限概念を完全に排除したトップページ。
- * ヒーローセクションに大学新聞の英語名称を追加。
+ * ヒーローセクションから「Official Website」を削除し、英語名称を強調。
  */
 export default function Home() {
   const db = useFirestore();
@@ -56,9 +56,6 @@ export default function Home() {
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 to-primary/20" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-[10px] font-black uppercase tracking-widest mb-6 border border-white/20 backdrop-blur-md">
-                <Newspaper size={14} /> <span>Official Website</span>
-              </div>
               <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 leading-[0.9] italic">
                 キャンパスの<br />
                 <span className="text-primary not-italic">「いま」</span>を届ける。
