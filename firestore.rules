@@ -2,12 +2,27 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ログイン機能を完全に廃止し、誰でも読み書きを可能にします。
-    // これにより auth: null のリクエストもすべて許可され、権限エラーを物理的に消滅させます。
-    match /{document=**} {
-      allow read, write: if true;
+    // ニュース閲覧に必要なコレクションのみ読み取りを完全に許可
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if false;
     }
     
-    // Deployment Token: 2024-05-26T20:00:00Z (Full Open Mode)
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /hero-images/{imageId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // その他のドキュメントはすべて拒否（セキュリティのため）
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Deployment Token: 2024-05-26T21:00:00Z (Read Only Mode)
   }
 }

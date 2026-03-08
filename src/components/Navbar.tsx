@@ -45,12 +45,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link 
-            href="/admin" 
-            className="bg-slate-100 px-4 py-1.5 rounded-full hover:bg-primary hover:text-white transition-all text-[9px]"
-          >
-            管理者メニュー
-          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -85,14 +79,6 @@ export function Navbar() {
                       {link.label}
                     </Link>
                   ))}
-                  <div className="mt-8 pt-8 border-t border-slate-50">
-                    <Link 
-                      href="/admin" 
-                      className="flex items-center h-16 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-primary hover:bg-primary/5 transition-all"
-                    >
-                      Open Admin Dashboard
-                    </Link>
-                  </div>
                 </nav>
               </div>
             </SheetContent>
