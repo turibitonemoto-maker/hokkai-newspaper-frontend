@@ -9,8 +9,8 @@ import { Newspaper, Loader2, Calendar, Ghost, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 /**
- * ログイン機能や管理者機能を完全に排除した、一般ユーザー向けのトップページ。
- * 常にパブリックアクセスモードで動作します。
+ * 一般ユーザー向けのトップページ。
+ * ログインなしで動作し、最新の記事を表示します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -22,8 +22,7 @@ export default function Home() {
     }));
   }, []);
 
-  // Firestoreが利用可能になった瞬間に全記事を最新順で取得します。
-  // 認証の確定を待たず、即座に読み取りを開始します。
+  // Firestoreから最新の記事を無条件で取得します。
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -67,8 +66,9 @@ export default function Home() {
               <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
                 <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
                 <p className="text-slate-600 font-bold">データの読み込みに失敗しました。</p>
-                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">
-                  {error.message.includes('permission') ? 'データベース設定の反映待ちです。数秒後にページを再読み込みしてください。' : '通信が不安定です。'}
+                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black leading-relaxed">
+                  データベース設定の反映待ちか、権限設定に問題がある可能性があります。<br />
+                  数秒後にページを再読み込みしてください。
                 </p>
               </div>
             ) : isArticlesLoading ? (

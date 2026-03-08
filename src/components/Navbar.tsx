@@ -13,12 +13,13 @@ import {
 } from "@/components/ui/sheet";
 
 /**
- * 管理機能やログイン機能を完全に排除した、純粋な閲覧用ナビゲーション
+ * 管理機能やログイン機能を完全に排除した、純粋な閲覧用ナビゲーション。
+ * 新しく「Announcements（お知らせ）」タブを追加。
  */
 export function Navbar() {
   const navLinks = [
     { href: "/", label: "TOP" },
-    { href: "/category/Announcements", label: "Announcements" }, // 新しく追加したタブ
+    { href: "/category/Announcements", label: "Announcements" },
     { href: "/category/Campus", label: "Campus" },
     { href: "/category/Event", label: "Events" },
     { href: "/category/Interview", label: "Interviews" },
