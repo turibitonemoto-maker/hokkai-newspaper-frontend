@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/sheet";
 
 /**
- * 管理機能やログイン機能を完全に排除した、純粋な閲覧用ナビゲーション。
- * 上部のカテゴリーリンクを削除し、非常にシンプルな構成にしました。
+ * 管理機能やログイン機能を完全に排除したナビゲーション。
+ * 権限の概念を抹消したため、一切のガードなしで閲覧可能です。
  */
 export function Navbar() {
   return (
@@ -28,7 +28,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* ナビゲーションをシンプルに維持 */}
+        {/* デスクトップ用：極限までシンプルに */}
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
           <Link href="/" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">
             TOP
