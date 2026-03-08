@@ -2,12 +2,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ログイン機能の廃止に伴い、全てのドキュメントへの読み書きを完全に許可します。
-    // これにより auth: null のリクエストも全て受理され、権限エラーを物理的に停止させます。
+    // ログイン機能を完全に廃止し、誰でも読み書きを可能にします。
+    // これにより auth: null のリクエストもすべて許可され、権限エラーを物理的に消滅させます。
     match /{document=**} {
       allow read, write: if true;
     }
     
-    // Force Redeploy: 2024-05-26T12:00:00Z (Universal Open Access)
+    // Deployment Token: 2024-05-26T20:00:00Z (Full Open Mode)
   }
 }

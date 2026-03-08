@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarTrigger className="text-slate-400 hover:text-primary transition-colors" />
               <div className="h-6 w-px bg-slate-100 hidden md:block" />
               <h1 className="text-sm md:text-lg font-black tracking-tight text-slate-900 truncate max-w-[150px] md:max-w-none">
-                管理者コンソール (認証不要)
+                管理者コンソール (認証不要モード)
               </h1>
             </div>
             <div className="flex items-center gap-2 md:gap-4">

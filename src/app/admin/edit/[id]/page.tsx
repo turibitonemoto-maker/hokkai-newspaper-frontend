@@ -39,7 +39,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     mainImageUrl: '',
   });
 
-  // 記事データが届いたらフォームを1回だけ初期化
+  // 記事データが届いたらフォームを初期化
   useEffect(() => {
     if (article && !isInitialized) {
       setFormData({
@@ -65,7 +65,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     setIsSubmitting(true);
     
     // updateDocumentNonBlocking を使用して「差分のみ」を送信
-    // これにより、既存の noteUrl や publishDate を壊さずに更新可能
+    // これにより、既存の noteUrl や publishDate を壊さずに更新
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,

@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // DBが利用可能なら認証状態に関わらず即座にリクエスト
+  // 認証状態に関わらず即座に全記事を取得
   const articlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, 'articles'), orderBy('publishDate', 'desc'));
