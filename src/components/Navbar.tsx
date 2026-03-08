@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 
 /**
- * 管理機能やログイン機能を完全に排除した閲覧用ナビゲーション
+ * 管理機能やログイン機能を完全に排除した、純粋な閲覧用ナビゲーション
  */
 export function Navbar() {
   const navLinks = [

@@ -2,7 +2,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Newspaper, Loader2, Calendar, Ghost, AlertCircle } from 'lucide-react';
@@ -18,12 +18,12 @@ export default function Home() {
     }));
   }, []);
 
-  // ログイン状態に依存せず、パブリックな記事を即座に取得
+  // 認証に依存せず、常に最新の記事を取得
+  // インデックスエラー（権限不足と誤報される場合がある）を避けるため、クエリを極力シンプル化
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
   }, [db]);
@@ -63,7 +63,7 @@ export default function Home() {
               <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
                 <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
                 <p className="text-slate-600 font-bold">記事の読み込みに失敗しました。</p>
-                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest">Public Access Enabled</p>
+                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">Public Access Mode: {error.message}</p>
               </div>
             ) : isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
