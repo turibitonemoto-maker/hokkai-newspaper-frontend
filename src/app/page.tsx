@@ -8,7 +8,8 @@ import { Newspaper, Loader2, Calendar, Ghost, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 /**
- * ログイン機能を排除し、パブリックな閲覧専用のトップページ
+ * ログイン機能や管理者機能を完全に排除した、一般ユーザー向けのトップページ。
+ * 常にパブリックアクセスモードで動作します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -20,7 +21,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 認証状態に関わらず、DBが利用可能になった瞬間にリクエストを開始
+  // Firestoreが利用可能になった瞬間に全記事を最新順で取得します。
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -63,13 +64,15 @@ export default function Home() {
             {error ? (
               <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
                 <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
-                <p className="text-slate-600 font-bold">記事の読み込みに失敗しました。</p>
-                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">Public Access Mode Status: {error.message}</p>
+                <p className="text-slate-600 font-bold">データの読み込みに失敗しました。</p>
+                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">
+                  {error.message.includes('permission') ? 'データベース設定の反映待ちです...' : '一時的に通信が不安定です。'}
+                </p>
               </div>
             ) : isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-                <p className="mt-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">Fetching Latest Stories...</p>
+                <p className="mt-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">記事を取得中...</p>
               </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in">
