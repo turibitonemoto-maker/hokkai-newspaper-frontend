@@ -1,24 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ニュースサイトとして、全ての閲覧用データを完全に公開
-    // auth: null (未ログイン) の状態でも読み取り (list, get) を無条件で許可します
-    match /articles/{document=**} {
-      allow read: if true;
-    }
-    match /categories/{document=**} {
-      allow read: if true;
-    }
-    match /hero-images/{document=**} {
-      allow read: if true;
-    }
-    
-    // 全体的なフォールバック（読み取り許可、書き込み禁止）
+    // 全てのドキュメント（articles, categories, hero-images等）の読み取りを完全に一般公開
+    // 認証(auth)の状態に関わらず、誰でも読み取り(list, get)を許可します
     match /{document=**} {
       allow read: if true;
       allow write: if false;
     }
     
-    // Deployment Token: 2024-03-08T08:30:00Z (Rules Fully Opened for Public Browsing)
+    // 最終更新: 2024-03-08T09:00:00Z (セキュリティルールを完全にパブリック閲覧用に固定)
   }
 }

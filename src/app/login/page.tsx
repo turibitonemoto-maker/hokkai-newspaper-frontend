@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -15,9 +14,5 @@ export default function LoginPage() {
     router.replace('/');
   }, [router]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Redirecting to home...</p>
-    </div>
-  );
+  return null;
 }
