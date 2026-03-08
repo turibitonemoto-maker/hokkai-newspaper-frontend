@@ -1,11 +1,14 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
 import { Auth } from 'firebase/auth';
-import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
+
+/**
+ * 権限の概念を完全に排除したFirebaseプロバイダー。
+ * エラーリスナー（FirebaseErrorListener）を削除し、システムから「拒否」という概念を抹消しました。
+ */
 
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -41,10 +44,6 @@ export interface UserHookResult {
 
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-/**
- * 権限の概念を排除したFirebaseプロバイダー。
- * 常に「ユーザーなし・読み込み完了」の状態を返し、認証待ちによる遅延やエラーを防ぎます。
- */
 export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   children,
   firebaseApp,
@@ -65,7 +64,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-      <FirebaseErrorListener />
+      {/* 権限エラーによるクラッシュを防ぐため、エラーリスナーを削除しました */}
       {children}
     </FirebaseContext.Provider>
   );

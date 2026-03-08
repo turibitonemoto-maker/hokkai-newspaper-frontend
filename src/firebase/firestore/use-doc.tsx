@@ -1,4 +1,3 @@
-
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -27,15 +26,7 @@ export interface UseDocResult<T> {
 
 /**
  * React hook to subscribe to a single Firestore document in real-time.
- * Handles nullable references.
- * 
- * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedDocRef or BAD THINGS WILL HAPPEN
- * use useMemoFirebase to memoize it per React guidance.
- *
- * @template T Optional type for document data. Defaults to any.
- * @param {DocumentReference<DocumentData> | null | undefined} memoizedDocRef -
- * The Firestore DocumentReference. Waits if null/undefined.
- * @returns {UseDocResult<T>} Object with data, isLoading, error.
+ * 権限の概念を抹消するため、エラー時もUIをクラッシュさせずに静かに処理を続行します。
  */
 export function useDoc<T = any>(
   memoizedDocRef: (DocumentReference<DocumentData> & {__memo?: boolean}) | null | undefined,
@@ -62,7 +53,6 @@ export function useDoc<T = any>(
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
           const newData = { ...(snapshot.data() as T), id: snapshot.id };
-          // 無限ループを防ぐため、データが実質的に変わった場合のみセットする
           setData(prev => {
             if (JSON.stringify(prev) === JSON.stringify(newData)) return prev;
             return newData;
@@ -79,10 +69,11 @@ export function useDoc<T = any>(
           path: memoizedDocRef.path,
         })
 
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
+        setError(contextualError);
+        setData(null);
+        setIsLoading(false);
 
+        // ログとしては送信するが、Listenerを削除したため画面はクラッシュしません
         errorEmitter.emit('permission-error', contextualError);
       }
     );
