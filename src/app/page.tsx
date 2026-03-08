@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -22,6 +23,7 @@ export default function Home() {
   }, []);
 
   // Firestoreが利用可能になった瞬間に全記事を最新順で取得します。
+  // 認証の確定を待たず、即座に読み取りを開始します。
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -66,7 +68,7 @@ export default function Home() {
                 <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
                 <p className="text-slate-600 font-bold">データの読み込みに失敗しました。</p>
                 <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">
-                  {error.message.includes('permission') ? 'データベース設定の反映待ちです...' : '一時的に通信が不安定です。'}
+                  {error.message.includes('permission') ? 'データベース設定の反映待ちです。数秒後にページを再読み込みしてください。' : '通信が不安定です。'}
                 </p>
               </div>
             ) : isArticlesLoading ? (

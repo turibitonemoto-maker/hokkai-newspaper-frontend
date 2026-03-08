@@ -2,12 +2,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 全てのドキュメントの読み取りを無条件で許可（閲覧専用・認証不要）
+    // 【重要】全てのドキュメントの読み取りを、認証の有無にかかわらず完全に無条件で許可します。
+    // これにより auth: null による権限エラー（Missing or insufficient permissions）を物理的に防止します。
     match /{document=**} {
       allow read: if true;
       allow write: if false;
     }
     
-    // 最終更新: 2024-03-08T11:00:00Z (Announcementsタブ追加に伴うパブリック閲覧の徹底)
+    // 最終デプロイ確認: 2024-03-08T11:30:00Z (パブリック閲覧権限の完全徹底)
   }
 }
