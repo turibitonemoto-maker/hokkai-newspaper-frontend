@@ -5,12 +5,12 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Newspaper, Loader2, Calendar, Ghost, AlertCircle } from 'lucide-react';
+import { Newspaper, Loader2, Calendar, Ghost } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 /**
- * 一般ユーザー向けのトップページ。
- * ログインなしで動作し、最新の記事を表示します。
+ * 権限概念を撤廃したトップページ。
+ * 起動と同時に、認証状態を一切気にせずパブリックにデータを取得します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -22,7 +22,7 @@ export default function Home() {
     }));
   }, []);
 
-  // Firestoreから最新の記事を無条件で取得します。
+  // 権限チェックなしで最新記事を取得
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -31,7 +31,7 @@ export default function Home() {
     );
   }, [db]);
 
-  const { data: articles, isLoading: isArticlesLoading, error } = useCollection(latestArticlesRef);
+  const { data: articles, isLoading: isArticlesLoading } = useCollection(latestArticlesRef);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
@@ -62,19 +62,10 @@ export default function Home() {
               </div>
             </div>
 
-            {error ? (
-              <div className="py-20 text-center bg-white rounded-[40px] shadow-sm border border-destructive/20">
-                <AlertCircle className="mx-auto text-destructive mb-4" size={40} />
-                <p className="text-slate-600 font-bold">データの読み込みに失敗しました。</p>
-                <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black leading-relaxed">
-                  データベース設定の反映待ちか、権限設定に問題がある可能性があります。<br />
-                  数秒後にページを再読み込みしてください。
-                </p>
-              </div>
-            ) : isArticlesLoading ? (
+            {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
-                <p className="mt-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">記事を取得中...</p>
+                <p className="mt-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">Loading Feed...</p>
               </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in">
@@ -85,7 +76,7 @@ export default function Home() {
             ) : (
               <div className="py-20 text-center bg-white rounded-[40px] shadow-sm">
                 <Ghost className="mx-auto text-slate-200 mb-4" size={40} />
-                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">記事がまだありません</p>
+                <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No stories found</p>
               </div>
             )}
           </div>

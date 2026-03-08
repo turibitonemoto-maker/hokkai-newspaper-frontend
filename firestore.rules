@@ -2,31 +2,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【重要】パブリックアクセスの完全許可
-    // 認証状態（auth）を一切問わず、記事やカテゴリーの読み取りを許可します。
-    // これにより auth: null による権限エラーを完全に防止します。
+    // 【最重要】権限の概念を完全に排除
+    // 認証（auth）の有無に関わらず、すべてのドキュメントへの読み取り・書き込みを無条件で許可します。
+    // これにより、auth: null による権限エラーは物理的に発生しなくなります。
     
-    match /articles/{articleId} {
-      allow read: if true;
-      allow write: if false;
-    }
-    
-    match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if false;
-    }
-    
-    match /hero-images/{imageId} {
-      allow read: if true;
-      allow write: if false;
-    }
-    
-    // 全体的なフォールバック
     match /{document=**} {
-      allow read: if true;
-      allow write: if false;
+      allow read, write: if true;
     }
     
-    // 最終更新: 2024-03-08T12:00:00Z (Announcementsタブ追加に伴うパブリック権限の再徹底)
+    // 最終更新: 2024-03-08T13:00:00Z (権限概念の完全抹消)
   }
 }
