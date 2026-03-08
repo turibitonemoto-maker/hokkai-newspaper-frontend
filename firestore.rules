@@ -2,7 +2,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ニュース閲覧に必要なコレクションのみ読み取りを完全に許可
+    // ニュース閲覧に必要なコレクションのみ、誰でも（未ログインでも）読み取りを完全に許可
     match /articles/{articleId} {
       allow read: if true;
       allow write: if false;
@@ -18,11 +18,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // その他のドキュメントはすべて拒否（セキュリティのため）
+    // その他のドキュメントはすべて拒否
     match /{document=**} {
       allow read, write: if false;
     }
     
-    // Deployment Token: 2024-05-26T21:00:00Z (Read Only Mode)
+    // Deployment Token: 2024-05-26T22:00:00Z (Public Read Only Mode)
   }
 }

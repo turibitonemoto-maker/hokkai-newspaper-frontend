@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Newspaper, Menu, Search } from 'lucide-react';
+import { Newspaper, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -12,6 +12,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+/**
+ * 管理機能やログイン機能を完全に排除した閲覧用ナビゲーション
+ */
 export function Navbar() {
   const navLinks = [
     { href: "/", label: "TOP" },
@@ -48,10 +51,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-primary hover:bg-primary/5 rounded-full">
-            <Search size={20} />
-          </Button>
-          
           {/* モバイル用ナビゲーション */}
           <Sheet>
             <SheetTrigger asChild>

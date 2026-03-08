@@ -18,7 +18,7 @@ export default function Home() {
     }));
   }, []);
 
-  // ログイン状態を待たずに即座にデータを取得
+  // ログイン状態に依存せず、パブリックな記事を即座に取得
   const latestArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -53,8 +53,8 @@ export default function Home() {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-12 border-b pb-6">
-              <h2 className="text-3xl font-black tracking-tight">最新の記事</h2>
-              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase">
+              <h2 className="text-3xl font-black tracking-tight italic uppercase">最新の記事</h2>
+              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-widest">
                 <Calendar size={14} className="text-primary" /> <span>{currentTime || '...'}</span>
               </div>
             </div>
@@ -67,7 +67,8 @@ export default function Home() {
               </div>
             ) : isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="animate-spin text-primary" size={48} />
+                <Loader2 className="animate-spin text-primary" size={48} strokeWidth={3} />
+                <p className="mt-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">Fetching Latest Stories...</p>
               </div>
             ) : articles && articles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in">
@@ -85,8 +86,8 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-slate-950 text-slate-600 py-12 text-center text-[10px] font-black uppercase tracking-widest">
-        &copy; {new Date().getFullYear()} 北海学園大学新聞
+      <footer className="bg-slate-950 text-slate-600 py-12 text-center text-[10px] font-black uppercase tracking-[0.3em] border-t border-slate-900">
+        &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
       </footer>
     </div>
   );

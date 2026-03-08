@@ -1,6 +1,9 @@
 
 'use client';
 
+/**
+ * 管理者画面は無効化されています。
+ */
 export default function AdminDashboard() {
-  return null; // Layout側でリダイレクトされるため表示されません
+  return null;
 }
