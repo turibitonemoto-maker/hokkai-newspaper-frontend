@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -17,6 +18,7 @@ import {
 export function Navbar() {
   const navLinks = [
     { href: "/", label: "TOP" },
+    { href: "/category/Announcements", label: "Announcements" }, // 新しく追加したタブ
     { href: "/category/Campus", label: "Campus" },
     { href: "/category/Event", label: "Events" },
     { href: "/category/Interview", label: "Interviews" },
@@ -37,7 +39,7 @@ export function Navbar() {
         </Link>
 
         {/* デスクトップ用ナビゲーション */}
-        <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
+        <nav className="hidden md:flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
           {navLinks.map((link) => (
             <Link 
               key={link.href} 

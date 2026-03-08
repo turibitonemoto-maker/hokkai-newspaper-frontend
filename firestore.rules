@@ -1,13 +1,13 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 全てのドキュメント（articles, categories, hero-images等）の読み取りを完全に一般公開
-    // 認証(auth)の状態に関わらず、誰でも読み取り(list, get)を許可します
+    // 全てのドキュメントの読み取りを無条件で許可（閲覧専用・認証不要）
     match /{document=**} {
       allow read: if true;
       allow write: if false;
     }
     
-    // 最終更新デプロイ時間: 2024-03-08T10:00:00Z (セキュリティルールを完全にパブリック閲覧用に固定)
+    // 最終更新: 2024-03-08T11:00:00Z (Announcementsタブ追加に伴うパブリック閲覧の徹底)
   }
 }
