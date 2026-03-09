@@ -2,28 +2,13 @@
 "use client";
 
 import Link from 'next/link';
-import { Newspaper, ChevronDown } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Newspaper } from 'lucide-react';
 
 /**
- * 権限の概念を完全に排除したナビゲーションバー。
- * 「新聞記事の分類」をナビゲーション内に配置しました。
+ * 権限の概念を完全に排除したシンプルなナビゲーションバー。
+ * ロゴのみを表示する構成にリセットしました。
  */
 export function Navbar() {
-  const categories = [
-    { id: 'Announcements', label: 'お知らせ' },
-    { id: 'Campus', label: 'キャンパス' },
-    { id: 'Event', label: 'イベント' },
-    { id: 'Interview', label: 'インタビュー' },
-    { id: 'Sports', label: 'スポーツ' },
-    { id: 'Opinion', label: 'オピニオン' },
-  ];
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -36,25 +21,8 @@ export function Navbar() {
           </span>
         </Link>
 
+        {/* ナビゲーションメニューは現在すべて削除されています */}
         <nav className="flex items-center gap-6">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-slate-600 hover:text-primary transition-colors outline-none">
-              新聞記事の分類 <ChevronDown size={14} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-2xl p-2 min-w-[160px] shadow-2xl border-none ring-1 ring-slate-100">
-              {categories.map((cat) => (
-                <DropdownMenuItem key={cat.id} asChild>
-                  <Link 
-                    href={`/category/${cat.id}`}
-                    className="flex flex-col items-start px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group"
-                  >
-                    <span className="text-sm font-black text-slate-900 group-hover:text-primary transition-colors">{cat.label}</span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{cat.id}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
       </div>
     </header>
