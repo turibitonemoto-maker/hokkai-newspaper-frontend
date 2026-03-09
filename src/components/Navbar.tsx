@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
  * 配色は 北海(青) 学園(黒) 大学(青) 新聞(黒)。
  * ロゴは左端（パディングなし）に配置、2段目のメニューもロゴのラインに合わせて左寄せに設定。
  * Google Font「Yuji Mai」をロゴに適用。
+ * 文字サイズを調整し、1280px内に全要素が収まるように最適化。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -36,9 +37,9 @@ export function Navbar() {
     <header className="fixed top-0 left-0 w-full z-50 shadow-md">
       {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full border-b bg-white">
-        <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-start gap-12">
+        <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-start gap-8 md:gap-12">
           <Link href="/" className="flex items-center group shrink-0">
-            <div className="font-yuji text-3xl md:text-5xl tracking-tighter">
+            <div className="font-yuji text-3xl md:text-4xl tracking-tighter">
               <span className="text-primary">北海</span>
               <span className="text-slate-950">学園</span>
               <span className="text-primary">大学</span>
@@ -46,13 +47,13 @@ export function Navbar() {
             </div>
           </Link>
 
-          <nav className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar py-2">
+          <nav className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-2">
             {mainLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-base md:text-lg font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
+                  "text-sm md:text-base font-bold uppercase tracking-wider px-2 md:px-3 py-2 rounded-xl transition-all whitespace-nowrap",
                   pathname === link.href 
                     ? "bg-slate-100 text-primary" 
                     : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -68,12 +69,12 @@ export function Navbar() {
       {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full bg-primary text-white">
         <div className="max-w-[1280px] mx-auto px-0 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-8 md:gap-12">
+          <nav className="flex items-center gap-6 md:gap-8">
             {subLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-xs md:text-base font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
+                className="text-xs md:text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
               >
                 {link.label}
               </Link>
