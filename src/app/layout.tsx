@@ -26,7 +26,10 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative">
             <Navbar />
-            {children}
+            {/* ナビゲーションバーが固定(160px)されているため、その分の余白を追加 */}
+            <div className="pt-40">
+              {children}
+            </div>
           </div>
           <Toaster />
         </FirebaseClientProvider>
