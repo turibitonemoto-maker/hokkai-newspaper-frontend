@@ -8,9 +8,9 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 2段構成のナビゲーションバー。
- * 上段（白）: 主要なカテゴリー。文字サイズを拡大。
- * 下段（青）: 組織情報や募集情報。文字サイズを拡大。
- * 権限の概念は完全に排除されています。
+ * 上段（白）: 主要なカテゴリー。
+ * 下段（青）: 組織情報や募集情報。
+ * 文字の太さを font-black から font-bold に変更し、読みやすさを向上。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -41,18 +41,18 @@ export function Navbar() {
             <div className="bg-primary p-2 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
               <Newspaper size={24} />
             </div>
-            <span className="font-black text-2xl tracking-tighter text-slate-950 hidden sm:inline-block">
+            <span className="font-bold text-2xl tracking-tighter text-slate-950 hidden sm:inline-block">
               北海学園大学<span className="text-primary">新聞</span>
             </span>
           </Link>
 
-          <nav className="flex items-center gap-2 md:gap-6 overflow-x-auto no-scrollbar py-2">
+          <nav className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-2">
             {mainLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm md:text-base font-black uppercase tracking-wider px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap",
+                  "text-sm md:text-base font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
                   pathname === link.href 
                     ? "bg-slate-100 text-primary" 
                     : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -68,12 +68,12 @@ export function Navbar() {
       {/* セカンダリナビゲーション（青） */}
       <div className="w-full bg-primary text-white shadow-inner">
         <div className="container mx-auto px-4 h-12 flex items-center overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-8 md:gap-12">
+          <nav className="flex items-center gap-6 md:gap-10">
             {subLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-[11px] md:text-sm font-black uppercase tracking-[0.15em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
+                className="text-[11px] md:text-sm font-bold uppercase tracking-[0.1em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
               >
                 {link.label}
               </Link>
