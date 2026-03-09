@@ -25,11 +25,11 @@ export default function CategoryPage() {
   const { data: articles, isLoading } = useCollection(categoryQuery);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 font-body">
+    <div className="min-h-screen flex flex-col bg-white font-body">
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-12">
-        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm">
+        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
           <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
           <ChevronRight size={12} className="text-slate-200" />
           <span className="text-primary">{slug}</span>

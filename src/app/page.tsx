@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -12,8 +11,7 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * ヒーローセクションを削除し、記事一覧と分類をメインに据えたトップページ。
- * サイト全体は中央にボックスレイアウトで配置されています。
+ * サイト全体を白基調にし、コンテンツを中央に据えたトップページ。
  */
 export default function Home() {
   const db = useFirestore();
@@ -52,7 +50,7 @@ export default function Home() {
   const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 font-body">
+    <div className="min-h-screen flex flex-col bg-white font-body">
       <Navbar />
       
       <main className="flex-grow">
@@ -86,7 +84,7 @@ export default function Home() {
                 <Megaphone size={14} className="text-slate-400" />
                 <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
               </div>
-              <div className="relative w-full h-24 md:h-32 bg-slate-200 rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
+              <div className="relative w-full h-24 md:h-32 bg-slate-50 rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
                 {adPlaceholder && (
                   <Image 
                     src={adPlaceholder.imageUrl} 
