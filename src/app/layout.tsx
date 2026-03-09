@@ -17,8 +17,8 @@ export default function RootLayout({
     <html lang="ja">
       <body className="font-body antialiased bg-white">
         <FirebaseClientProvider>
-          {/* サイト全体を中央に配置し、左右に余白を作るラッパー。背景は白。 */}
-          <div className="max-w-[1280px] mx-auto bg-white min-h-screen shadow-2xl relative overflow-x-hidden border-x border-slate-100">
+          {/* コンテンツを中央に配置するが、影や境界線を消して背景と一体化させる */}
+          <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative overflow-x-hidden">
             {children}
           </div>
           <Toaster />
