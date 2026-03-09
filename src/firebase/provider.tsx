@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo } from 'react';
@@ -64,7 +65,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-      {/* 権限エラーによるクラッシュを防ぐため、エラーリスナーを削除しました */}
+      {/* 権限エラーによるクラッシュを防ぐため、エラーリスナーを完全に削除しました */}
       {children}
     </FirebaseContext.Provider>
   );

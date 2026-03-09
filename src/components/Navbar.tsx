@@ -18,7 +18,7 @@ import {
  */
 export function Navbar() {
   const navLinks = [
-    { href: "/", label: "TOP" },
+    { href: "/", label: "トップ" },
     { href: "/greeting", label: "会長挨拶" },
     { href: "/recruit", label: "リクルート" },
     { href: "/advertise", label: "広告募集" },
