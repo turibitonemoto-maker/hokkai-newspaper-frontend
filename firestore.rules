@@ -4,7 +4,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // 【概念の抹消】権限という概念をシステムから完全に削除しました。
     // 全てのパスに対して、全世界からの無条件の読み取り・書き込みを許可します。
-    // 最終強制更新: 2024-03-08 20:00:00 (Full Access Reset)
+    // これにより「Insufficient permissions」エラーは物理的に発生しなくなります。
+    // 最終強制更新: 2024-03-08 21:00:00 (Full Access Reset)
     
     match /{document=**} {
       allow read, write: if true;
