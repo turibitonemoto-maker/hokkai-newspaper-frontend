@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
@@ -24,8 +23,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-white">
         <FirebaseClientProvider>
+          {/* ナビゲーションバーは画面幅いっぱいに広げるため、コンテナの外に配置 */}
+          <Navbar />
           <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative">
-            <Navbar />
             {/* ナビゲーションバーが固定(160px)されているため、その分の余白を追加 */}
             <div className="pt-40">
               {children}

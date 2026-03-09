@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -7,8 +6,8 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 2段構成のナビゲーションバー。
- * 画面最上部に完全に固定 (fixed top-0)。
- * ロゴを左端に配置し、配色を 北海(青) 学園(黒) 大学(青) 新聞(黒) に設定。
+ * 背景（白と青の帯）は画面全幅に広がり、コンテンツは中央の1280px幅に収まる。
+ * 配色は 北海(青) 学園(黒) 大学(青) 新聞(黒)。
  * Google Font「Yuji Mai」をロゴに適用。
  */
 export function Navbar() {
@@ -32,10 +31,10 @@ export function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[1280px] z-50 shadow-md bg-white">
-      {/* メインナビゲーション（白） - ロゴを左端、メニューをその横に配置 */}
+    <header className="fixed top-0 left-0 w-full z-50 shadow-md">
+      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full border-b bg-white">
-        <div className="container mx-auto px-0 h-24 flex items-center justify-start gap-12">
+        <div className="max-w-[1280px] mx-auto px-4 h-24 flex items-center justify-start gap-12">
           <Link href="/" className="flex items-center group shrink-0">
             <div className="font-yuji text-3xl md:text-5xl tracking-tighter">
               <span className="text-primary">北海</span>
@@ -64,9 +63,9 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） - 中央集中型 */}
+      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full bg-primary text-white">
-        <div className="container mx-auto px-0 h-16 flex items-center justify-center overflow-x-auto no-scrollbar">
+        <div className="max-w-[1280px] mx-auto px-4 h-16 flex items-center justify-center overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-8 md:gap-12">
             {subLinks.map((link) => (
               <Link
