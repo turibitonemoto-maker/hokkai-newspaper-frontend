@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -11,6 +12,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
  * サイト全体を白基調にし、コンテンツを中央に据えたトップページ。
+ * デザインをナビゲーションバーと統一。
  */
 export default function Home() {
   const db = useFirestore();
@@ -35,13 +37,13 @@ export default function Home() {
 
   // カテゴリーリスト
   const categories = [
-    { id: 'Announcements', label: 'お知らせ', color: 'bg-blue-500' },
-    { id: 'Campus', label: 'キャンパス', color: 'bg-emerald-500' },
-    { id: 'Event', label: 'イベント', color: 'bg-amber-500' },
-    { id: 'Interview', label: 'インタビュー', color: 'bg-purple-500' },
-    { id: 'Sports', label: 'スポーツ', color: 'bg-red-500' },
-    { id: 'Column', label: 'コラム・寄稿', color: 'bg-indigo-500' },
-    { id: 'Opinion', label: 'オピニオン', color: 'bg-slate-600' },
+    { id: 'Announcements', label: 'お知らせ' },
+    { id: 'Campus', label: 'キャンパス' },
+    { id: 'Event', label: 'イベント' },
+    { id: 'Interview', label: 'インタビュー' },
+    { id: 'Sports', label: 'スポーツ' },
+    { id: 'Column', label: 'コラム・寄稿' },
+    { id: 'Opinion', label: 'オピニオン' },
   ];
 
   // 最新記事（上位12件を表示）
@@ -53,24 +55,26 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white font-body">
       <main className="flex-grow">
         <section className="py-8 md:py-12">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-0">
             
-            {/* 新聞記事の分類 */}
-            <div className="mb-12">
-              <div className="flex items-center gap-2 mb-6">
-                <Hash size={16} className="text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">新聞記事の分類</span>
+            {/* 新聞記事の分類 - ナビゲーションバー風デザイン */}
+            <div className="mb-16">
+              <div className="flex items-center gap-2 mb-8">
+                <div className="font-yuji text-3xl md:text-4xl tracking-tighter">
+                  <span className="text-primary">新聞</span>
+                  <span className="text-slate-950">記事</span>
+                  <span className="text-primary">の</span>
+                  <span className="text-slate-950">分類</span>
+                </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
+              <div className="flex flex-wrap gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-2">
                 {categories.map((cat) => (
                   <Link 
                     key={cat.id} 
                     href={`/category/${cat.id}`}
-                    className="group relative flex flex-col items-center justify-center p-4 bg-white rounded-[20px] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                    className="text-sm md:text-base font-bold uppercase tracking-wider px-5 py-3 rounded-xl transition-all whitespace-nowrap bg-white text-slate-600 hover:text-primary hover:bg-slate-100 border border-slate-100 shadow-sm"
                   >
-                    <span className="text-xs font-bold text-slate-900 mb-0.5">{cat.label}</span>
-                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{cat.id}</span>
-                    <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 ${cat.color} rounded-t-full group-hover:w-1/2 transition-all duration-300`} />
+                    {cat.label}
                   </Link>
                 ))}
               </div>
@@ -99,11 +103,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 最新の記事の見出し */}
+            {/* 最新の記事の見出し - ナビゲーションバー風デザイン */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tighter italic uppercase text-slate-900 leading-none">最新の記事</h2>
-                <div className="h-1.5 w-16 bg-primary mt-3 rounded-full" />
+                <div className="font-yuji text-4xl md:text-5xl tracking-tighter mb-2">
+                  <span className="text-primary">最新</span>
+                  <span className="text-slate-950">の</span>
+                  <span className="text-primary">記事</span>
+                </div>
+                <div className="h-1.5 w-16 bg-primary mt-2 rounded-full" />
               </div>
               <div className="flex items-center gap-2.5 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] bg-white px-5 py-2.5 rounded-xl shadow-sm border border-slate-100">
                 <Calendar size={12} className="text-primary" /> <span>{currentTime || '...'}</span>
@@ -148,9 +156,12 @@ export default function Home() {
       <footer className="bg-slate-950 text-slate-600 py-12 text-center border-t border-slate-900">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-            <span className="font-black text-lg tracking-tighter text-white">
-              北海学園大学<span className="text-primary">新聞</span>
-            </span>
+            <div className="font-yuji text-2xl tracking-tighter">
+              <span className="text-primary">北海</span>
+              <span className="text-white">学園</span>
+              <span className="text-primary">大学</span>
+              <span className="text-white">新聞</span>
+            </div>
           </div>
           <p className="text-[9px] font-black uppercase tracking-[0.3em]">
             &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
