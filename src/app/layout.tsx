@@ -3,6 +3,7 @@ import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: '北海学園大学新聞 | Hokkai Gakuen University Newspaper',
@@ -21,16 +22,23 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-white">
+      <body className="font-body antialiased bg-white flex flex-col min-h-screen">
         <FirebaseClientProvider>
-          {/* ナビゲーションバー */}
+          {/* ナビゲーションバー (全幅背景) */}
           <Navbar />
-          <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative">
-            {/* ナビゲーションバーの高さに合わせてパディングを調整 (モバイル: 128px, PC: 160px) */}
-            <div className="pt-32 md:pt-40 px-4 md:px-0">
-              {children}
+          
+          <main className="flex-grow flex flex-col">
+            <div className="max-w-[1280px] w-full mx-auto bg-white relative flex-grow">
+              {/* ナビゲーションバーの高さに合わせてパディングを調整 */}
+              <div className="pt-32 md:pt-40 px-4 md:px-0">
+                {children}
+              </div>
             </div>
-          </div>
+          </main>
+
+          {/* フッター (全幅背景) */}
+          <Footer />
+          
           <Toaster />
         </FirebaseClientProvider>
       </body>

@@ -41,7 +41,7 @@ export default function ArticlePreviewPage() {
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
 
   return (
-    <div className="min-h-screen bg-white font-body">
+    <div className="min-h-screen bg-white font-body pb-20">
       {/* プレビューバー */}
       <div className="sticky top-0 z-50 w-full bg-slate-900 text-white px-4 py-3 flex items-center justify-between shadow-2xl">
         <div className="flex items-center gap-3">
@@ -104,12 +104,6 @@ export default function ArticlePreviewPage() {
           </article>
         </div>
       </main>
-
-      <footer className="bg-slate-50 py-12 border-t text-center">
-        <p className="text-[10px] text-slate-400 font-black tracking-[0.3em] uppercase">
-          &copy; {new Date().getFullYear()} 北海学園大学新聞 PREVIEW MODE
-        </p>
-      </footer>
     </div>
   );
 }
