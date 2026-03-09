@@ -11,7 +11,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
  * サイト全体を白基調にし、コンテンツを中央に据えたトップページ。
- * Navbarはレイアウトレベルで固定されているため、ここでは記述しません。
  */
 export default function Home() {
   const db = useFirestore();
@@ -41,6 +40,7 @@ export default function Home() {
     { id: 'Event', label: 'イベント', color: 'bg-amber-500' },
     { id: 'Interview', label: 'インタビュー', color: 'bg-purple-500' },
     { id: 'Sports', label: 'スポーツ', color: 'bg-red-500' },
+    { id: 'Column', label: 'コラム・寄稿', color: 'bg-indigo-500' },
     { id: 'Opinion', label: 'オピニオン', color: 'bg-slate-600' },
   ];
 
@@ -61,7 +61,7 @@ export default function Home() {
                 <Hash size={16} className="text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">新聞記事の分類</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
                 {categories.map((cat) => (
                   <Link 
                     key={cat.id} 
@@ -110,7 +110,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 記事グリッド（小型化・左寄せ） */}
+            {/* 記事グリッド */}
             {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-24">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
@@ -148,7 +148,6 @@ export default function Home() {
       <footer className="bg-slate-950 text-slate-600 py-12 text-center border-t border-slate-900">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-            <Newspaper size={20} className="text-primary" />
             <span className="font-black text-lg tracking-tighter text-white">
               北海学園大学<span className="text-primary">新聞</span>
             </span>

@@ -21,6 +21,7 @@ export function Navbar() {
     { label: 'イベント', href: '/category/Event' },
     { label: 'インタビュー', href: '/category/Interview' },
     { label: 'スポーツ', href: '/category/Sports' },
+    { label: 'コラム・寄稿', href: '/category/Column' },
   ];
 
   const subLinks = [
@@ -33,7 +34,7 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md">
-      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央、パディングを排除して左寄せを強調 */}
+      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full border-b bg-white">
         <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-start gap-12">
           <Link href="/" className="flex items-center group shrink-0">
@@ -64,7 +65,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央、開始位置をロゴに合わせる */}
+      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央 */}
       <div className="w-full bg-primary text-white">
         <div className="max-w-[1280px] mx-auto px-0 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-8 md:gap-12">

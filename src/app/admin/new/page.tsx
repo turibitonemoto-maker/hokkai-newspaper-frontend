@@ -183,6 +183,7 @@ export default function NewArticlePage() {
                     <SelectItem value="Event">イベント</SelectItem>
                     <SelectItem value="Interview">インタビュー</SelectItem>
                     <SelectItem value="Sports">スポーツ</SelectItem>
+                    <SelectItem value="Column">コラム・寄稿</SelectItem>
                     <SelectItem value="Opinion">オピニオン</SelectItem>
                   </SelectContent>
                 </Select>

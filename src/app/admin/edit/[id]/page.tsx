@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -64,8 +63,6 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
 
     setIsSubmitting(true);
     
-    // updateDocumentNonBlocking を使用して「差分のみ」を送信
-    // これにより、既存の noteUrl や publishDate を壊さずに更新
     updateDocumentNonBlocking(articleRef, {
       title: formData.title,
       htmlContent: formData.htmlContent,
@@ -176,6 +173,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                     <SelectItem value="Event">イベント</SelectItem>
                     <SelectItem value="Interview">インタビュー</SelectItem>
                     <SelectItem value="Sports">スポーツ</SelectItem>
+                    <SelectItem value="Column">コラム・寄稿</SelectItem>
                     <SelectItem value="Opinion">オピニオン</SelectItem>
                   </SelectContent>
                 </Select>
