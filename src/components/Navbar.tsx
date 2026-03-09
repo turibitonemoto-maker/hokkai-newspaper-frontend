@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
  * 2段構成のナビゲーションバー。
  * 背景（白と青の帯）は画面全幅に広がり、コンテンツは中央の1280px幅に収まる。
  * 配色は 北海(青) 学園(黒) 大学(青) 新聞(黒)。
+ * ロゴは左端に配置、2段目のメニューもロゴのラインに合わせて左寄せに設定。
  * Google Font「Yuji Mai」をロゴに適用。
  */
 export function Navbar() {
@@ -63,9 +64,9 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央 */}
+      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央、メニューは左寄せ */}
       <div className="w-full bg-primary text-white">
-        <div className="max-w-[1280px] mx-auto px-4 h-16 flex items-center justify-center overflow-x-auto no-scrollbar">
+        <div className="max-w-[1280px] mx-auto px-4 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-8 md:gap-12">
             {subLinks.map((link) => (
               <Link
