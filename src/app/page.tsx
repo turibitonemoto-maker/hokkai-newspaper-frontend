@@ -12,9 +12,8 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * 権限の概念を完全に排除したトップページ。
- * 記事の枠を小さくし、グリッドの列数を増やすことで左側に寄せて表示。
- * 広告掲載エリア（Advertisement Area）を追加。
+ * ヒーローセクションを削除し、記事一覧と分類をメインに据えたトップページ。
+ * サイト全体は中央にボックスレイアウトで配置されています。
  */
 export default function Home() {
   const db = useFirestore();
@@ -47,7 +46,7 @@ export default function Home() {
     { id: 'Opinion', label: 'オピニオン', color: 'bg-slate-600' },
   ];
 
-  // 最新記事（上位12件を表示するように増量）
+  // 最新記事（上位12件を表示）
   const latestArticles = articles?.slice(0, 12) || [];
 
   const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
@@ -57,24 +56,7 @@ export default function Home() {
       <Navbar />
       
       <main className="flex-grow">
-        {/* ヒーローセクション */}
-        <section className="relative h-[40vh] md:h-[60vh] flex items-center overflow-hidden bg-slate-900 text-white">
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 to-primary/20" />
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl">
-              <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-4 leading-[0.9] italic">
-                キャンパスの<br />
-                <span className="text-primary not-italic">「いま」</span>を届ける。
-              </h1>
-              <p className="text-lg md:text-2xl font-black tracking-[0.15em] text-white/80 uppercase mt-6 border-l-4 border-primary pl-6 py-2">
-                HOKKAI GAKUEN UNIVERSITY<br />NEWSPAPER
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* メインコンテンツセクション */}
-        <section className="py-12 md:py-20">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
             
             {/* 新聞記事の分類 */}
@@ -98,7 +80,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 広告セクション（Advertisement） */}
+            {/* 広告セクション */}
             <div className="mb-16">
               <div className="flex items-center gap-2 mb-4">
                 <Megaphone size={14} className="text-slate-400" />
@@ -132,7 +114,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 記事グリッド */}
+            {/* 記事グリッド（小型化・左寄せ） */}
             {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-24">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
@@ -141,7 +123,7 @@ export default function Home() {
             ) : latestArticles.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 animate-fade-in">
                 {latestArticles.map((article) => (
-                  <div key={article.id} className="max-w-[320px]">
+                  <div key={article.id} className="max-w-full">
                     <ArticleCard article={article as any} />
                   </div>
                 ))}
