@@ -11,8 +11,8 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * トップページのデザインをナビゲーションバー（一番上のデザイン）と完全に統一。
- * 見出しの配色リズム（青・黒・青・黒）とフォント（Yuji Mai）を適用。
+ * トップページのデザイン。見出しの配色リズム（青・黒・青・黒）は維持しつつ、
+ * フォントはロゴ以外標準の太字（Inter）を使用。
  */
 export default function Home() {
   const db = useFirestore();
@@ -35,7 +35,7 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  // カテゴリーリスト（ナビゲーションバーと同期）
+  // カテゴリーリスト
   const categories = [
     { id: 'Announcements', label: 'お知らせ' },
     { id: 'Campus', label: 'キャンパス' },
@@ -52,10 +52,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
       <main className="flex-grow">
-        {/* 新聞記事の分類セクション - ナビゲーションバー（一番上）のデザインを継承 */}
+        {/* 新聞記事の分類セクション - ヘッダーのデザインを継承（フォントは標準） */}
         <section className="w-full border-b bg-white mb-12">
           <div className="container mx-auto px-0 py-8 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
-            <div className="font-yuji text-3xl md:text-4xl tracking-tighter shrink-0">
+            <div className="text-3xl md:text-4xl font-black tracking-tighter shrink-0 uppercase italic">
               <span className="text-primary">新聞</span>
               <span className="text-slate-950">記事</span>
               <span className="text-primary">の</span>
@@ -99,10 +99,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 最新の記事の見出し - ロゴ風配色 */}
+          {/* 最新の記事の見出し - 配色リズムは維持、フォントは標準 */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-slate-100 pb-8">
             <div>
-              <div className="font-yuji text-4xl md:text-5xl tracking-tighter">
+              <div className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
                 <span className="text-primary">最新</span>
                 <span className="text-slate-950">の</span>
                 <span className="text-primary">記事</span>
@@ -148,7 +148,7 @@ export default function Home() {
       <footer className="bg-slate-950 text-slate-600 py-16 text-center border-t border-slate-900">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 mb-8 opacity-50">
-            <div className="font-yuji text-3xl tracking-tighter">
+            <div className="text-3xl font-black tracking-tighter uppercase italic">
               <span className="text-primary">北海</span>
               <span className="text-white">学園</span>
               <span className="text-primary">大学</span>

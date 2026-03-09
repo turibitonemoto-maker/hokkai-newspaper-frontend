@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 /**
  * 2段構成のナビゲーションバー。
  * 配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)。
- * すべての文字を1280pxの幅に収めつつ、アイコン除去後の余白を活かして左端に配置。
+ * Yuji Maiフォントはロゴのみに使用。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -33,7 +33,7 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md">
-      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央 */}
+      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央1280px */}
       <div className="w-full border-b bg-white">
         <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-start gap-8 md:gap-12">
           <Link href="/" className="flex items-center group shrink-0">
@@ -64,7 +64,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央 */}
+      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央1280px */}
       <div className="w-full bg-primary text-white">
         <div className="max-w-[1280px] mx-auto px-0 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-6 md:gap-8">
