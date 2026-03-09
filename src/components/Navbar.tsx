@@ -1,7 +1,6 @@
 "use client";
 
 import Link from 'next/link';
-import { Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
@@ -10,6 +9,7 @@ import { usePathname } from 'next/navigation';
  * ロゴの配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)
  * 常に上部に固定されるように sticky top-0 を設定。
  * ロゴに Google Font「Yuji Mai」を適用。
+ * 謎のアイコン（Newspaper）を削除しました。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -36,11 +36,8 @@ export function Navbar() {
       {/* メインナビゲーション（白） - 中央集中型 */}
       <div className="w-full border-b bg-white/95 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-24 flex items-center justify-center gap-10 md:gap-16">
-          <Link href="/" className="flex items-center gap-4 group shrink-0">
-            <div className="bg-primary p-2.5 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
-              <Newspaper size={32} />
-            </div>
-            <div className="font-yuji text-2xl md:text-4xl tracking-tighter hidden sm:inline-block">
+          <Link href="/" className="flex items-center group shrink-0">
+            <div className="font-yuji text-3xl md:text-5xl tracking-tighter sm:inline-block">
               <span className="text-primary">北海</span>
               <span className="text-slate-950">学園</span>
               <span className="text-primary">大学</span>
