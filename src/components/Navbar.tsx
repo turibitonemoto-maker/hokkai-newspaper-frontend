@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 2段構成のナビゲーションバー。
- * ロゴを左側に配置し、メインメニューを右側に寄せました。
+ * ロゴを左端に配置し、メインメニューを右側に寄せました。
  * ロゴの配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)
  * 常に上部に固定されるように sticky top-0 を設定。
  * ロゴに Google Font「Yuji Mai」を適用。
@@ -34,7 +34,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-md bg-white">
-      {/* メインナビゲーション（白） - ロゴを左、メニューを右に配置 */}
+      {/* メインナビゲーション（白） - ロゴを左端、メニューを右側に配置 */}
       <div className="w-full border-b bg-white/95 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-24 flex items-center justify-between">
           <Link href="/" className="flex items-center group shrink-0">
