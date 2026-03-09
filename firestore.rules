@@ -3,8 +3,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 【概念の抹消】権限という概念をシステムから完全に削除しました。
-    // すべてのパスに対して、全世界からの無条件の読み取り・書き込みを許可します。
-    // 最終強制更新: 2024-03-08 17:00:00 (Full Access Reset)
+    // 全てのパスに対して、全世界からの無条件の読み取り・書き込みを許可します。
+    // 最終強制更新: 2024-03-08 18:00:00 (Full Access Reset)
     
     match /{document=**} {
       allow read, write: if true;

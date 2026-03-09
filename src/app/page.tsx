@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -10,7 +11,7 @@ import Link from 'next/link';
 
 /**
  * 権限概念を完全に排除したトップページ。
- * ヒーローセクションから「Official Website」を削除し、英語名称を強調。
+ * 「新聞記事の分類」を「最新の記事」の見出しよりも上に配置。
  */
 export default function Home() {
   const db = useFirestore();
@@ -70,19 +71,9 @@ export default function Home() {
         {/* メインコンテンツセクション */}
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4">
-            {/* 見出し */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-              <div>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic uppercase text-slate-900 leading-none">最新の記事</h2>
-                <div className="h-2 w-24 bg-primary mt-4 rounded-full" />
-              </div>
-              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-[0.2em] bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
-                <Calendar size={14} className="text-primary" /> <span>{currentTime || '...'}</span>
-              </div>
-            </div>
-
-            {/* 見出しのすぐ下に配置される分類（カテゴリーナビゲーション） */}
-            <div className="mb-16">
+            
+            {/* 新聞記事の分類（セクション最上部に配置） */}
+            <div className="mb-20">
               <div className="flex items-center gap-2 mb-6">
                 <Hash size={18} className="text-primary" />
                 <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">新聞記事の分類</span>
@@ -99,6 +90,17 @@ export default function Home() {
                     <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 ${cat.color} rounded-t-full group-hover:w-1/2 transition-all duration-300`} />
                   </Link>
                 ))}
+              </div>
+            </div>
+
+            {/* 最新の記事の見出し */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+              <div>
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic uppercase text-slate-900 leading-none">最新の記事</h2>
+                <div className="h-2 w-24 bg-primary mt-4 rounded-full" />
+              </div>
+              <div className="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-[0.2em] bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
+                <Calendar size={14} className="text-primary" /> <span>{currentTime || '...'}</span>
               </div>
             </div>
 

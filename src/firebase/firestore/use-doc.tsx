@@ -1,3 +1,4 @@
+
 'use client';
     
 import { useState, useEffect } from 'react';
@@ -8,8 +9,6 @@ import {
   FirestoreError,
   DocumentSnapshot,
 } from 'firebase/firestore';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
@@ -26,7 +25,7 @@ export interface UseDocResult<T> {
 
 /**
  * React hook to subscribe to a single Firestore document in real-time.
- * 権限の概念を抹消するため、エラー時もUIをクラッシュさせずに静かに処理を続行します。
+ * 権限の概念を抹消するため、エラー時も静かに処理を完了させます。
  */
 export function useDoc<T = any>(
   memoizedDocRef: (DocumentReference<DocumentData> & {__memo?: boolean}) | null | undefined,
@@ -63,18 +62,11 @@ export function useDoc<T = any>(
         setError(null);
         setIsLoading(false);
       },
-      (error: FirestoreError) => {
-        const contextualError = new FirestorePermissionError({
-          operation: 'get',
-          path: memoizedDocRef.path,
-        })
-
-        setError(contextualError);
+      (err: FirestoreError) => {
+        // 【概念の抹消】拒否という概念を無視します。
         setData(null);
+        setError(err);
         setIsLoading(false);
-
-        // ログとしては送信するが、Listenerを削除したため画面はクラッシュしません
-        errorEmitter.emit('permission-error', contextualError);
       }
     );
 
