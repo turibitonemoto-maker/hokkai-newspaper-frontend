@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -36,12 +35,12 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full shadow-md">
       {/* メインナビゲーション（白） - 中央集中型 */}
       <div className="w-full border-b bg-white/95 backdrop-blur-xl">
-        <div className="container mx-auto px-4 h-20 flex items-center justify-center gap-12 md:gap-20">
-          <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="bg-primary p-2 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
-              <Newspaper size={28} />
+        <div className="container mx-auto px-4 h-24 flex items-center justify-center gap-10 md:gap-16">
+          <Link href="/" className="flex items-center gap-4 group shrink-0">
+            <div className="bg-primary p-2.5 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
+              <Newspaper size={32} />
             </div>
-            <span className="font-bold text-2xl tracking-tighter text-slate-950 hidden sm:inline-block">
+            <span className="font-bold text-2xl md:text-3xl tracking-tighter text-slate-950 hidden sm:inline-block">
               北海学園大学<span className="text-primary">新聞</span>
             </span>
           </Link>
@@ -52,7 +51,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-base md:text-lg font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition-all whitespace-nowrap",
+                  "text-base md:text-xl font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
                   pathname === link.href 
                     ? "bg-slate-100 text-primary" 
                     : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -67,8 +66,8 @@ export function Navbar() {
 
       {/* セカンダリナビゲーション（青） - 中央集中型 */}
       <div className="w-full bg-primary text-white shadow-inner">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-center overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-10 md:gap-16">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-center overflow-x-auto no-scrollbar">
+          <nav className="flex items-center gap-8 md:gap-12">
             {subLinks.map((link) => (
               <Link
                 key={link.label}

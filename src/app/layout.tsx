@@ -15,9 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className="font-body antialiased">
+      <body className="font-body antialiased bg-slate-100">
         <FirebaseClientProvider>
-          {children}
+          {/* サイト全体を中央に配置し、左右に余白を作るラッパー */}
+          <div className="max-w-[1280px] mx-auto bg-white min-h-screen shadow-2xl relative overflow-x-hidden border-x border-slate-200">
+            {children}
+          </div>
           <Toaster />
         </FirebaseClientProvider>
       </body>
