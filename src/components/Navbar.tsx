@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -16,6 +17,13 @@ import {
  * 権限の概念を抹消したため、一切のガードなしで閲覧可能です。
  */
 export function Navbar() {
+  const navLinks = [
+    { href: "/", label: "TOP" },
+    { href: "/greeting", label: "会長挨拶" },
+    { href: "/recruit", label: "リクルート" },
+    { href: "/advertise", label: "広告募集" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -28,11 +36,17 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* デスクトップ用：極限までシンプルに */}
+        {/* デスクトップ用ナビゲーション */}
         <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600">
-          <Link href="/" className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1">
-            TOP
-          </Link>
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary py-1"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -54,9 +68,15 @@ export function Navbar() {
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-2 p-4 grow">
-                  <Link href="/" className="flex items-center h-16 px-6 rounded-2xl text-sm font-black uppercase tracking-widest text-slate-600 hover:bg-primary/5 hover:text-primary transition-all">
-                    TOP
-                  </Link>
+                  {navLinks.map((link) => (
+                    <Link 
+                      key={link.href} 
+                      href={link.href} 
+                      className="flex items-center h-16 px-6 rounded-2xl text-sm font-black uppercase tracking-widest text-slate-600 hover:bg-primary/5 hover:text-primary transition-all"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
                 </nav>
               </div>
             </SheetContent>
