@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="font-body antialiased bg-white">
         <FirebaseClientProvider>
-          <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative overflow-x-hidden">
+          <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative">
             <Navbar />
             {children}
           </div>

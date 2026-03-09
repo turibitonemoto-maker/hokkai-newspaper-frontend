@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 /**
  * 2段構成の中央集中型ナビゲーションバー。
  * ロゴの配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)
- * 常に上部に固定されるように sticky 設定を維持。
+ * 常に上部に固定されるように sticky top-0 を設定。
  */
 export function Navbar() {
   const pathname = usePathname();
