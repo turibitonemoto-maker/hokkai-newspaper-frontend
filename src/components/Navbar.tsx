@@ -10,9 +10,7 @@ import { Button } from '@/components/ui/button';
 
 /**
  * 2段構成のナビゲーションバー。
- * 1段目の右端に検索機能を追加。
- * 配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)。
- * Yuji Maiフォントはロゴのみに使用。
+ * モバイルとPCで高さを最適化。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -49,12 +47,12 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
-      {/* メインナビゲーション（白） - 背景は全幅、コンテンツは中央1280px */}
+      {/* 1段目: ロゴと検索 (モバイル: h-20, PC: h-24) */}
       <div className="w-full border-b bg-white relative">
-        <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-6 md:gap-10 overflow-hidden flex-grow">
+        <div className="max-w-[1280px] mx-auto px-0 h-20 md:h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4 md:gap-10 overflow-hidden flex-grow">
             <Link href="/" className="flex items-center group shrink-0">
-              <div className="font-yuji text-4xl tracking-tighter">
+              <div className="font-yuji text-2xl md:text-4xl tracking-tighter leading-none">
                 <span className="text-primary">北海</span>
                 <span className="text-slate-950">学園</span>
                 <span className="text-primary">大学</span>
@@ -63,7 +61,7 @@ export function Navbar() {
             </Link>
 
             {!isSearchOpen && (
-              <nav className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar py-2 animate-in fade-in duration-500">
+              <nav className="hidden lg:flex items-center gap-1 overflow-x-auto no-scrollbar py-2 animate-in fade-in duration-500">
                 {mainLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -82,21 +80,21 @@ export function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-2 md:gap-4 ml-2">
             {isSearchOpen ? (
               <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 w-full max-w-md">
                 <div className="relative flex-grow">
                   <Input 
                     autoFocus
-                    placeholder="キーワードを入力して検索"
+                    placeholder="検索"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="rounded-full border-slate-200 bg-slate-50 h-10 w-[200px] md:w-[300px] pr-10"
+                    className="rounded-full border-slate-200 bg-slate-50 h-9 md:h-10 w-[120px] md:w-[300px] pr-8 text-sm"
                   />
-                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full">
-                  <X size={20} className="text-slate-400" />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full h-8 w-8">
+                  <X size={18} className="text-slate-400" />
                 </Button>
               </form>
             ) : (
@@ -104,24 +102,24 @@ export function Navbar() {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setIsSearchOpen(true)}
-                className="rounded-full hover:bg-slate-50 transition-colors"
+                className="rounded-full hover:bg-slate-50 transition-colors h-10 w-10 md:h-12 md:w-12"
               >
-                <Search size={24} className="text-slate-400 hover:text-primary" />
+                <Search size={20} className="text-slate-400 md:size-6" />
               </Button>
             )}
           </div>
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央1280px */}
+      {/* 2段目: サブリンク (モバイル: h-12, PC: h-16) */}
       <div className="w-full bg-primary text-white">
-        <div className="max-w-[1280px] mx-auto px-0 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-8">
+        <div className="max-w-[1280px] mx-auto px-0 h-12 md:h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
+          <nav className="flex items-center gap-4 md:gap-8 px-4 md:px-0">
             {subLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
+                className="text-[10px] md:text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
               >
                 {link.label}
               </Link>
