@@ -1,16 +1,20 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Newspaper, Loader2, Calendar, Hash, ChevronRight } from 'lucide-react';
+import { Newspaper, Loader2, Calendar, Hash, ChevronRight, Megaphone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * 権限概念を完全に排除したトップページ。
+ * 権限の概念を完全に排除したトップページ。
  * 記事の枠を小さくし、グリッドの列数を増やすことで左側に寄せて表示。
+ * 広告掲載エリア（Advertisement Area）を追加。
  */
 export default function Home() {
   const db = useFirestore();
@@ -46,6 +50,8 @@ export default function Home() {
   // 最新記事（上位12件を表示するように増量）
   const latestArticles = articles?.slice(0, 12) || [];
 
+  const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-body">
       <Navbar />
@@ -71,8 +77,8 @@ export default function Home() {
         <section className="py-12 md:py-20">
           <div className="container mx-auto px-4">
             
-            {/* 新聞記事の分類（セクション最上部） */}
-            <div className="mb-16">
+            {/* 新聞記事の分類 */}
+            <div className="mb-12">
               <div className="flex items-center gap-2 mb-6">
                 <Hash size={16} className="text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">新聞記事の分類</span>
@@ -92,6 +98,29 @@ export default function Home() {
               </div>
             </div>
 
+            {/* 広告セクション（Advertisement） */}
+            <div className="mb-16">
+              <div className="flex items-center gap-2 mb-4">
+                <Megaphone size={14} className="text-slate-400" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
+              </div>
+              <div className="relative w-full h-24 md:h-32 bg-slate-200 rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
+                {adPlaceholder && (
+                  <Image 
+                    src={adPlaceholder.imageUrl} 
+                    alt="Advertisement" 
+                    fill 
+                    className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
+                  <div className="bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full shadow-xl">
+                    <p className="text-[10px] font-black tracking-widest text-slate-900">広告募集中</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* 最新の記事の見出し */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
@@ -103,7 +132,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 記事グリッド - 枠を小さくし、列数を増やすことで左寄りに見せる */}
+            {/* 記事グリッド */}
             {isArticlesLoading ? (
               <div className="flex flex-col items-center justify-center py-24">
                 <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />

@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Article": {
@@ -107,6 +108,31 @@
         "id",
         "imageUrl"
       ]
+    },
+    "Advertisement": {
+      "title": "Advertisement",
+      "type": "object",
+      "description": "サイト内に表示される広告枠。",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "linkUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "imageUrl"
+      ]
     }
   },
   "auth": {
@@ -132,6 +158,12 @@
         "$ref": "#/backend/entities/HeroImage"
       },
       "description": "トップページの背景画像リスト。"
+    },
+    "/ads/{adId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Advertisement"
+      },
+      "description": "広告データ。"
     }
   }
 }

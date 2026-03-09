@@ -29,6 +29,12 @@
       "description": "Lecture hall with students",
       "imageUrl": "https://images.unsplash.com/photo-1477281765962-ef34e8bb0967?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx1bml2ZXJzaXR5JTIwbGVjdHVyZXxlbnwwfHx8fDE3NzE5MTAxMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "university lecture"
+    },
+    {
+      "id": "ad-placeholder",
+      "description": "Generic advertisement banner placeholder",
+      "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxidXNpbmVzcyUyMGJhbm5lcnxlbnwwfHx8fDE3NzE5MTExMDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "business banner"
     }
   ]
 }
