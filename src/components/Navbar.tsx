@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
  */
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -37,6 +38,15 @@ export function Navbar() {
     { label: '広告募集', href: '#' },
     { label: 'お問い合わせ', href: '#' },
   ];
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
@@ -75,7 +85,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-4 ml-4">
             {isSearchOpen ? (
-              <div className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 w-full max-w-md">
+              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 w-full max-w-md">
                 <div className="relative flex-grow">
                   <Input 
                     autoFocus
@@ -84,12 +94,12 @@ export function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="rounded-full border-slate-200 bg-slate-50 h-10 w-[200px] md:w-[300px] pr-10"
                   />
-                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full">
+                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full">
                   <X size={20} className="text-slate-400" />
                 </Button>
-              </div>
+              </form>
             ) : (
               <Button 
                 variant="ghost" 
