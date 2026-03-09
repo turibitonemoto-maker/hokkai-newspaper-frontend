@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useSearchParams } from 'next/navigation';
@@ -7,9 +6,9 @@ import { collection, query, where, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Search, Loader2, Ghost, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 
-export default function SearchPage() {
+function SearchResults() {
   const searchParams = useSearchParams();
   const queryText = searchParams.get('q') || '';
   const db = useFirestore();
@@ -38,12 +37,14 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
       <main className="flex-grow container mx-auto px-4 py-12">
+        {/* パンくずリスト */}
         <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
           <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
           <ChevronRight size={12} className="text-slate-200" />
           <span className="text-primary uppercase">Search Results</span>
         </nav>
 
+        {/* 検索見出し - 配色リズムは維持、フォントは標準 */}
         <header className="mb-16">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-slate-900 p-3 rounded-2xl text-white shadow-lg">
@@ -96,5 +97,17 @@ export default function SearchPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    }>
+      <SearchResults />
+    </Suspense>
   );
 }

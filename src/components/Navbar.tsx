@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -55,7 +54,7 @@ export function Navbar() {
         <div className="max-w-[1280px] mx-auto px-0 h-24 flex items-center justify-between">
           <div className="flex items-center gap-6 md:gap-10 overflow-hidden flex-grow">
             <Link href="/" className="flex items-center group shrink-0">
-              <div className="font-yuji text-3xl md:text-4xl tracking-tighter">
+              <div className="font-yuji text-4xl tracking-tighter">
                 <span className="text-primary">北海</span>
                 <span className="text-slate-950">学園</span>
                 <span className="text-primary">大学</span>
@@ -64,13 +63,13 @@ export function Navbar() {
             </Link>
 
             {!isSearchOpen && (
-              <nav className="hidden lg:flex items-center gap-1 md:gap-2 overflow-x-auto no-scrollbar py-2 animate-in fade-in duration-500">
+              <nav className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar py-2 animate-in fade-in duration-500">
                 {mainLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "text-xs md:text-sm font-bold uppercase tracking-wider px-2 py-2 rounded-xl transition-all whitespace-nowrap",
+                      "text-sm font-bold uppercase tracking-wider px-2 py-2 rounded-xl transition-all whitespace-nowrap",
                       pathname === link.href 
                         ? "bg-slate-100 text-primary" 
                         : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -117,12 +116,12 @@ export function Navbar() {
       {/* セカンダリナビゲーション（青） - 背景は全幅、コンテンツは中央1280px */}
       <div className="w-full bg-primary text-white">
         <div className="max-w-[1280px] mx-auto px-0 h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-6 md:gap-8">
+          <nav className="flex items-center gap-8">
             {subLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-xs md:text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
+                className="text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
               >
                 {link.label}
               </Link>
