@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 /**
- * 2段構成のナビゲーションバー。
- * 上段（白）: 主要なカテゴリー。
- * 下段（青）: 組織情報や募集情報。
- * 文字サイズを拡大し、視認性をさらに向上。
+ * 2段構成の中央集中型ナビゲーションバー。
+ * 上段（白）: 主要なカテゴリーを中央に配置。
+ * 下段（青）: 組織情報や募集情報を中央に配置。
+ * 左右に空白を作ることで、重要なコンテンツへ視線が集中するように設計。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -34,9 +34,9 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-md">
-      {/* メインナビゲーション（白） */}
+      {/* メインナビゲーション（白） - 中央集中型 */}
       <div className="w-full border-b bg-white/95 backdrop-blur-xl">
-        <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="container mx-auto px-4 h-20 flex items-center justify-center gap-12 md:gap-20">
           <Link href="/" className="flex items-center gap-3 group shrink-0">
             <div className="bg-primary p-2 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
               <Newspaper size={28} />
@@ -46,7 +46,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-2 md:gap-4 overflow-x-auto no-scrollbar py-2 ml-4">
+          <nav className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar py-2">
             {mainLinks.map((link) => (
               <Link
                 key={link.href}
@@ -65,10 +65,10 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* セカンダリナビゲーション（青） */}
+      {/* セカンダリナビゲーション（青） - 中央集中型 */}
       <div className="w-full bg-primary text-white shadow-inner">
-        <div className="container mx-auto px-4 h-14 flex items-center overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-8 md:gap-12">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-center overflow-x-auto no-scrollbar">
+          <nav className="flex items-center gap-10 md:gap-16">
             {subLinks.map((link) => (
               <Link
                 key={link.label}
