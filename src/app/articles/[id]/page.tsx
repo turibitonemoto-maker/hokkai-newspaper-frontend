@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { Navbar } from '@/components/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ChevronLeft, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
@@ -28,7 +27,6 @@ export default function ArticlePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
-        <Navbar />
         <div className="flex-grow flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -42,7 +40,6 @@ export default function ArticlePage() {
   if (!article) {
     return (
       <div className="min-h-screen flex flex-col bg-white">
-        <Navbar />
         <div className="flex-grow flex flex-col items-center justify-center p-4">
           <Badge variant="destructive" className="mb-4">404 NOT FOUND</Badge>
           <h1 className="text-3xl font-black mb-6 tracking-tight">記事が見つかりませんでした</h1>
@@ -59,15 +56,13 @@ export default function ArticlePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
-      <Navbar />
-      
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8 md:py-12">
           <div className="max-w-4xl mx-auto">
             <Button 
               variant="ghost" 
               className="mb-6 md:mb-10 gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-500 font-bold rounded-xl"
-              onClick={() => router.back()} // ブラウザの履歴を戻る
+              onClick={() => router.back()}
             >
               <ChevronLeft size={18} /> BACK
             </Button>
@@ -100,7 +95,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('base')}
-                      className="rounded-lg h-8 px-3 font-black text-[10px]"
+                      className="rounded-lg h-8 px-3 font-bold text-[10px]"
                     >
                       標準
                     </Button>
@@ -108,7 +103,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'lg' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('lg')}
-                      className="rounded-lg h-8 px-3 font-black text-[10px]"
+                      className="rounded-lg h-8 px-3 font-bold text-[10px]"
                     >
                       拡大
                     </Button>
@@ -116,7 +111,7 @@ export default function ArticlePage() {
                       variant={fontSize === 'xl' ? 'secondary' : 'ghost'} 
                       size="sm" 
                       onClick={() => setFontSize('xl')}
-                      className="rounded-lg h-8 px-3 font-black text-[10px]"
+                      className="rounded-lg h-8 px-3 font-bold text-[10px]"
                     >
                       最大
                     </Button>
@@ -156,7 +151,7 @@ export default function ArticlePage() {
                       note.comでこの記事の続きを読む
                       <ExternalLink size={28} className="shrink-0" />
                     </a>
-                    <p className="text-center mt-4 md:mt-6 text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <p className="text-center mt-4 md:mt-6 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
                       ※外部サイト（note.com）へ移動します
                     </p>
                   </div>
@@ -164,11 +159,11 @@ export default function ArticlePage() {
 
                 <footer className="mt-12 md:mt-20 pt-8 md:pt-12 border-t border-slate-100">
                   <div className="bg-slate-50 rounded-2xl md:rounded-[32px] p-6 md:p-8 flex items-center gap-4 md:gap-6">
-                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-black text-xl md:text-2xl uppercase">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-bold text-xl md:text-2xl uppercase">
                       H
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 mb-1 text-sm md:text-base">北海学園大学新聞</h4>
+                      <h4 className="font-bold text-slate-900 mb-1 text-sm md:text-base">北海学園大学新聞</h4>
                       <p className="text-[10px] md:text-sm text-slate-500 leading-relaxed font-medium">
                         この記事は北海学園大学新聞 取材班によって執筆・編集されました。
                       </p>

@@ -7,9 +7,8 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 2段構成の中央集中型ナビゲーションバー。
- * 上段（白）: 主要なカテゴリーを中央に配置。
- * 下段（青）: 組織情報や募集情報を中央に配置。
- * 左右に空白を作ることで、重要なコンテンツへ視線が集中するように設計。
+ * ロゴの配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)
+ * 常に上部に固定されるように sticky 設定を維持。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -32,7 +31,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full shadow-md">
+    <header className="sticky top-0 z-50 w-full shadow-md bg-white">
       {/* メインナビゲーション（白） - 中央集中型 */}
       <div className="w-full border-b bg-white/95 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-24 flex items-center justify-center gap-10 md:gap-16">
@@ -40,9 +39,12 @@ export function Navbar() {
             <div className="bg-primary p-2.5 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
               <Newspaper size={32} />
             </div>
-            <span className="font-bold text-2xl md:text-3xl tracking-tighter text-slate-950 hidden sm:inline-block">
-              北海学園大学<span className="text-primary">新聞</span>
-            </span>
+            <div className="font-bold text-2xl md:text-3xl tracking-tighter hidden sm:inline-block">
+              <span className="text-primary">北海</span>
+              <span className="text-slate-950">学園</span>
+              <span className="text-primary">大学</span>
+              <span className="text-slate-950">新聞</span>
+            </div>
           </Link>
 
           <nav className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar py-2">
@@ -51,7 +53,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-base md:text-xl font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
+                  "text-base md:text-lg font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
                   pathname === link.href 
                     ? "bg-slate-100 text-primary" 
                     : "text-slate-600 hover:text-primary hover:bg-slate-50"

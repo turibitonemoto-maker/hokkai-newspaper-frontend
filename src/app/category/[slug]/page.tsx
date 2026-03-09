@@ -3,7 +3,6 @@
 import { useParams } from 'next/navigation';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, orderBy } from 'firebase/firestore';
-import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { ChevronRight, Filter, Loader2, Ghost } from 'lucide-react';
 import Link from 'next/link';
@@ -26,10 +25,8 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
-      <Navbar />
-      
       <main className="flex-grow container mx-auto px-4 py-12">
-        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
+        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
           <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
           <ChevronRight size={12} className="text-slate-200" />
           <span className="text-primary">{slug}</span>
@@ -52,7 +49,7 @@ export default function CategoryPage() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-40">
             <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
-            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Database Synchronizing</p>
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em]">Database Synchronizing</p>
           </div>
         ) : articles && articles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 animate-fade-in">
@@ -69,7 +66,7 @@ export default function CategoryPage() {
             <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
               このカテゴリーにはまだ公開された記事がないようです。
             </p>
-            <Link href="/" className="inline-block mt-8 text-primary font-black uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">
+            <Link href="/" className="inline-block mt-8 text-primary font-bold uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">
               BACK TO HOME
             </Link>
           </div>

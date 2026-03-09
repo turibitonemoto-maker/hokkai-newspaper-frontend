@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { Navbar } from '@/components/Navbar';
 
 export const metadata: Metadata = {
   title: '北海学園大学新聞 | Hokkai Gakuen University Newspaper',
@@ -17,8 +18,8 @@ export default function RootLayout({
     <html lang="ja">
       <body className="font-body antialiased bg-white">
         <FirebaseClientProvider>
-          {/* コンテンツを中央に配置するが、影や境界線を消して背景と一体化させる */}
           <div className="max-w-[1280px] mx-auto bg-white min-h-screen relative overflow-x-hidden">
+            <Navbar />
             {children}
           </div>
           <Toaster />

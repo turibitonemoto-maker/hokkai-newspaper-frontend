@@ -2,7 +2,6 @@
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { Navbar } from '@/components/Navbar';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Newspaper, Loader2, Calendar, Hash, ChevronRight, Megaphone } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -12,6 +11,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
  * サイト全体を白基調にし、コンテンツを中央に据えたトップページ。
+ * Navbarはレイアウトレベルで固定されているため、ここでは記述しません。
  */
 export default function Home() {
   const db = useFirestore();
@@ -51,8 +51,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
-      <Navbar />
-      
       <main className="flex-grow">
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
@@ -70,7 +68,7 @@ export default function Home() {
                     href={`/category/${cat.id}`}
                     className="group relative flex flex-col items-center justify-center p-4 bg-white rounded-[20px] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                   >
-                    <span className="text-xs font-black text-slate-900 mb-0.5">{cat.label}</span>
+                    <span className="text-xs font-bold text-slate-900 mb-0.5">{cat.label}</span>
                     <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{cat.id}</span>
                     <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-1 ${cat.color} rounded-t-full group-hover:w-1/2 transition-all duration-300`} />
                   </Link>
