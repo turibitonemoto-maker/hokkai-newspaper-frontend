@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -13,6 +12,7 @@ export default {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
+        yuji: ['"Yuji Mai"', 'serif'],
         code: ['monospace'],
       },
       colors: {

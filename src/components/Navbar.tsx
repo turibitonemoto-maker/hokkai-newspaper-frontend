@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
  * 2段構成の中央集中型ナビゲーションバー。
  * ロゴの配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)
  * 常に上部に固定されるように sticky top-0 を設定。
+ * ロゴに Google Font「Yuji Mai」を適用。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -39,7 +40,7 @@ export function Navbar() {
             <div className="bg-primary p-2.5 rounded-xl text-white transition-all group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-primary/20">
               <Newspaper size={32} />
             </div>
-            <div className="font-bold text-2xl md:text-3xl tracking-tighter hidden sm:inline-block">
+            <div className="font-yuji text-2xl md:text-4xl tracking-tighter hidden sm:inline-block">
               <span className="text-primary">北海</span>
               <span className="text-slate-950">学園</span>
               <span className="text-primary">大学</span>
