@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -6,11 +7,8 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 2段構成のナビゲーションバー。
- * 背景（白と青の帯）は画面全幅に広がり、コンテンツは中央の1280px幅に収まる。
- * 配色は 北海(青) 学園(黒) 大学(青) 新聞(黒)。
- * ロゴは左端（パディングなし）に配置、2段目のメニューもロゴのラインに合わせて左寄せに設定。
- * Google Font「Yuji Mai」をロゴに適用。
- * 文字サイズを調整し、1280px内に全要素が収まるように最適化。
+ * 配色: 北海(青) 学園(黒) 大学(青) 新聞(黒)。
+ * すべての文字を1280pxの幅に収めつつ、アイコン除去後の余白を活かして左端に配置。
  */
 export function Navbar() {
   const pathname = usePathname();

@@ -4,15 +4,15 @@
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Newspaper, Loader2, Calendar, Hash, ChevronRight, Megaphone } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * サイト全体を白基調にし、コンテンツを中央に据えたトップページ。
- * デザインをナビゲーションバーと統一。
+ * トップページのデザインをナビゲーションバー（一番上のデザイン）と完全に統一。
+ * 見出しの配色リズム（青・黒・青・黒）とフォント（Yuji Mai）を適用。
  */
 export default function Home() {
   const db = useFirestore();
@@ -35,7 +35,7 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  // カテゴリーリスト
+  // カテゴリーリスト（ナビゲーションバーと同期）
   const categories = [
     { id: 'Announcements', label: 'お知らせ' },
     { id: 'Campus', label: 'キャンパス' },
@@ -46,124 +46,116 @@ export default function Home() {
     { id: 'Opinion', label: 'オピニオン' },
   ];
 
-  // 最新記事（上位12件を表示）
   const latestArticles = articles?.slice(0, 12) || [];
-
   const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
       <main className="flex-grow">
-        <section className="py-8 md:py-12">
-          <div className="container mx-auto px-0">
-            
-            {/* 新聞記事の分類 - ナビゲーションバー風デザイン */}
-            <div className="mb-16">
-              <div className="flex items-center gap-2 mb-8">
-                <div className="font-yuji text-3xl md:text-4xl tracking-tighter">
-                  <span className="text-primary">新聞</span>
-                  <span className="text-slate-950">記事</span>
-                  <span className="text-primary">の</span>
-                  <span className="text-slate-950">分類</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 md:gap-4 overflow-x-auto no-scrollbar pb-2">
-                {categories.map((cat) => (
-                  <Link 
-                    key={cat.id} 
-                    href={`/category/${cat.id}`}
-                    className="text-sm md:text-base font-bold uppercase tracking-wider px-5 py-3 rounded-xl transition-all whitespace-nowrap bg-white text-slate-600 hover:text-primary hover:bg-slate-100 border border-slate-100 shadow-sm"
-                  >
-                    {cat.label}
-                  </Link>
-                ))}
-              </div>
+        {/* 新聞記事の分類セクション - ナビゲーションバー（一番上）のデザインを継承 */}
+        <section className="w-full border-b bg-white mb-12">
+          <div className="container mx-auto px-0 py-8 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
+            <div className="font-yuji text-3xl md:text-4xl tracking-tighter shrink-0">
+              <span className="text-primary">新聞</span>
+              <span className="text-slate-950">記事</span>
+              <span className="text-primary">の</span>
+              <span className="text-slate-950">分類</span>
             </div>
-
-            {/* 広告セクション */}
-            <div className="mb-16">
-              <div className="flex items-center gap-2 mb-4">
-                <Megaphone size={14} className="text-slate-400" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
-              </div>
-              <div className="relative w-full h-24 md:h-32 bg-slate-50 rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
-                {adPlaceholder && (
-                  <Image 
-                    src={adPlaceholder.imageUrl} 
-                    alt="Advertisement" 
-                    fill 
-                    className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                  />
-                )}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
-                  <div className="bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full shadow-xl">
-                    <p className="text-[10px] font-black tracking-widest text-slate-900">広告募集中</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 最新の記事の見出し - ナビゲーションバー風デザイン */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-              <div>
-                <div className="font-yuji text-4xl md:text-5xl tracking-tighter mb-2">
-                  <span className="text-primary">最新</span>
-                  <span className="text-slate-950">の</span>
-                  <span className="text-primary">記事</span>
-                </div>
-                <div className="h-1.5 w-16 bg-primary mt-2 rounded-full" />
-              </div>
-              <div className="flex items-center gap-2.5 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] bg-white px-5 py-2.5 rounded-xl shadow-sm border border-slate-100">
-                <Calendar size={12} className="text-primary" /> <span>{currentTime || '...'}</span>
-              </div>
-            </div>
-
-            {/* 記事グリッド */}
-            {isArticlesLoading ? (
-              <div className="flex flex-col items-center justify-center py-24">
-                <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
-                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Feed</p>
-              </div>
-            ) : latestArticles.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 animate-fade-in">
-                {latestArticles.map((article) => (
-                  <div key={article.id} className="max-w-full">
-                    <ArticleCard article={article as any} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-24 text-center bg-white rounded-[32px] shadow-sm border border-dashed border-slate-200">
-                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em]">No stories found in the archives</p>
-              </div>
-            )}
-
-            {/* もっと見るボタン */}
-            {articles && articles.length > 12 && (
-              <div className="mt-16 text-left">
+            <nav className="flex flex-wrap gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+              {categories.map((cat) => (
                 <Link 
-                  href="/category/Campus" 
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-colors shadow-xl"
+                  key={cat.id} 
+                  href={`/category/${cat.id}`}
+                  className="text-sm md:text-base font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition-all whitespace-nowrap text-slate-600 hover:text-primary hover:bg-slate-50 border border-transparent hover:border-slate-100"
                 >
-                  View More Stories <ChevronRight size={14} />
+                  {cat.label}
                 </Link>
-              </div>
-            )}
+              ))}
+            </nav>
           </div>
+        </section>
+
+        <section className="container mx-auto px-0">
+          {/* 広告セクション */}
+          <div className="mb-16">
+            <div className="flex items-center gap-2 mb-4">
+              <Megaphone size={14} className="text-slate-400" />
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
+            </div>
+            <div className="relative w-full h-24 md:h-32 bg-slate-50 rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
+              {adPlaceholder && (
+                <Image 
+                  src={adPlaceholder.imageUrl} 
+                  alt="Advertisement" 
+                  fill 
+                  className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
+                <div className="bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full shadow-xl border">
+                  <p className="text-[10px] font-black tracking-widest text-slate-900 uppercase">広告募集中</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 最新の記事の見出し - ロゴ風配色 */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-slate-100 pb-8">
+            <div>
+              <div className="font-yuji text-4xl md:text-5xl tracking-tighter">
+                <span className="text-primary">最新</span>
+                <span className="text-slate-950">の</span>
+                <span className="text-primary">記事</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] bg-slate-50 px-5 py-2.5 rounded-xl border border-slate-100">
+              <Calendar size={12} className="text-primary" /> <span>{currentTime || '...'}</span>
+            </div>
+          </div>
+
+          {/* 記事グリッド */}
+          {isArticlesLoading ? (
+            <div className="flex flex-col items-center justify-center py-24">
+              <Loader2 className="animate-spin text-primary mb-4" size={48} strokeWidth={3} />
+              <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Feed</p>
+            </div>
+          ) : latestArticles.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 animate-fade-in mb-16">
+              {latestArticles.map((article) => (
+                <ArticleCard key={article.id} article={article as any} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-24 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
+              <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em]">No stories found in the archives</p>
+            </div>
+          )}
+
+          {/* もっと見るボタン */}
+          {articles && articles.length > 12 && (
+            <div className="mb-20">
+              <Link 
+                href="/category/Campus" 
+                className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl hover:scale-105 active:scale-95"
+              >
+                View More Stories <ChevronRight size={14} />
+              </Link>
+            </div>
+          )}
         </section>
       </main>
 
-      <footer className="bg-slate-950 text-slate-600 py-12 text-center border-t border-slate-900">
+      <footer className="bg-slate-950 text-slate-600 py-16 text-center border-t border-slate-900">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-            <div className="font-yuji text-2xl tracking-tighter">
+          <div className="flex items-center justify-center gap-2 mb-8 opacity-50">
+            <div className="font-yuji text-3xl tracking-tighter">
               <span className="text-primary">北海</span>
               <span className="text-white">学園</span>
               <span className="text-primary">大学</span>
               <span className="text-white">新聞</span>
             </div>
           </div>
-          <p className="text-[9px] font-black uppercase tracking-[0.3em]">
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">
             &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
           </p>
         </div>
