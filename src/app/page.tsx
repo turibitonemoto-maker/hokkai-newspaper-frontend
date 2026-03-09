@@ -11,8 +11,9 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * トップページのデザイン。見出しの配色リズム（青・黒・青・黒）は維持しつつ、
- * フォントはロゴ以外標準の太字（Inter）を使用。
+ * トップページのデザイン。
+ * 3段目の「新聞記事の分類」セクションを削除しました。
+ * 見出しの配色リズム（青・黒・青・黒）は維持しつつ、フォントはロゴ以外標準の太字を使用。
  */
 export default function Home() {
   const db = useFirestore();
@@ -35,49 +36,17 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  // カテゴリーリスト
-  const categories = [
-    { id: 'Announcements', label: 'お知らせ' },
-    { id: 'Campus', label: 'キャンパス' },
-    { id: 'Event', label: 'イベント' },
-    { id: 'Interview', label: 'インタビュー' },
-    { id: 'Sports', label: 'スポーツ' },
-    { id: 'Column', label: 'コラム・寄稿' },
-    { id: 'Opinion', label: 'オピニオン' },
-  ];
-
   const latestArticles = articles?.slice(0, 12) || [];
   const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-body">
       <main className="flex-grow">
-        {/* 新聞記事の分類セクション - ヘッダーのデザインを継承（フォントは標準） */}
-        <section className="w-full border-b bg-white mb-12">
-          <div className="container mx-auto px-0 py-8 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12">
-            <div className="text-3xl md:text-4xl font-black tracking-tighter shrink-0 uppercase italic">
-              <span className="text-primary">新聞</span>
-              <span className="text-slate-950">記事</span>
-              <span className="text-primary">の</span>
-              <span className="text-slate-950">分類</span>
-            </div>
-            <nav className="flex flex-wrap gap-2 md:gap-4 overflow-x-auto no-scrollbar">
-              {categories.map((cat) => (
-                <Link 
-                  key={cat.id} 
-                  href={`/category/${cat.id}`}
-                  className="text-sm md:text-base font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition-all whitespace-nowrap text-slate-600 hover:text-primary hover:bg-slate-50 border border-transparent hover:border-slate-100"
-                >
-                  {cat.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </section>
+        {/* 新聞記事の分類セクション（3段目）はユーザーの指示により削除されました */}
 
         <section className="container mx-auto px-0">
           {/* 広告セクション */}
-          <div className="mb-16">
+          <div className="mb-16 mt-8">
             <div className="flex items-center gap-2 mb-4">
               <Megaphone size={14} className="text-slate-400" />
               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
