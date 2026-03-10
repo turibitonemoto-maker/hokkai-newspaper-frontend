@@ -49,7 +49,7 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">設立</span>
-              <span className="col-span-2 font-bold">19XX年（詳細手直し予定）</span>
+              <span className="col-span-2 font-bold">1950年</span>
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">活動拠点</span>
