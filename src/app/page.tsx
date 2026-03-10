@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -20,6 +19,7 @@ export default function Home() {
     }));
   }, []);
 
+  // 記事データの取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -30,7 +30,16 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
+  // 広告データの取得
+  const adsRef = useMemoFirebase(() => {
+    if (!db) return null;
+    return collection(db, 'ads');
+  }, [db]);
+
+  const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
+
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
+  const activeAd = useMemo(() => ads?.[0] || null, [ads]);
   const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
   return (
@@ -41,23 +50,52 @@ export default function Home() {
           <Megaphone size={12} className="text-slate-400" />
           <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
         </div>
-        <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100">
-          {adPlaceholder && (
+        
+        {isAdsLoading ? (
+          <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] animate-pulse" />
+        ) : activeAd ? (
+          /* 管理画面から登録された本番の広告 */
+          <Link 
+            href={activeAd.linkUrl || '#'} 
+            target={activeAd.linkUrl ? "_blank" : "_self"}
+            className="relative block w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border border-slate-100"
+          >
             <Image 
-              src={adPlaceholder.imageUrl} 
-              alt="Advertisement" 
+              src={activeAd.imageUrl} 
+              alt={activeAd.title || "Advertisement"} 
               fill 
               sizes="100vw"
-              className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-              priority
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-          )}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
-            <div className="bg-white/90 backdrop-blur-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full shadow-xl border">
-              <p className="text-[8px] md:text-[10px] font-black tracking-widest text-slate-900 uppercase">広告募集中</p>
+            {activeAd.title && (
+              <div className="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                {activeAd.title}
+              </div>
+            )}
+          </Link>
+        ) : (
+          /* 広告がない場合の募集中プレースホルダー */
+          <Link 
+            href="/ads"
+            className="relative block w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100"
+          >
+            {adPlaceholder && (
+              <Image 
+                src={adPlaceholder.imageUrl} 
+                alt="Advertisement" 
+                fill 
+                sizes="100vw"
+                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                priority
+              />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
+              <div className="bg-white/90 backdrop-blur-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full shadow-xl border">
+                <p className="text-[8px] md:text-[10px] font-black tracking-widest text-slate-900 uppercase">広告募集中</p>
+              </div>
             </div>
-          </div>
-        </div>
+          </Link>
+        )}
       </div>
 
       {/* 最新の記事の見出し */}
