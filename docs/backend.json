@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Article": {
@@ -136,6 +137,17 @@
         "id",
         "imageUrl"
       ]
+    },
+    "Greeting": {
+      "title": "Greeting",
+      "type": "object",
+      "description": "会長挨拶のデータ。",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorImageUrl": { "type": "string", "format": "uri" }
+      }
     }
   },
   "auth": {
@@ -167,6 +179,12 @@
         "$ref": "#/backend/entities/Advertisement"
       },
       "description": "広告データ。"
+    },
+    "/settings/greeting": {
+      "schema": {
+        "$ref": "#/backend/entities/Greeting"
+      },
+      "description": "会長挨拶データ。"
     }
   }
 }
