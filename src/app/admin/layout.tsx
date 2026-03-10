@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 /**
  * 管理者画面は現在完全に無効化されています。
  * アクセスがあった場合はトップページへ即座にリダイレクトします。
+ * 今後は別の専用プロジェクトで管理画面を運用します。
  */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

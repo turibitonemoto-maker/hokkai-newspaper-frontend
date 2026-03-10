@@ -19,14 +19,22 @@
 }
 ```
 
-### 2. JSON API エンドポイント
+### 2. Firestore コレクションとデータ構造
+管理サイトから保存すべきデータ形式は `docs/backend.json` に定義されています。
+
+- **記事一覧 (`articles`)**:
+  - `title` (string): タイトル
+  - `htmlContent` (string): 本文 (HTML)
+  - `categoryId` (string): `Campus`, `Event`, `Interview`, `Sports`, `Column`, `Opinion`
+  - `publishDate` (string): ISO形式の日付
+  - `mainImageUrl` (string): 画像URL
+  - `isPublished` (boolean): 公開フラグ
+- **ヒーロー画像 (`hero-images`)**: トップ背景用
+- **広告 (`ads`)**: 広告バナー用
+
+### 3. JSON API エンドポイント
 このサイト自体も簡易的な JSON API を提供しています。
 - **記事一覧取得**: `GET /api/articles`
-
-### 3. Firestore コレクション
-- `articles`: 記事データ（ID, title, htmlContent, publishDate, categoryId, etc.）
-- `hero-images`: トップページの背景画像
-- `ads`: 広告データ
 
 ---
 
