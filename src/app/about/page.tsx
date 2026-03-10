@@ -45,7 +45,7 @@ export default function AboutPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">団体名</span>
-              <span className="col-span-2 font-bold">北海学園大学一部新聞会 取材班</span>
+              <span className="col-span-2 font-bold">北海学園大学一部新聞会</span>
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">設立</span>

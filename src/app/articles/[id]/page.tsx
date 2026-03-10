@@ -163,7 +163,7 @@ export default function ArticlePage() {
                 <div>
                   <h4 className="font-bold text-slate-900 mb-1 text-sm md:text-base">北海学園大学一部新聞会</h4>
                   <p className="text-[10px] md:text-sm text-slate-500 leading-relaxed font-medium">
-                    この記事は北海学園大学一部新聞会 取材班によって執筆・編集されました。
+                    この記事は北海学園大学一部新聞会によって執筆・編集されました。
                   </p>
                 </div>
               </div>
