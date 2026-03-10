@@ -2,35 +2,47 @@
 
 このプロジェクトは Next.js (App Router), Tailwind CSS, Firebase, Genkit を使用して構築されています。
 
+## 管理用サイト（別プロジェクト）からの接続について
+
+別で管理用サイトを作成する場合、以下の情報を利用してこのプロジェクトの Firestore にアクセスできます。
+
+### 1. Firebase 設定情報 (Config)
+別サイトの Firebase 初期化（`initializeApp`）に以下の値を使用してください：
+
+```json
+{
+  "projectId": "studio-7293379319-74783",
+  "appId": "1:820160445583:web:8c5cdc051dec375b9404fa",
+  "apiKey": "AIzaSyCtRptsIIqQ1FASh5ZWU6ExVlCzj1KNJNo",
+  "authDomain": "studio-7293379319-74783.firebaseapp.com",
+  "messagingSenderId": "820160445583"
+}
+```
+
+### 2. JSON API エンドポイント
+このサイト自体も簡易的な JSON API を提供しています。
+- **記事一覧取得**: `GET /api/articles`
+
+### 3. Firestore コレクション
+- `articles`: 記事データ（ID, title, htmlContent, publishDate, categoryId, etc.）
+- `hero-images`: トップページの背景画像
+- `ads`: 広告データ
+
+---
+
 ## GitHub への移動手順
 
-プロジェクトを GitHub に移行するには、以下の手順に従ってください。
-
 1. **GitHub で新しいリポジトリを作成する**
-   - GitHub にログインし、[New Repository](https://github.com/new) から空のリポジトリを作成します。
+   - [New Repository](https://github.com/new) から空のリポジトリを作成します。
 
-2. **ターミナルで Git を初期化し、プッシュする**
-   IDE（Firebase Studio）の下部にあるターミナルを開き、以下のコマンドを順番に実行します。
+2. **ターミナルでプッシュする**
+   IDE 下部のターミナルで以下を実行します：
 
    ```bash
-   # Git の初期化
    git init
-
-   # 全ファイルのステージング
    git add .
-
-   # 初回コミット
-   git commit -m "Initial commit of Hokkai Gakuen University Newspaper site"
-
-   # メインブランチ名の設定
+   git commit -m "Initial commit"
    git branch -M main
-
-   # GitHub リポジトリの紐付け（URL は作成したものに置き換えてください）
    git remote add origin https://github.com/あなたのユーザー名/リポジトリ名.git
-
-   # GitHub へ送信
    git push -u origin main
    ```
-
-3. **Firebase との連携**
-   - GitHub に移動した後は、Firebase App Hosting や Vercel などのお好みのホスティングサービスと連携してデプロイすることが可能です。
