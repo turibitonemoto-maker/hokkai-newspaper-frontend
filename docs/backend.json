@@ -137,43 +137,6 @@
         "id",
         "imageUrl"
       ]
-    },
-    "Inquiry": {
-      "title": "Inquiry",
-      "type": "object",
-      "description": "ユーザーからのお問い合わせ。",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
-        "subject": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "isRead": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "name",
-        "email",
-        "message",
-        "createdAt",
-        "isRead"
-      ]
     }
   },
   "auth": {
@@ -205,12 +168,6 @@
         "$ref": "#/backend/entities/Advertisement"
       },
       "description": "広告データ。"
-    },
-    "/inquiries/{inquiryId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Inquiry"
-      },
-      "description": "ユーザーからのお問い合わせ。"
     }
   }
 }
