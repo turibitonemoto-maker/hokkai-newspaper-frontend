@@ -7,12 +7,12 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto space-y-12">
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest">ABOUT US</Badge>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter">北海学園大学新聞とは</h1>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter">北海学園大学一部新聞会とは</h1>
         </header>
 
         <section className="prose prose-slate prose-lg max-w-none font-medium text-slate-700 leading-relaxed">
           <p>
-            北海学園大学新聞は、北海学園大学唯一の学生新聞団体です。学内の出来事から地域の話題、学生の活躍、教員のインタビューなど、「いま」の北海学園を広く深く伝えることを使命としています。
+            北海学園大学一部新聞会は、北海学園大学唯一の学生新聞団体です。学内の出来事から地域の話題、学生の活躍、教員のインタビューなど、「いま」の北海学園を広く深く伝えることを使命としています。
           </p>
           <p>
             私たちは単なるニュース配信に留まらず、学生の視点から社会を捉え、考えるきっかけを提供することを目指しています。
@@ -45,7 +45,7 @@ export default function AboutPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">団体名</span>
-              <span className="col-span-2 font-bold">北海学園大学新聞 取材班</span>
+              <span className="col-span-2 font-bold">北海学園大学一部新聞会 取材班</span>
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">設立</span>

@@ -6,7 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: '北海学園大学新聞 | Hokkai Gakuen University Newspaper',
+  title: '北海学園大学一部新聞会 | Hokkai Gakuen University Ichibu Newspaper',
   description: '北海学園大学の最新ニュース、イベント、インタビューをお届けする学生新聞公式サイト。',
 };
 

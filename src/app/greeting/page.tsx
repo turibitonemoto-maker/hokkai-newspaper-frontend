@@ -20,7 +20,7 @@ export default function GreetingPage() {
             <div className="prose prose-slate prose-xl max-w-none font-medium leading-relaxed text-slate-800">
               <h2 className="text-3xl font-black tracking-tight mb-6">「伝える力」で、大学をより豊かに。</h2>
               <p>
-                北海学園大学新聞のウェブサイトを訪問いただき、ありがとうございます。
+                北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。
               </p>
               <p>
                 私たちの活動は、学生の声に耳を傾け、それを形にして届けることにあります。情報が溢れる現代だからこそ、学内で何が起きているのか、何が求められているのかを真摯に取材することが重要だと考えています。
@@ -31,7 +31,7 @@ export default function GreetingPage() {
             </div>
 
             <div className="pt-10 border-t border-slate-100">
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">President of Newspaper Group</p>
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">President of Ichibu Newspaper Group</p>
               <p className="text-3xl font-black italic">会長名（詳細手直し予定）</p>
             </div>
           </div>

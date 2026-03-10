@@ -60,7 +60,7 @@ export default function NewArticlePage() {
       id: id,
       publishDate: new Date().toISOString(),
       lastSyncedDate: new Date().toISOString(),
-      authorName: '北海学園大学新聞',
+      authorName: '北海学園大学一部新聞会',
       source: 'internal'
     }, { merge: true });
 

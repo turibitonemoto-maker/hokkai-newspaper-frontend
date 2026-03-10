@@ -85,7 +85,7 @@ export default function ArticlePage() {
               </div>
               <div className="flex items-center gap-2">
                 <User size={14} className="text-primary" />
-                <span>{article.authorName || '北海学園大学新聞'}</span>
+                <span>{article.authorName || '北海学園大学一部新聞会'}</span>
               </div>
               <div className="md:flex-grow" />
               <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border shadow-sm w-fit">
@@ -161,9 +161,9 @@ export default function ArticlePage() {
                   H
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-1 text-sm md:text-base">北海学園大学新聞</h4>
+                  <h4 className="font-bold text-slate-900 mb-1 text-sm md:text-base">北海学園大学一部新聞会</h4>
                   <p className="text-[10px] md:text-sm text-slate-500 leading-relaxed font-medium">
-                    この記事は北海学園大学新聞 取材班によって執筆・編集されました。
+                    この記事は北海学園大学一部新聞会 取材班によって執筆・編集されました。
                   </p>
                 </div>
               </div>
