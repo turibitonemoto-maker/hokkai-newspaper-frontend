@@ -24,7 +24,7 @@ export default function AdsPage() {
                 <h3 className="text-xl font-black">ターゲット</h3>
               </div>
               <p className="text-sm leading-relaxed text-slate-600">
-                北海学園大学の学生
+                北海学園大学の学生 および教職員が主な読者層です。 地元の若者へ効果的に訴求することが可能です。
               </p>
             </CardContent>
           </Card>
