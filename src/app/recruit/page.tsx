@@ -54,7 +54,7 @@ export default function RecruitPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="flex items-start gap-4">
               <CheckCircle2 className="text-primary shrink-0" size={24} />
-              <p className="font-bold">プロのような取材・執筆スキルが身につく</p>
+              <p className="font-bold">取材・執筆スキルが身につく</p>
             </div>
             <div className="flex items-start gap-4">
               <CheckCircle2 className="text-primary shrink-0" size={24} />
