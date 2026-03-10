@@ -1,10 +1,13 @@
+'use client';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mail, MapPin, Instagram, ArrowRight } from 'lucide-react';
 
 /**
- * フォーム機能を廃止し、公式メールアドレスとSNSへの連絡を促すページ。
+ * お問い合わせページ
+ * フォーム機能を廃止し、ボット対策と信ぴょう性確保のため、
+ * 公式メールアドレスとSNS（Instagram）への直接連絡を促す構成。
  */
 export default function ContactPage() {
   return (
@@ -38,7 +41,7 @@ export default function ContactPage() {
           </a>
 
           {/* Instagram */}
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="group">
+          <a href="https://www.instagram.com/hgu_news/" target="_blank" rel="noopener noreferrer" className="group">
             <Card className="rounded-[40px] border-none shadow-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:scale-[1.02] transition-all duration-300 h-full">
               <CardContent className="p-10 space-y-6">
                 <div className="bg-white/20 w-16 h-16 rounded-3xl flex items-center justify-center text-white backdrop-blur-sm">
@@ -49,7 +52,7 @@ export default function ContactPage() {
                     Instagram <ArrowRight size={20} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                   </h3>
                   <p className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-2">Follow our news</p>
-                  <p className="text-xl font-bold">@hgu_ichibu_news</p>
+                  <p className="text-xl font-bold">@hgu_news</p>
                   <p className="text-xs mt-2 text-white/80 font-medium">DMからもお問い合わせを受け付けています。</p>
                 </div>
               </CardContent>
