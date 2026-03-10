@@ -42,7 +42,7 @@ export default function ContactPage() {
                     <MapPin className="text-primary shrink-0" size={24} />
                     <div>
                       <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Office</p>
-                      <p className="font-bold">北海学園大学 豊平キャンパス内<br />新聞部部室</p>
+                      <p className="font-bold">北海学園大学 豊平キャンパス内<br />文化棟二階</p>
                     </div>
                   </div>
                 </div>

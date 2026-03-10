@@ -53,7 +53,7 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-4">
               <span className="font-black text-slate-400 text-xs uppercase tracking-widest">活動拠点</span>
-              <span className="col-span-2 font-bold">豊平キャンパス（詳細手直し予定）</span>
+              <span className="col-span-2 font-bold">北海学園大学豊平キャンパス文化棟二階</span>
             </div>
           </div>
         </section>
