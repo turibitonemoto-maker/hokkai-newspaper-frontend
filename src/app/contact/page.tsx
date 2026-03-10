@@ -1,15 +1,32 @@
 'use client';
 
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, MapPin, Instagram, ArrowRight } from 'lucide-react';
+import { Mail, MapPin, Instagram, ArrowRight, Copy, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * お問い合わせページ
  * フォーム機能を廃止し、ボット対策と信ぴょう性確保のため、
  * 公式メールアドレスとSNS（Instagram）への直接連絡を促す構成。
+ * メールアドレスをクリックすると自動的にコピーされます。
  */
 export default function ContactPage() {
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+  const email = "r06hgunews@gmail.com";
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(email);
+    setCopied(true);
+    toast({
+      title: "メールアドレスをコピーしました",
+      description: "クリップボードに保存されました。メール作成時に貼り付けてください。",
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
@@ -22,23 +39,26 @@ export default function ContactPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* メールアドレス */}
-          <a href="mailto:r06hgunews@gmail.com" className="group">
+          {/* メールアドレス (コピー機能付き) */}
+          <button 
+            onClick={handleCopyEmail}
+            className="group text-left w-full focus:outline-none"
+          >
             <Card className="rounded-[40px] border-none shadow-xl bg-white hover:scale-[1.02] transition-all duration-300 h-full ring-1 ring-slate-100 hover:ring-primary/20">
               <CardContent className="p-10 space-y-6">
                 <div className="bg-primary/10 w-16 h-16 rounded-3xl flex items-center justify-center text-primary">
-                  <Mail size={32} />
+                  {copied ? <Check size={32} /> : <Mail size={32} />}
                 </div>
-                <div>
+                <div className="relative">
                   <h3 className="text-2xl font-black mb-2 flex items-center gap-2">
-                    Email <ArrowRight size={20} className="text-primary opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                    Email <Copy size={16} className="text-primary opacity-0 group-hover:opacity-100 transition-all" />
                   </h3>
-                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-2">Official Email Address</p>
-                  <p className="text-xl font-bold text-slate-900 break-all">r06hgunews@gmail.com</p>
+                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-2">Click to Copy Address</p>
+                  <p className="text-xl font-bold text-slate-900 break-all">{email}</p>
                 </div>
               </CardContent>
             </Card>
-          </a>
+          </button>
 
           {/* Instagram */}
           <a href="https://www.instagram.com/hgu_news/" target="_blank" rel="noopener noreferrer" className="group">
