@@ -16,8 +16,7 @@ import {
 
 /**
  * 2段構成のナビゲーションバー。
- * スマホ版では入り切らないメニューを「その他」に集約。
- * 団体名を「北海学園大学一部新聞会」に変更。
+ * ロゴは「北海学園大学新聞」とし、団体正式名称とは使い分け。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -68,9 +67,7 @@ export function Navbar() {
                 <span className="text-primary">北海</span>
                 <span className="text-slate-950">学園</span>
                 <span className="text-primary">大学</span>
-                <span className="text-slate-950">一部</span>
-                <span className="text-primary">新聞</span>
-                <span className="text-slate-950">会</span>
+                <span className="text-slate-950">新聞</span>
               </div>
             </Link>
 
