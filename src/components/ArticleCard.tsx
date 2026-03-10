@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -5,6 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ExternalLink } from 'lucide-react';
+import { useMemo } from 'react';
 
 interface ArticleCardProps {
   article: {
@@ -20,27 +22,29 @@ interface ArticleCardProps {
   };
 }
 
-/**
- * スマートフォンでもはっきりと「分かれて」見えるよう調整された記事カード。
- */
 export function ArticleCard({ article }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/600/400`;
   const isExternal = article.source === 'note';
   
-  // htmlContent または content からテキストを抽出
-  const rawContent = article.htmlContent || article.content || "";
-  const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
-  const excerpt = plainText.substring(0, 80) + (plainText.length > 80 ? "..." : "");
+  // テキスト抽出をメモ化して再レンダリングコストを抑える
+  const excerpt = useMemo(() => {
+    const rawContent = article.htmlContent || article.content || "";
+    const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
+    return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
+  }, [article.htmlContent, article.content]);
+
+  const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
 
   return (
     <Link href={`/articles/${article.id}`} className="group block h-full">
-      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-lg transition-all duration-500 rounded-[20px] md:rounded-[24px] ring-1 ring-slate-100 group-hover:ring-primary/20">
-        <div className="relative aspect-[4/3] overflow-hidden">
+      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-lg transition-all duration-300 rounded-[20px] md:rounded-[24px] ring-1 ring-slate-100 group-hover:ring-primary/20">
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
           <Image
             src={displayImage}
             alt={article.title}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             data-ai-hint="news photo"
           />
           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
@@ -59,7 +63,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
             <div className="flex items-center gap-1">
               <Calendar className="text-primary/60 size-[9px] md:size-[10px]" />
-              <span>{article.publishDate?.split('T')[0]}</span>
+              <span>{date}</span>
             </div>
           </div>
           <h3 className="text-sm md:text-base font-black leading-tight text-slate-900 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">

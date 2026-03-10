@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -14,7 +15,6 @@ export default function ArticlePage() {
   const { id } = useParams();
   const router = useRouter();
   const db = useFirestore();
-  // フォントサイズのスケール調整
   const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
 
   const articleRef = useMemoFirebase(() => {
@@ -23,6 +23,16 @@ export default function ArticlePage() {
   }, [db, id]);
 
   const { data: article, isLoading } = useDoc(articleRef);
+
+  const displayImage = useMemo(() => 
+    article?.mainImageUrl || `https://picsum.photos/seed/${article?.id}/1200/600`
+  , [article?.mainImageUrl, article?.id]);
+
+  const mainContent = useMemo(() => 
+    article?.htmlContent || article?.content || ''
+  , [article?.htmlContent, article?.content]);
+
+  const isExternal = article?.source === 'note';
 
   if (isLoading) {
     return (
@@ -50,12 +60,6 @@ export default function ArticlePage() {
       </div>
     );
   }
-
-  const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
-  const isExternal = article.source === 'note';
-  
-  // 管理アプリ側の content フィールドにも対応
-  const mainContent = article.htmlContent || article.content || '';
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 pb-24">
@@ -92,39 +96,27 @@ export default function ArticlePage() {
               </div>
               <div className="md:flex-grow" />
               <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border shadow-sm w-fit">
-                <Button 
-                  variant={fontSize === 'base' ? 'secondary' : 'ghost'} 
-                  size="sm" 
-                  onClick={() => setFontSize('base')}
-                  className="rounded-lg h-8 px-3 font-bold text-[10px]"
-                >
-                  標準
-                </Button>
-                <Button 
-                  variant={fontSize === 'lg' ? 'secondary' : 'ghost'} 
-                  size="sm" 
-                  onClick={() => setFontSize('lg')}
-                  className="rounded-lg h-8 px-3 font-bold text-[10px]"
-                >
-                  拡大
-                </Button>
-                <Button 
-                  variant={fontSize === 'xl' ? 'secondary' : 'ghost'} 
-                  size="sm" 
-                  onClick={() => setFontSize('xl')}
-                  className="rounded-lg h-8 px-3 font-bold text-[10px]"
-                >
-                  最大
-                </Button>
+                {(['base', 'lg', 'xl'] as const).map((size) => (
+                  <Button 
+                    key={size}
+                    variant={fontSize === size ? 'secondary' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setFontSize(size)}
+                    className="rounded-lg h-8 px-3 font-bold text-[10px]"
+                  >
+                    {size === 'base' ? '標準' : size === 'lg' ? '拡大' : '最大'}
+                  </Button>
+                ))}
               </div>
             </div>
           </header>
 
-          <div className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden mb-10 md:mb-16 shadow-xl md:shadow-2xl shadow-slate-200 ring-1 ring-slate-100">
+          <div className="relative aspect-[16/9] rounded-xl md:rounded-2xl overflow-hidden mb-10 md:mb-16 shadow-xl md:shadow-2xl shadow-slate-200 ring-1 ring-slate-100 bg-slate-50">
             <Image
               src={displayImage}
               alt={article.title}
               fill
+              sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
             />
@@ -133,7 +125,7 @@ export default function ArticlePage() {
           <div className="max-w-3xl mx-auto relative">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-300",
+                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-relaxed prose-p:text-slate-800 prose-a:text-primary prose-strong:text-slate-950 transition-all duration-200",
                 fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
                 fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
                 fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 
@@ -152,25 +144,8 @@ export default function ArticlePage() {
                   note.comでこの記事の続きを読む
                   <ExternalLink size={28} className="shrink-0" />
                 </a>
-                <p className="text-center mt-4 md:mt-6 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  ※外部サイト（note.com）へ移動します
-                </p>
               </div>
             )}
-
-            <footer className="mt-12 md:mt-20 pt-8 md:pt-12 border-t border-slate-100">
-              <div className="bg-slate-50 rounded-2xl md:rounded-[32px] p-6 md:p-8 flex items-center gap-4 md:gap-6">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 font-bold text-xl md:text-2xl uppercase">
-                  H
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 mb-1 text-sm md:text-base">北海学園大学一部新聞会</h4>
-                  <p className="text-[10px] md:text-sm text-slate-500 leading-relaxed font-medium">
-                    この記事は北海学園大学一部新聞会によって執筆・編集されました。
-                  </p>
-                </div>
-              </div>
-            </footer>
           </div>
         </article>
       </div>

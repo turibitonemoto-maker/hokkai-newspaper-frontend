@@ -1,9 +1,24 @@
-import type {Metadata} from 'next';
+
+import type { Metadata } from 'next';
+import { Inter, Yuji_Mai } from 'next/font/google';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+const yujiMai = Yuji_Mai({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-yuji',
+});
 
 export const metadata: Metadata = {
   title: '北海学園大学一部新聞会 | Hokkai Gakuen University Ichibu Newspaper',
@@ -16,29 +31,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased bg-white flex flex-col min-h-screen">
+    <html lang="ja" className={`${inter.variable} ${yujiMai.variable}`}>
+      <body className="font-sans antialiased bg-white flex flex-col min-h-screen">
         <FirebaseClientProvider>
-          {/* ナビゲーションバー (全幅背景) */}
           <Navbar />
-          
           <main className="flex-grow flex flex-col">
             <div className="max-w-[1280px] w-full mx-auto bg-white relative flex-grow">
-              {/* ナビゲーションバーの高さに合わせてパディングを調整 */}
               <div className="pt-32 md:pt-40">
                 {children}
               </div>
             </div>
           </main>
-
-          {/* フッター (全幅背景) */}
           <Footer />
-          
           <Toaster />
         </FirebaseClientProvider>
       </body>

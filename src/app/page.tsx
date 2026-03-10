@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -29,8 +30,8 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  const latestArticles = articles?.slice(0, 12) || [];
-  const adPlaceholder = PlaceHolderImages.find(img => img.id === 'ad-placeholder');
+  const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
+  const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
   return (
     <section className="container mx-auto px-0 pb-20">
@@ -46,7 +47,9 @@ export default function Home() {
               src={adPlaceholder.imageUrl} 
               alt="Advertisement" 
               fill 
+              sizes="100vw"
               className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+              priority
             />
           )}
           <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
