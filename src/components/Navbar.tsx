@@ -60,9 +60,9 @@ export function Navbar() {
     <header className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
       {/* 1段目: ロゴと主要メニュー */}
       <div className="w-full border-b bg-white relative">
-        <div className="max-w-[1280px] mx-auto px-0 h-20 md:h-24 flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-8 overflow-hidden flex-grow px-0">
-            <Link href="/" className="flex items-center group shrink-0 pl-1 md:pl-0">
+        <div className="max-w-[1280px] mx-auto px-4 h-20 md:h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4 md:gap-8 flex-grow">
+            <Link href="/" className="flex items-center group shrink-0">
               <div className="font-yuji text-2xl md:text-4xl tracking-tighter leading-none whitespace-nowrap">
                 <span className="text-primary">北海</span>
                 <span className="text-slate-950">学園</span>
@@ -72,7 +72,7 @@ export function Navbar() {
             </Link>
 
             {!isSearchOpen && (
-              <nav className="flex items-center gap-0.5 md:gap-1 py-2 animate-in fade-in duration-500 overflow-hidden">
+              <nav className="flex items-center gap-1 md:gap-2 py-2 animate-in fade-in duration-500 overflow-hidden">
                 {/* PC版: すべて表示 */}
                 <div className="hidden md:flex items-center gap-1">
                   {mainLinks.map((link) => (
@@ -80,7 +80,7 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       className={cn(
-                        "text-sm font-bold uppercase tracking-wider px-2 py-2 rounded-xl transition-all whitespace-nowrap",
+                        "text-sm font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
                         pathname === link.href 
                           ? "bg-slate-100 text-primary" 
                           : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -98,7 +98,7 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       className={cn(
-                        "text-[10px] font-bold uppercase tracking-wider px-1.5 py-1.5 rounded-lg transition-all whitespace-nowrap",
+                        "text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg transition-all whitespace-nowrap",
                         pathname === link.href 
                           ? "bg-slate-100 text-primary" 
                           : "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -110,14 +110,14 @@ export function Navbar() {
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-0.5">
+                      <button className="text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-0.5">
                         その他 <ChevronDown size={10} />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl min-w-[120px]">
                       {mobileHiddenLinks.map((link) => (
                         <DropdownMenuItem key={link.href} asChild className="focus:bg-slate-50 focus:text-primary rounded-lg cursor-pointer">
-                          <Link href={link.href} className="w-full text-[10px] font-bold py-2">
+                          <Link href={link.href} className="w-full text-xs font-bold py-2">
                             {link.label}
                           </Link>
                         </DropdownMenuItem>
@@ -129,21 +129,21 @@ export function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center gap-1 md:gap-4 ml-1 pr-1 md:pr-0">
+          <div className="flex items-center gap-2 md:gap-4 ml-4">
             {isSearchOpen ? (
               <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 w-full max-w-md">
                 <div className="relative flex-grow">
                   <Input 
                     autoFocus
-                    placeholder="検索"
+                    placeholder="キーワードで検索"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="rounded-full border-slate-200 bg-slate-50 h-8 md:h-10 w-[120px] md:w-[300px] pr-8 text-[10px] md:text-sm"
+                    className="rounded-full border-slate-200 bg-slate-50 h-10 md:h-12 w-[160px] md:w-[300px] pr-10"
                   />
-                  <Search className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none size-3 md:size-[14px]" />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none size-4 md:size-5" />
                 </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full h-8 w-8">
-                  <X size={16} className="text-slate-400" />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full h-10 w-10">
+                  <X size={20} className="text-slate-400" />
                 </Button>
               </form>
             ) : (
@@ -153,7 +153,7 @@ export function Navbar() {
                 onClick={() => setIsSearchOpen(true)}
                 className="rounded-full hover:bg-slate-50 transition-colors h-10 w-10 md:h-12 md:w-12"
               >
-                <Search size={18} className="text-slate-400 md:size-6" />
+                <Search size={20} className="text-slate-400 md:size-6" />
               </Button>
             )}
           </div>
@@ -162,8 +162,8 @@ export function Navbar() {
 
       {/* 2段目: サブリンク */}
       <div className="w-full bg-primary text-white">
-        <div className="max-w-[1280px] mx-auto px-0 h-10 md:h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-4 md:gap-8 px-2 md:px-0">
+        <div className="max-w-[1280px] mx-auto px-4 h-12 md:h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
+          <nav className="flex items-center gap-4 md:gap-8">
             {subLinks.map((link) => (
               <Link
                 key={link.label}

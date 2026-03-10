@@ -30,7 +30,7 @@ export default function RootLayout({
           <main className="flex-grow flex flex-col">
             <div className="max-w-[1280px] w-full mx-auto bg-white relative flex-grow">
               {/* ナビゲーションバーの高さに合わせてパディングを調整 */}
-              <div className="pt-32 md:pt-40 px-4 md:px-0">
+              <div className="pt-32 md:pt-40">
                 {children}
               </div>
             </div>
