@@ -5,7 +5,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Article",
       "type": "object",
-      "description": "Represents a news article for the website, primarily sourced and synchronized from note.com, with additional local metadata and AI-generated summaries for enhanced readability and content management.",
+      "description": "Represents a news article. Supports both rich HTML (htmlContent) and plain text (content) for compatibility with management tools.",
       "properties": {
         "id": {
           "type": "string",
@@ -36,7 +36,11 @@
         },
         "htmlContent": {
           "type": "string",
-          "description": "The full HTML content of the article."
+          "description": "The full HTML content of the article (Primary)."
+        },
+        "content": {
+          "type": "string",
+          "description": "The plain text content of the article (Fallback for simple management tools)."
         },
         "summary": {
           "type": "string",
@@ -145,7 +149,7 @@
       "schema": {
         "$ref": "#/backend/entities/Article"
       },
-      "description": "Stores individual articles. Restricted to specific authorized emails for writes."
+      "description": "Stores individual articles. Temporarily open for development synchronization."
     },
     "/categories/{categoryId}": {
       "schema": {

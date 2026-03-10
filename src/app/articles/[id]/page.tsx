@@ -53,6 +53,9 @@ export default function ArticlePage() {
 
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/1200/600`;
   const isExternal = article.source === 'note';
+  
+  // 管理アプリ側の content フィールドにも対応
+  const mainContent = article.htmlContent || article.content || '';
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 pb-24">
@@ -135,7 +138,7 @@ export default function ArticlePage() {
                 fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
                 fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 
               )}
-              dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
+              dangerouslySetInnerHTML={{ __html: mainContent }}
             />
 
             {isExternal && article.noteUrl && (

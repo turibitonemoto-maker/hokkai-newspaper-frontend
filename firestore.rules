@@ -1,19 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【表示用アプリの権限確立】
-    // 1. 閲覧（read）は全世界に公開
-    // 2. 書き込み（write）は、認証された特定の管理者のみに制限
+    // 【開発・連携用設定】
+    // 管理アプリ側との接続を優先するため、一時的に全公開に設定しています。
+    // 本番公開時には、write権限を特定の管理者（Authユーザー）に制限することを推奨します。
     
     match /{document=**} {
-      // 誰でも閲覧可能
-      allow read: if true;
-      
-      // 書き込みは「ログインしていること」かつ「特定のメールアドレスであること」を条件にする
-      // ※ 下記の "your-admin-email@example.com" をあなたのGmailアドレスなどに書き換えてください
-      allow write: if request.auth != null && 
-                     (request.auth.token.email == "your-admin-email@example.com" || 
-                      request.auth.token.email_verified == true);
+      allow read, write: if true;
     }
   }
 }

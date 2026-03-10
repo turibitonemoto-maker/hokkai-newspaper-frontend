@@ -11,6 +11,7 @@ interface ArticleCardProps {
     id: string;
     title: string;
     htmlContent?: string;
+    content?: string;
     categoryId: string;
     publishDate: string;
     mainImageUrl?: string;
@@ -26,7 +27,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/600/400`;
   const isExternal = article.source === 'note';
   
-  const plainText = article.htmlContent?.replace(/<[^>]*>?/gm, '') || "";
+  // htmlContent または content からテキストを抽出
+  const rawContent = article.htmlContent || article.content || "";
+  const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
   const excerpt = plainText.substring(0, 80) + (plainText.length > 80 ? "..." : "");
 
   return (
