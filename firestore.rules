@@ -1,12 +1,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【開発・連携用設定】
-    // 管理アプリ側との接続を優先するため、一時的に全公開に設定しています。
-    // 本番公開時には、write権限を特定の管理者（Authユーザー）に制限することを推奨します。
+    // 【表示用サイトの権限設定】
+    // 閲覧は誰でも可能ですが、編集（書き込み）は特定の管理者のみに制限します。
     
     match /{document=**} {
-      allow read, write: if true;
+      // 公開コンテンツの読み取りは常に許可
+      allow read: if true;
+      
+      // 書き込みは、指定された管理者メールアドレスでログインしている場合のみ許可
+      allow write: if request.auth != null && request.auth.token.email == "r06hgunews@gmail.com";
     }
   }
 }

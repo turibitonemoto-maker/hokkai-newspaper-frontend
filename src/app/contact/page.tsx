@@ -28,7 +28,7 @@ export default function ContactPage() {
                     <Mail className="text-primary shrink-0" size={24} />
                     <div>
                       <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Email</p>
-                      <p className="font-bold">example@hgu-newspaper.com</p>
+                      <p className="font-bold">r06hgunews@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
