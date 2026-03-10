@@ -35,11 +35,11 @@ export function Navbar() {
   ];
 
   const subLinks = [
-    { label: '北海学園大学新聞とは', href: '#' },
-    { label: '会長挨拶', href: '#' },
-    { label: '部員募集', href: '#' },
-    { label: '広告募集', href: '#' },
-    { label: 'お問い合わせ', href: '#' },
+    { label: '北海学園大学新聞とは', href: '/about' },
+    { label: '会長挨拶', href: '/greeting' },
+    { label: '部員募集', href: '/recruit' },
+    { label: '広告募集', href: '/ads' },
+    { label: 'お問い合わせ', href: '/contact' },
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
