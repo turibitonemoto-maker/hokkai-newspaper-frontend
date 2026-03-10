@@ -1,15 +1,23 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // 【表示用サイトの権限設定】
-    // 閲覧は誰でも可能ですが、編集（書き込み）は特定の管理者のみに制限します。
     
+    // 全般設定
     match /{document=**} {
       // 公開コンテンツの読み取りは常に許可
       allow read: if true;
       
       // 書き込みは、指定された管理者メールアドレスでログインしている場合のみ許可
       allow write: if request.auth != null && request.auth.token.email == "r06hgunews@gmail.com";
+    }
+
+    // お問い合わせ用の特設ルール
+    match /inquiries/{inquiryId} {
+      // 誰でもお問い合わせを送信（作成）可能にする
+      allow create: if true;
+      // 読み取り・更新・削除は管理者のみ（上の全般ルールでカバー）
     }
   }
 }
