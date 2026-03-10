@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Megaphone, TrendingUp, Users, Target } from 'lucide-react';
+import { Megaphone, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdsPage() {
@@ -24,8 +24,7 @@ export default function AdsPage() {
                 <h3 className="text-xl font-black">ターゲット</h3>
               </div>
               <p className="text-sm leading-relaxed text-slate-600">
-                北海学園大学の全学生（約X,XXX名）および教職員が主な読者層です。
-                地元の若者へ効果的に訴求することが可能です。
+                北海学園大学の学生
               </p>
             </CardContent>
           </Card>
