@@ -6,6 +6,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { MaintenanceGuard } from '@/components/MaintenanceGuard';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,16 +35,18 @@ export default function RootLayout({
     <html lang="ja" className={`${inter.variable} ${yujiMai.variable}`}>
       <body className="font-sans antialiased bg-white flex flex-col min-h-screen">
         <FirebaseClientProvider>
-          <Navbar />
-          <main className="flex-grow flex flex-col">
-            <div className="max-w-[1280px] w-full mx-auto bg-white relative flex-grow">
-              <div className="pt-32 md:pt-40">
-                {children}
+          <MaintenanceGuard>
+            <Navbar />
+            <main className="flex-grow flex flex-col">
+              <div className="max-w-[1280px] w-full mx-auto bg-white relative flex-grow">
+                <div className="pt-32 md:pt-40">
+                  {children}
+                </div>
               </div>
-            </div>
-          </main>
-          <Footer />
-          <Toaster />
+            </main>
+            <Footer />
+            <Toaster />
+          </MaintenanceGuard>
         </FirebaseClientProvider>
       </body>
     </html>

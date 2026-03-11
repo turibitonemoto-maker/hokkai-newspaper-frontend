@@ -148,6 +148,21 @@
         "authorName": { "type": "string" },
         "authorImageUrl": { "type": "string", "format": "uri" }
       }
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "type": "object",
+      "description": "サイト全体の動作設定。",
+      "properties": {
+        "isMaintenanceMode": {
+          "type": "boolean",
+          "description": "メンテナンスモードの有効/無効フラグ。"
+        },
+        "maintenanceMessage": {
+          "type": "string",
+          "description": "メンテナンス画面に表示するメッセージ。"
+        }
+      }
     }
   },
   "auth": {
@@ -185,6 +200,12 @@
         "$ref": "#/backend/entities/Greeting"
       },
       "description": "会長挨拶データ。"
+    },
+    "/settings/site": {
+      "schema": {
+        "$ref": "#/backend/entities/SiteSettings"
+      },
+      "description": "サイト全体の共通設定。"
     }
   }
 }

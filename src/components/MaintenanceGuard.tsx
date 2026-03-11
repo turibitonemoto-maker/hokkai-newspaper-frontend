@@ -1,0 +1,80 @@
+
+'use client';
+
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { ReactNode } from 'react';
+import { Loader2, Construction, AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
+interface MaintenanceGuardProps {
+  children: ReactNode;
+}
+
+/**
+ * メンテナンスモードの監視と表示の切り替えを行うコンポーネント。
+ * 管理者（r06hgunews@gmail.com）がログインしている場合（管理ツール経由など）は
+ * メンテナンス中でもサイトを確認できる仕様です。
+ */
+export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
+  const db = useFirestore();
+  
+  const siteSettingsRef = useMemoFirebase(() => {
+    if (!db) return null;
+    return doc(db, 'settings', 'site');
+  }, [db]);
+
+  const { data: settings, isLoading } = useDoc(siteSettingsRef);
+
+  // 初回読み込み中
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <Loader2 className="animate-spin text-primary mb-4" size={40} />
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verifying Site Status...</p>
+      </div>
+    );
+  }
+
+  const isMaintenanceMode = settings?.isMaintenanceMode === true;
+  const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。ご不便をおかけいたしますが、再開まで今しばらくお待ちください。";
+
+  // メンテナンスモードが有効な場合の表示
+  if (isMaintenanceMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <div className="max-w-xl w-full text-center space-y-8 animate-fade-in">
+          <div className="bg-white rounded-[48px] p-12 md:p-16 shadow-2xl shadow-slate-200/60 border border-slate-100">
+            <div className="bg-primary/10 w-20 h-20 rounded-3xl flex items-center justify-center text-primary mx-auto mb-10">
+              <Construction size={40} />
+            </div>
+            
+            <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest mb-6">MAINTENANCE MODE</Badge>
+            
+            <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 mb-6 leading-tight">
+              メンテナンス中です
+            </h1>
+            
+            <p className="text-slate-600 font-medium leading-relaxed mb-10 text-lg">
+              {maintenanceMessage}
+            </p>
+
+            <div className="pt-8 border-t border-slate-100">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                Hokkai Gakuen University Ichibu Newspaper
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+            <AlertTriangle size={12} className="text-amber-500" />
+            <span>Emergency inquiries: r06hgunews@gmail.com</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 通常表示
+  return <>{children}</>;
+}
