@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { ReactNode } from 'react';
 import { Loader2, Construction, AlertTriangle } from 'lucide-react';
@@ -13,11 +12,12 @@ interface MaintenanceGuardProps {
 
 /**
  * メンテナンスモードの監視と表示の切り替えを行うコンポーネント。
- * 管理者（r06hgunews@gmail.com）がログインしている場合（管理ツール経由など）は
+ * 管理者（r06hgunews@gmail.com）がログインしている場合は、
  * メンテナンス中でもサイトを確認できる仕様です。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
+  const { user } = useUser();
   
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
@@ -38,9 +38,12 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。ご不便をおかけいたしますが、再開まで今しばらくお待ちください。";
+  
+  // 管理者（r06hgunews@gmail.com）であればバイパス許可
+  const isAdmin = user?.email === "r06hgunews@gmail.com";
 
-  // メンテナンスモードが有効な場合の表示
-  if (isMaintenanceMode) {
+  // メンテナンスモードが有効 かつ 管理者でない場合の表示
+  if (isMaintenanceMode && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
         <div className="max-w-xl w-full text-center space-y-8 animate-fade-in">
@@ -75,6 +78,15 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     );
   }
 
-  // 通常表示
-  return <>{children}</>;
+  // 管理者の場合はメンテナンス中でも確認できることを示すバナー（オプション）
+  return (
+    <>
+      {isMaintenanceMode && isAdmin && (
+        <div className="fixed top-0 left-0 w-full z-[100] bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest py-1.5 text-center shadow-md">
+          ADMIN PREVIEW MODE (MAINTENANCE ACTIVE FOR PUBLIC)
+        </div>
+      )}
+      {children}
+    </>
+  );
 }

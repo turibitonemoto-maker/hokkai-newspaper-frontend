@@ -1,15 +1,10 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
-import { Auth } from 'firebase/auth';
-
-/**
- * 権限の概念を完全に排除したFirebaseプロバイダー。
- * エラーリスナー（FirebaseErrorListener）を削除し、システムから「拒否」という概念を抹消しました。
- */
+import { Auth, User } from 'firebase/auth';
+import { useUser as useUserHook } from './auth/use-user';
 
 interface FirebaseProviderProps {
   children: ReactNode;
@@ -23,24 +18,18 @@ export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
   auth: Auth | null;
-  user: null;
-  isUserLoading: false;
-  userError: null;
+  user: User | null;
+  isUserLoading: boolean;
+  userError: Error | null;
 }
 
 export interface FirebaseServicesAndUser {
   firebaseApp: FirebaseApp;
   firestore: Firestore;
   auth: Auth;
-  user: null;
-  isUserLoading: false;
-  userError: null;
-}
-
-export interface UserHookResult { 
-  user: null;
-  isUserLoading: false;
-  userError: null;
+  user: User | null;
+  isUserLoading: boolean;
+  userError: Error | null;
 }
 
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
@@ -51,21 +40,22 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   firestore,
   auth,
 }) => {
+  const { user, isUserLoading, userError } = useUserHook();
+
   const contextValue = useMemo((): FirebaseContextState => {
     return {
       areServicesAvailable: true,
       firebaseApp,
       firestore,
       auth,
-      user: null,
-      isUserLoading: false,
-      userError: null,
+      user,
+      isUserLoading,
+      userError,
     };
-  }, [firebaseApp, firestore, auth]);
+  }, [firebaseApp, firestore, auth, user, isUserLoading, userError]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-      {/* 権限エラーによるクラッシュを防ぐため、エラーリスナーを完全に削除しました */}
       {children}
     </FirebaseContext.Provider>
   );
@@ -78,15 +68,16 @@ export const useFirebase = (): FirebaseServicesAndUser => {
     firebaseApp: context.firebaseApp!,
     firestore: context.firestore!,
     auth: context.auth!,
-    user: null,
-    isUserLoading: false,
-    userError: null,
+    user: context.user,
+    isUserLoading: context.isUserLoading,
+    userError: context.userError,
   };
 };
 
 export const useAuth = (): Auth => useFirebase().auth;
 export const useFirestore = (): Firestore => useFirebase().firestore;
 export const useFirebaseApp = (): FirebaseApp => useFirebase().firebaseApp;
+export const useUser = () => useFirebase();
 
 type MemoFirebase <T> = T & {__memo?: boolean};
 
@@ -96,7 +87,3 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
   (memoized as MemoFirebase<T>).__memo = true;
   return memoized;
 }
-
-export const useUser = (): UserHookResult => {
-  return { user: null, isUserLoading: false, userError: null };
-};
