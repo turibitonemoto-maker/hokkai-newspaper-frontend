@@ -12,8 +12,7 @@ interface MaintenanceGuardProps {
 
 /**
  * メンテナンスモードの監視と表示の切り替えを行うコンポーネント。
- * 管理者（r06hgunews@gmail.com）がログインしている場合は、
- * メンテナンス中でもサイトを確認できる仕様です。
+ * 管理者がログインしている場合は、メンテナンス中でもサイトを確認できる仕様です。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
@@ -39,8 +38,9 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。ご不便をおかけいたしますが、再開まで今しばらくお待ちください。";
   
-  // 管理者（r06hgunews@gmail.com）であればバイパス許可
-  const isAdmin = user?.email === "r06hgunews@gmail.com";
+  // 管理者メールアドレスのリスト
+  const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
+  const isAdmin = user?.email && adminEmails.includes(user.email);
 
   // メンテナンスモードが有効 かつ 管理者でない場合の表示
   if (isMaintenanceMode && !isAdmin) {
@@ -78,7 +78,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     );
   }
 
-  // 管理者の場合はメンテナンス中でも確認できることを示すバナー（オプション）
+  // 管理者の場合はメンテナンス中でも確認できることを示すバナー
   return (
     <>
       {isMaintenanceMode && isAdmin && (
