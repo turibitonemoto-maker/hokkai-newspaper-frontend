@@ -22,7 +22,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   const { data: settings, isLoading } = useDoc(siteSettingsRef);
 
-  // 初回読み込み中は、レイアウトを崩さないように何もしない（一瞬の白画面を避ける）
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
