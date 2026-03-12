@@ -1,11 +1,11 @@
+
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 /**
- * ログイン機能は完全に無効化されています。
- * アクセスがあった場合は即座にトップページへ戻します。
+ * 表示用サイトにログイン機能は不要なため、トップページへ戻します。
  */
 export default function LoginPage() {
   const router = useRouter();
