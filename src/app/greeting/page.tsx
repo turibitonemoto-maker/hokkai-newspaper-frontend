@@ -24,9 +24,12 @@ export default function GreetingPage() {
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
     message: `北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。
-    私たちは単なるニュース配信に留まらず、学生の視点から社会を捉え、考えるきっかけを提供することを目指しています。
-    これからも、北海学園大学の「いま」を切り取り、学生の皆さんの知的好奇心を刺激するような情報を発信し続けてまいります。`,
-    authorName: "会長名（詳細手直し予定）",
+私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。
+変化の激しい現代において、正確かつ価値のある情報を発信することは私たちの重要な使命です。
+
+これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。
+今後とも、当会への変わらぬご支援とご愛顧を賜りますようお願い申し上げます。`,
+    authorName: "北海学園大学一部新聞会 会長",
     authorImageUrl: null
   };
 
@@ -63,6 +66,7 @@ export default function GreetingPage() {
                   fill
                   sizes="256px"
                   className="object-cover"
+                  priority
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-black uppercase text-[10px] tracking-widest text-center px-4 leading-relaxed">

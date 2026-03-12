@@ -1,41 +1,37 @@
-# 北海学園大学一部新聞会 公式サイト (表示用アプリ)
 
-このプロジェクトは、一般読者がニュースを閲覧するための「表示用」アプリケーションです。
-コンテンツの管理（追加・編集・削除）は、別で作成された「管理用アプリ」から行います。
+# 北海学園大学一部新聞会 公式サイト (Production)
 
-## 権限とセキュリティの設定
+このプロジェクトは、北海学園大学一部新聞会の公式ニュース配信サイトです。
 
-このプロジェクトの Firestore は以下のルールで保護されています：
-- **閲覧**: 全ユーザー（ログイン不要）
-- **編集（管理者）**: 以下のメールアドレスでログインしたユーザーのみ
-  - `r06hgunews@gmail.com`
-  - `turibitonemoto@gmail.com`
+## 本番環境の構成
 
-### 管理用アプリから接続する手順
+- **フロントエンド**: Next.js 15 (App Router)
+- **データベース**: Firebase Firestore
+- **認証**: Firebase Authentication (Googleログイン)
+- **インフラ**: Firebase App Hosting
 
-1. **Firebase設定の共有**
-   管理用アプリ側で以下の Config を使用して Firebase を初期化してください。
-   ```json
-   {
-     "projectId": "studio-7293379319-74783",
-     "appId": "1:820160445583:web:8c5cdc051dec375b9404fa",
-     "apiKey": "AIzaSyCtRptsIIqQ1FASh5ZWU6ExVlCzj1KNJNo",
-     "authDomain": "studio-7293379319-74783.firebaseapp.com"
-   }
-   ```
+## 運用・管理の仕組み
 
-2. **管理者の確立**
-   管理用アプリ側で Firebase Authentication (Googleログイン等) を実装し、上記いずれかの管理者メールアドレスでログインしてください。ログインすることで、Firestoreへの書き込み権限が付与されます。
+コンテンツの管理（記事の投稿、広告の設定、メンテナンスモードの切り替え等）は、セキュリティ確保のため**別個に構築された「管理用アプリ」**から行います。
 
-3. **ドメインの許可**
-   管理用アプリで画像を表示・設定する場合、`next.config.ts` に以下のドメインが含まれていることを確認してください。
-   - `assets.st-note.com`
-   - `pbs.twimg.com`
+### 管理者権限
+以下のメールアドレスでログインしたユーザーのみが、データの書き込み（更新・削除）を行えます。
+- `r06hgunews@gmail.com`
+- `turibitonemoto@gmail.com`
+
+### Firestore セキュリティ設定
+本番環境の `firestore.rules` は、全ユーザーに読み取り（Read）を許可し、上記の管理者のみに書き込み（Write）を許可するよう設定されています。
+
+## 管理用アプリへの接続設定
+他プロジェクトの管理アプリからこのデータベースに接続する場合、以下のConfigを使用してください。
+```json
+{
+  "projectId": "studio-7293379319-74783",
+  "appId": "1:820160445583:web:8c5cdc051dec375b9404fa",
+  "apiKey": "AIzaSyCtRptsIIqQ1FASh5ZWU6ExVlCzj1KNJNo",
+  "authDomain": "studio-7293379319-74783.firebaseapp.com"
+}
+```
 
 ---
-
-## 開発者向け情報
-
-- **技術スタック**: Next.js 15, Tailwind CSS, Firebase (Firestore, Auth)
-- **主要なデータ構造**: `docs/backend.json` を参照
-- **公式メール**: `r06hgunews@gmail.com`
+© 2025 北海学園大学一部新聞会

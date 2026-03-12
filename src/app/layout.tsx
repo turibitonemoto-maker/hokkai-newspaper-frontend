@@ -22,8 +22,9 @@ const yujiMai = Yuji_Mai({
 });
 
 export const metadata: Metadata = {
-  title: '北海学園大学一部新聞会 | Hokkai Gakuen University Ichibu Newspaper',
-  description: '北海学園大学の最新ニュース、イベント、インタビューをお届けする学生新聞公式サイト。',
+  title: '北海学園大学一部新聞会 公式サイト | Hokkai Gakuen University Ichibu Newspaper',
+  description: '1950年創立。北海学園大学の最新ニュース、イベント、インタビュー、学内情報を学生の視点からお届けする公式サイト。',
+  keywords: ['北海学園大学', '新聞会', '学生新聞', 'ニュース', '大学情報'],
 };
 
 export default function RootLayout({
