@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -54,7 +55,6 @@ export default function Home() {
         {isAdsLoading ? (
           <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] animate-pulse" />
         ) : activeAd ? (
-          /* 管理画面から登録された本番の広告 */
           <Link 
             href={activeAd.linkUrl || '#'} 
             target={activeAd.linkUrl ? "_blank" : "_self"}
@@ -64,8 +64,9 @@ export default function Home() {
               src={activeAd.imageUrl} 
               alt={activeAd.title || "Advertisement"} 
               fill 
-              sizes="100vw"
+              sizes="(max-width: 1280px) 100vw, 1280px"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
+              priority
             />
             {activeAd.title && (
               <div className="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
@@ -74,7 +75,6 @@ export default function Home() {
             )}
           </Link>
         ) : (
-          /* 広告がない場合の募集中プレースホルダー */
           <Link 
             href="/ads"
             className="relative block w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100"
@@ -84,7 +84,7 @@ export default function Home() {
                 src={adPlaceholder.imageUrl} 
                 alt="Advertisement" 
                 fill 
-                sizes="100vw"
+                sizes="(max-width: 1280px) 100vw, 1280px"
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                 priority
               />
@@ -98,7 +98,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* 最新の記事の見出し */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 md:mb-10 border-b border-slate-100 pb-6 md:pb-8 px-4 md:px-0">
         <div>
           <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
@@ -112,7 +111,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 記事グリッド */}
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20 md:py-24">
           <Loader2 className="animate-spin text-primary mb-4 size-10 md:size-12" strokeWidth={3} />
@@ -120,8 +118,8 @@ export default function Home() {
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16 px-4 md:px-0">
-          {latestArticles.map((article) => (
-            <ArticleCard key={article.id} article={article as any} />
+          {latestArticles.map((article, idx) => (
+            <ArticleCard key={article.id} article={article as any} priority={idx < 4} />
           ))}
         </div>
       ) : (
@@ -130,7 +128,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* もっと見るボタン */}
       {articles && articles.length > 12 && (
         <div className="mb-20 px-4 md:px-0 text-center md:text-left">
           <Link 

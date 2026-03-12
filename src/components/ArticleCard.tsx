@@ -20,13 +20,13 @@ interface ArticleCardProps {
     source?: string;
     noteUrl?: string;
   };
+  priority?: boolean;
 }
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/600/400`;
   const isExternal = article.source === 'note';
   
-  // テキスト抽出をメモ化して再レンダリングコストを抑える
   const excerpt = useMemo(() => {
     const rawContent = article.htmlContent || article.content || "";
     const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
@@ -45,6 +45,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
             data-ai-hint="news photo"
           />
           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">

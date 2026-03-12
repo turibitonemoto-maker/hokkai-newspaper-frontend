@@ -39,8 +39,8 @@ export default function ArticlePage() {
       <div className="min-h-screen flex flex-col bg-white">
         <div className="flex-grow flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm font-bold text-slate-400 tracking-widest uppercase">Fetching Story</p>
+            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[10px] font-bold text-slate-300 tracking-[0.3em] uppercase">Loading Story</p>
           </div>
         </div>
       </div>

@@ -1,19 +1,16 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { ReactNode } from 'react';
-import { Loader2, Construction, AlertTriangle } from 'lucide-react';
+import { Construction, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface MaintenanceGuardProps {
   children: ReactNode;
 }
 
-/**
- * メンテナンスモードの監視と表示の切り替えを行うコンポーネント。
- * 管理者がログインしている場合は、メンテナンス中でもサイトを確認できる仕様です。
- */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
   const { user } = useUser();
@@ -25,24 +22,21 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   const { data: settings, isLoading } = useDoc(siteSettingsRef);
 
-  // 初回読み込み中
+  // 初回読み込み中は、レイアウトを崩さないように何もしない（一瞬の白画面を避ける）
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-        <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verifying Site Status...</p>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
-  const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。ご不便をおかけいたしますが、再開まで今しばらくお待ちください。";
+  const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。再開まで今しばらくお待ちください。";
   
-  // 管理者メールアドレスのリスト
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
-  // メンテナンスモードが有効 かつ 管理者でない場合の表示
   if (isMaintenanceMode && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
@@ -78,7 +72,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     );
   }
 
-  // 管理者の場合はメンテナンス中でも確認できることを示すバナー
   return (
     <>
       {isMaintenanceMode && isAdmin && (
