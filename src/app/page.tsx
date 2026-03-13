@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -52,20 +53,19 @@ export default function Home() {
 
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
   const activeAd = useMemo(() => ads?.[0] || null, [ads]);
-  const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
   // インデックスエラー判定
   const isIndexError = articlesError && 'code' in articlesError && articlesError.code === 'failed-precondition';
 
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 管制からのステータス報告 */}
+      {/* 管制からのステータス報告 (最優先表示) */}
       {settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8 animate-fade-in">
-          <Alert className="bg-primary/5 border-primary/20 rounded-[24px] py-6 px-8 shadow-sm">
-            <Info className="h-5 w-5 text-primary" />
-            <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">System Notice from Control</AlertTitle>
-            <AlertDescription className="text-slate-700 font-bold">
+          <Alert className="bg-primary/10 border-primary rounded-[24px] py-6 px-8 shadow-md">
+            <Info className="h-6 w-6 text-primary" />
+            <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">📡 Message from Control</AlertTitle>
+            <AlertDescription className="text-slate-900 font-black text-lg">
               {settings.systemNotice}
             </AlertDescription>
           </Alert>

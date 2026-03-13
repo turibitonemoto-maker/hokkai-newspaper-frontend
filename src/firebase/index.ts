@@ -1,3 +1,4 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -16,6 +17,9 @@ declare global {
   var __firebase_db: Firestore | undefined;
 }
 
+/**
+ * Firebaseの初期化を行い、シングルトンインスタンスを返します。
+ */
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
     return { firebaseApp: null, auth: null, firestore: null };
@@ -63,10 +67,18 @@ export async function logout() {
 
 /**
  * 【重要：エクスポートの整理】
- * 名前空間の衝突（useUser）を避けるため、provider.tsx からのみエクスポートします。
- * auth/use-user.tsx からの直接エクスポートは禁止です。
+ * 名前空間の衝突（useUser）を避けるため、provider.tsx からのみ主要フックをエクスポートします。
+ * auth/use-user.tsx からの直接エクスポート、または他ファイルでの重複定義は禁止です。
  */
-export { useUser } from './provider'; 
+export { 
+  useUser, 
+  useFirestore, 
+  useAuth, 
+  useFirebaseApp, 
+  useFirebase, 
+  useMemoFirebase 
+} from './provider'; 
+
 export * from './client-provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
