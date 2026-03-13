@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -16,7 +17,7 @@ export default function CategoryPage() {
     return query(
       collection(db, 'articles'),
       where('categoryId', '==', slug),
-      where('isPublished', '==', true),
+      where('isPublished', '==', true), // 公開済みのみ
       orderBy('publishDate', 'desc')
     );
   }, [db, slug]);

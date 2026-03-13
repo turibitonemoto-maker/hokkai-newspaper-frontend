@@ -201,11 +201,11 @@
       },
       "description": "会長挨拶データ。"
     },
-    "/settings/site": {
+    "/settings/maintenance": {
       "schema": {
         "$ref": "#/backend/entities/SiteSettings"
       },
-      "description": "サイト全体の共通設定。"
+      "description": "メンテナンスモード設定。"
     }
   }
 }

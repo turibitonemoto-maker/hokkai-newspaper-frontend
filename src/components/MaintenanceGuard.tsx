@@ -11,13 +11,18 @@ interface MaintenanceGuardProps {
   children: ReactNode;
 }
 
+/**
+ * メンテナンスモードを監視するガードコンポーネント。
+ * settings/maintenance ドキュメントを常時監視し、有効なら画面をブロックします。
+ */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
   const { user } = useUser();
   
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
-    return doc(db, 'settings', 'site');
+    // ユーザーの指定に基づき settings/maintenance を監視
+    return doc(db, 'settings', 'maintenance');
   }, [db]);
 
   const { data: settings, isLoading } = useDoc(siteSettingsRef);
@@ -33,9 +38,11 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。再開まで今しばらくお待ちください。";
   
+  // 管理者メールアドレス
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
+  // メンテナンスモードが有効かつ、管理者でない場合はブロック
   if (isMaintenanceMode && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">

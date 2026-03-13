@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
@@ -19,11 +20,12 @@ export default function Home() {
     }));
   }, []);
 
-  // 記事データの取得
+  // 記事データの取得 (公開済み記事のみにフィルタリング)
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
+      where('isPublished', '==', true), // 公開済みフラグをチェック
       orderBy('publishDate', 'desc')
     );
   }, [db]);

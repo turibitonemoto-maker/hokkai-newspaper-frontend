@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useSearchParams } from 'next/navigation';
@@ -13,12 +14,12 @@ function SearchResults() {
   const queryText = searchParams.get('q') || '';
   const db = useFirestore();
 
-  // 検索は一旦全公開記事を取得し、クライアントサイドでフィルタリング
+  // 検索対象も「公開済み」記事に限定して取得
   const allArticlesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('isPublished', '==', true),
+      where('isPublished', '==', true), // 下書きを除外
       orderBy('publishDate', 'desc')
     );
   }, [db]);
