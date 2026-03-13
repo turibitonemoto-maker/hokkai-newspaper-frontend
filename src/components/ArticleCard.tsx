@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
+/**
+ * 記事カードコンポーネント
+ * AIによる要約を排除し、本文からの純粋な抜粋を表示するように最適化しました。
+ */
 interface ArticleCardProps {
   article: {
     id: string;
@@ -46,7 +49,6 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority={priority}
-            data-ai-hint="news photo"
           />
           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
             <Badge className="bg-primary text-white border-none font-black text-[7px] md:text-[8px] tracking-[0.1em] uppercase py-0.5 px-1.5 md:px-2 shadow-lg">

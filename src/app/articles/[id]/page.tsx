@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, ExternalLink, Share2, Type } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細ページ (表示用・閲覧専用)
- * 管理サイトで「公開(isPublished: true)」に設定された記事のみを表示します。
+ * AI機能（要約）を排除し、記者の生原稿のみを純粋に表示する構成に最適化しました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -39,8 +39,6 @@ export default function ArticlePage() {
     article?.htmlContent || article?.content || ''
   , [article?.htmlContent, article?.content]);
 
-  const isExternal = article?.source === 'note';
-
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white">
@@ -52,7 +50,6 @@ export default function ArticlePage() {
     );
   }
 
-  // 記事が存在しない、または非公開の場合は「見つかりません」を表示 (ガード機能)
   if (!article || !isPublic) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white">

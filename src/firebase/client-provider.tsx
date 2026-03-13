@@ -9,8 +9,8 @@ interface FirebaseClientProviderProps {
 }
 
 /**
- * Firebase Client Provider
- * 最適化：マウント前の描画を極限まで軽くし、ハイドレーションエラーと初期ロード時間を最小化。
+ * Firebase Client Provider (最適化版)
+ * 表示サイトの読み込み「重さ」を解消するため、マウント時の処理を簡略化しました。
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const [services, setServices] = useState<{
@@ -20,8 +20,12 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   } | null>(null);
 
   useEffect(() => {
-    const initialized = initializeFirebase();
-    setServices(initialized);
+    // 実行をわずかに遅延させて初期レンダリングを優先
+    const timer = setTimeout(() => {
+      const initialized = initializeFirebase();
+      setServices(initialized);
+    }, 10);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!services || !services.firebaseApp) {

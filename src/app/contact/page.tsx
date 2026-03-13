@@ -7,8 +7,8 @@ import { Mail, MapPin, Instagram, ArrowRight, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * お問い合わせページ (閲覧専用)
- * 荒らし対策のためフォームは設置せず、公式SNSおよびメールへの直接連絡のみを案内します。
+ * お問い合わせページ (表示用サイト専用)
+ * 【重要】荒らし対策のためフォームを廃止し、外部SNSおよびメールへの直接連絡のみを案内します。
  */
 export default function ContactPage() {
   const { toast } = useToast();
@@ -32,7 +32,8 @@ export default function ContactPage() {
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest">CONTACT</Badge>
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter">お問い合わせ</h1>
           <p className="text-slate-500 font-bold">
-            取材依頼、広告掲載、入部希望などは、以下の公式窓口より直接ご連絡ください。
+            取材依頼、広告掲載、入部希望などは、以下の公式窓口より直接ご連絡ください。<br />
+            ※荒らし対策のため、Webフォームを廃止し外部SNSに集約しております。
           </p>
         </header>
 
