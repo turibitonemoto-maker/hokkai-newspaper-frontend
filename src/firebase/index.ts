@@ -5,13 +5,13 @@ import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, setPersistence, browserLocalPersistence, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
-let firebaseApp: FirebaseApp;
-let auth: Auth;
-let firestore: Firestore;
+// グローバルオブジェクトにインスタンスを保持するためのキー
+const FIREBASE_GLOBAL_KEY = '__FIREBASE_SERVICES__';
 
 /**
- * Firebaseの各サービスを初期化します。シングルトンとして動作し、
- * 既に初期化済みの場合は既存のインスタンスを返します。
+ * Firebaseの各サービスを初期化します。
+ * ブラウザのグローバルオブジェクト (window) にインスタンスを保持することで、
+ * Next.jsのホットリロード等による重複初期化エラー（ca9等）を徹底的に防ぎます。
  */
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
@@ -22,46 +22,42 @@ export function initializeFirebase() {
     };
   }
 
-  // Appの初期化（未初期化の場合のみ）
-  if (!firebaseApp) {
-    if (!getApps().length) {
-      try {
-        firebaseApp = initializeApp(firebaseConfig);
-      } catch (e) {
-        console.error("Firebase Initialization Error:", e);
-        firebaseApp = initializeApp(firebaseConfig);
-      }
-    } else {
-      firebaseApp = getApp();
-    }
+  const win = window as any;
+
+  // 既に初期化済みの場合はグローバルから返す
+  if (win[FIREBASE_GLOBAL_KEY]) {
+    return win[FIREBASE_GLOBAL_KEY];
   }
 
-  // Authの初期化と永続性の設定（未初期化の場合のみ）
-  if (!auth) {
-    auth = getAuth(firebaseApp);
-    setPersistence(auth, browserLocalPersistence).catch((err) => {
-      // 永続性の設定失敗は致命的ではないため警告のみ
-      console.warn("Firebase Auth Persistence failed to set:", err);
-    });
-  }
+  // Appの初期化
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-  // Firestoreの初期化（未初期化の場合のみ）
-  if (!firestore) {
-    firestore = getFirestore(firebaseApp);
-  }
+  // Authの初期化
+  const authInstance = getAuth(app);
 
-  return {
-    firebaseApp,
-    auth,
-    firestore
+  // Firestoreの初期化
+  const db = getFirestore(app);
+
+  // 非同期で永続性を設定（エラーは無視せず警告のみ）
+  setPersistence(authInstance, browserLocalPersistence).catch((err) => {
+    console.warn("Firebase Auth Persistence failed to set:", err);
+  });
+
+  // グローバルに保存して使い回す
+  win[FIREBASE_GLOBAL_KEY] = {
+    firebaseApp: app,
+    auth: authInstance,
+    firestore: db
   };
+
+  return win[FIREBASE_GLOBAL_KEY];
 }
 
 /**
  * Googleでログインを実行します。
  */
 export async function signInWithGoogle() {
-  const auth = getAuth();
+  const { auth } = initializeFirebase();
   const provider = new GoogleAuthProvider();
   try {
     return await signInWithPopup(auth, provider);
@@ -75,7 +71,7 @@ export async function signInWithGoogle() {
  * ログアウトを実行します。
  */
 export async function logout() {
-  const auth = getAuth();
+  const { auth } = initializeFirebase();
   return await signOut(auth);
 }
 

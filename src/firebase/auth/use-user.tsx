@@ -5,6 +5,7 @@ import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 
 /**
  * 認証ユーザーの状態をリアルタイムで取得するフック。
+ * initializeFirebase() によって初期化された後の使用を想定しています。
  */
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,7 +13,15 @@ export function useUser() {
   const [userError, setUserError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const auth = getAuth();
+    let auth;
+    try {
+      // グローバルに初期化済みのAuthインスタンスを取得
+      auth = getAuth();
+    } catch (e) {
+      // まだ初期化されていない場合は待機
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
