@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -12,8 +11,9 @@ interface MaintenanceGuardProps {
 }
 
 /**
- * メンテナンスモードを監視するガードコンポーネント。
- * settings/maintenance ドキュメントを常時監視し、有効なら画面をブロックします。
+ * 【こちら表示用サイト】
+ * 管理サイト側で設定された settings/maintenance ドキュメントを常時監視し、
+ * isMaintenanceMode が true の場合は全ページをブロックしてメンテナンス画面を表示します。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
@@ -21,7 +21,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
-    // ユーザーの指定に基づき settings/maintenance を監視
     return doc(db, 'settings', 'maintenance');
   }, [db]);
 
@@ -38,11 +37,11 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。再開まで今しばらくお待ちください。";
   
-  // 管理者メールアドレス
+  // 表示サイト側では一般ユーザー向けにブロックを徹底
+  // 管理者メールアドレスであっても、基本的にはメンテナンス画面を表示（プレビューモードはNavbar等で識別可）
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
-  // メンテナンスモードが有効かつ、管理者でない場合はブロック
   if (isMaintenanceMode && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">

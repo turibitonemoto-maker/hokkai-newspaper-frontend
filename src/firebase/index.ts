@@ -6,8 +6,9 @@ import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'fir
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 /**
- * Next.jsのホットリロード時でもFirestoreの内部状態を矛盾させないため
- * globalThisを使用してインスタンスを物理的に1つに固定します。
+ * 【こちら表示用サイト】
+ * Next.jsのホットリロード時におけるFirestoreの内部状態エラー（ID: ca9）を物理的に遮断するため、
+ * globalThisを使用してインスタンスを完全に1つに固定するスーパーシングルトン・パターンを採用しています。
  */
 declare global {
   var __firebase_app: FirebaseApp | undefined;
@@ -20,18 +21,18 @@ export function initializeFirebase() {
     return { firebaseApp: null, auth: null, firestore: null };
   }
 
-  // 1. Firebase App の初期化（シングルトン）
+  // 1. Firebase App の初期化（シングルトン固定）
   if (!globalThis.__firebase_app) {
     const apps = getApps();
     globalThis.__firebase_app = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
   }
 
-  // 2. Auth の初期化（シングルトン）
+  // 2. Auth の初期化（シングルトン固定）
   if (!globalThis.__firebase_auth) {
     globalThis.__firebase_auth = getAuth(globalThis.__firebase_app);
   }
 
-  // 3. Firestore の初期化（シングルトン）
+  // 3. Firestore の初期化（シングルトン固定）
   if (!globalThis.__firebase_db) {
     globalThis.__firebase_db = getFirestore(globalThis.__firebase_app);
   }
@@ -43,9 +44,6 @@ export function initializeFirebase() {
   };
 }
 
-/**
- * Googleでログインを実行します。
- */
 export async function signInWithGoogle() {
   const { auth } = initializeFirebase();
   if (!auth) return;
@@ -57,9 +55,6 @@ export async function signInWithGoogle() {
   }
 }
 
-/**
- * ログアウトを実行します。
- */
 export async function logout() {
   const { auth } = initializeFirebase();
   if (!auth) return;

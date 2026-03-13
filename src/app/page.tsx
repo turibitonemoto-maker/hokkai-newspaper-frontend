@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
- * トップページ (閲覧専用)
- * 管理サイトで「公開」に設定された記事のみをリアルタイムで表示します。
+ * 【こちら表示用サイト】
+ * 管理サイトで「公開(isPublished: true)」に設定された記事のみをリアルタイムで取得し表示します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -23,7 +23,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 記事データの取得 (公開済み記事のみにフィルタリング)
+  // 記事データの取得 (管理サイト側の「公開」設定を厳格に守る)
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
