@@ -1,3 +1,4 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -64,7 +65,8 @@ export async function logout() {
 }
 
 /**
- * 重複エクスポートによる競合を避けるため、フックは provider.tsx からのみエクスポートします。
+ * 名前空間の衝突（useUserの重複等）を避けるため、フックは provider.tsx からのみエクスポートします。
+ * use-user.tsx からの直接エクスポートは行いません。
  */
 export { 
   useUser, 

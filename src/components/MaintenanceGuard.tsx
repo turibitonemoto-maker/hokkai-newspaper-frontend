@@ -13,8 +13,8 @@ interface MaintenanceGuardProps {
 
 /**
  * 【こちら表示用サイト】
- * 管理サイト側で設定された status を監視し、稼働状況を最小限のUIで表示します。
- * 「作業状況」などの紛らわしい表現を排除しました。
+ * 稼働状況を最小限のUIで表示します。
+ * 「作業状況」などの紛らわしい表現を排除した軽量版です。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();

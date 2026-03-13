@@ -12,17 +12,21 @@ import { Badge } from '@/components/ui/badge';
 
 /**
  * 【こちら表示用サイト】
- * 管制の指示に基づき、広告の自動終了とステータス表示の簡素化を適用。
- * 不要なAI機能を排除し、極限まで軽量化された閲覧専用ページです。
+ * 広告の自動終了とステータス表示の簡素化、AI機能の完全排除を適用。
+ * 1950年からの伝統を届ける、極限まで軽量化された閲覧専用ページです。
  */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
+  const [now, setNow] = useState<Date>(new Date());
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
+    // 1分ごとに現在時刻を更新して広告の終了判定を正確にする
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
   }, []);
 
   // 公開記事のみを取得
@@ -44,35 +48,37 @@ export default function Home() {
   }, [db]);
   const { data: settings } = useDoc(siteSettingsRef);
 
-  // 広告データの取得と「厳格な」時間フィルタリング
+  // 広告データの取得
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'ads');
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
+  // 広告の「厳格な」時間フィルタリング
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
-    const now = new Date();
     
-    // 1. 終了時間を過ぎていないものだけを抽出
     const validAds = ads.filter(ad => {
       if (!ad.imageUrl) return false;
-      if (!ad.displayEndTime) return true; // 終了設定がない場合は常時表示
-      return new Date(ad.displayEndTime) > now;
+      // 終了時間が設定されている場合のみ判定。なければ常時表示。
+      if (!ad.displayEndTime) return true;
+      try {
+        return new Date(ad.displayEndTime) > now;
+      } catch (e) {
+        return true;
+      }
     });
 
     if (validAds.length === 0) return null;
-    
-    // 2. 有効な広告の中から最新の1つを表示
     return validAds[0];
-  }, [ads]);
+  }, [ads, now]);
 
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
-      {/* 📡 稼働状況表示（シンプル化） */}
+      {/* 📡 稼働状況表示（簡素化） */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">

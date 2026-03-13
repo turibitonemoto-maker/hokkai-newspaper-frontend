@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント
- * AI要約を排除し、軽量化（sizesプロパティ追加）を行いました。
+ * AI要約を排除し、徹底的に軽量化（sizes属性追加）しました。
  * 画像がない場合は無理な生成をせず、清潔な余白として扱います。
  */
 interface ArticleCardProps {
