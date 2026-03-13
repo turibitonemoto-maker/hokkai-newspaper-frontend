@@ -7,10 +7,8 @@ import { Mail, MapPin, Instagram, ArrowRight, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * お問い合わせページ
- * フォーム機能を廃止し、ボット対策と信ぴょう性確保のため、
- * 公式メールアドレスとSNS（Instagram）への直接連絡を促す構成。
- * メールアドレスをクリックすると自動的にコピーされます。
+ * お問い合わせページ (閲覧専用)
+ * 荒らし対策のためフォームは設置せず、公式SNSおよびメールへの直接連絡のみを案内します。
  */
 export default function ContactPage() {
   const { toast } = useToast();
@@ -22,7 +20,7 @@ export default function ContactPage() {
     setCopied(true);
     toast({
       title: "メールアドレスをコピーしました",
-      description: "クリップボードに保存されました。メール作成時に貼り付けてください。",
+      description: "クリップボードに保存されました。",
     });
     setTimeout(() => setCopied(false), 2000);
   };
@@ -34,26 +32,26 @@ export default function ContactPage() {
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest">CONTACT</Badge>
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter">お問い合わせ</h1>
           <p className="text-slate-500 font-bold">
-            ご意見、取材依頼、広告掲載、入部希望などは、以下の公式窓口よりお気軽にご連絡ください。
+            取材依頼、広告掲載、入部希望などは、以下の公式窓口より直接ご連絡ください。
           </p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* メールアドレス (コピー機能付き) */}
+          {/* メールアドレス */}
           <button 
             onClick={handleCopyEmail}
-            className="group text-left w-full focus:outline-none"
+            className="group text-left w-full focus:outline-none focus:ring-2 focus:ring-primary rounded-[40px]"
           >
-            <Card className="rounded-[40px] border-none shadow-xl bg-white hover:scale-[1.02] transition-all duration-300 h-full ring-1 ring-slate-100 hover:ring-primary/20">
+            <Card className="rounded-[40px] border-none shadow-xl bg-white hover:shadow-2xl transition-all duration-300 h-full ring-1 ring-slate-100">
               <CardContent className="p-10 space-y-6">
                 <div className="bg-primary/10 w-16 h-16 rounded-3xl flex items-center justify-center text-primary">
                   {copied ? <Check size={32} /> : <Mail size={32} />}
                 </div>
-                <div className="relative">
-                  <h3 className="text-2xl font-black mb-2 flex items-center gap-2">
+                <div>
+                  <h3 className="text-2xl font-black mb-2 flex items-center gap-2 text-slate-900">
                     Email <Copy size={16} className="text-primary opacity-0 group-hover:opacity-100 transition-all" />
                   </h3>
-                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-2">Click to Copy Address</p>
+                  <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-2">Click to Copy</p>
                   <p className="text-xl font-bold text-slate-900 break-all">{email}</p>
                 </div>
               </CardContent>
@@ -62,7 +60,7 @@ export default function ContactPage() {
 
           {/* Instagram */}
           <a href="https://www.instagram.com/hgu_news/" target="_blank" rel="noopener noreferrer" className="group">
-            <Card className="rounded-[40px] border-none shadow-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:scale-[1.02] transition-all duration-300 h-full">
+            <Card className="rounded-[40px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white hover:shadow-2xl transition-all duration-300 h-full">
               <CardContent className="p-10 space-y-6">
                 <div className="bg-white/20 w-16 h-16 rounded-3xl flex items-center justify-center text-white backdrop-blur-sm">
                   <Instagram size={32} />
@@ -71,31 +69,24 @@ export default function ContactPage() {
                   <h3 className="text-2xl font-black mb-2 flex items-center gap-2 text-white">
                     Instagram <ArrowRight size={20} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                   </h3>
-                  <p className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-2">Follow our news</p>
+                  <p className="text-white/70 font-black text-[10px] uppercase tracking-widest mb-2">Follow our news</p>
                   <p className="text-xl font-bold">@hgu_news</p>
-                  <p className="text-xs mt-2 text-white/80 font-medium">DMからもお問い合わせを受け付けています。</p>
+                  <p className="text-xs mt-2 text-white/90 font-medium">DMからのご連絡も可能です。</p>
                 </div>
               </CardContent>
             </Card>
           </a>
         </div>
 
-        <section className="bg-slate-50 rounded-[48px] p-10 md:p-16 text-center space-y-8">
-          <div className="max-w-xl mx-auto space-y-6">
-            <div className="flex justify-center">
-              <div className="bg-white p-4 rounded-3xl shadow-sm text-slate-400">
-                <MapPin size={32} />
-              </div>
-            </div>
-            <h2 className="text-2xl font-black tracking-tight">活動拠点</h2>
-            <p className="text-slate-600 font-medium leading-relaxed">
-              北海学園大学 豊平キャンパス内<br />
-              文化棟二階 一部新聞会部室
-            </p>
-            <div className="pt-6 border-t border-slate-200">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hokkai Gakuen University Ichibu Newspaper</p>
-            </div>
+        <section className="bg-slate-50 rounded-[48px] p-10 md:p-16 text-center space-y-6">
+          <div className="bg-white p-4 rounded-3xl shadow-sm text-slate-400 w-fit mx-auto mb-4">
+            <MapPin size={32} />
           </div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900">活動拠点</h2>
+          <p className="text-slate-600 font-medium leading-relaxed">
+            北海学園大学 豊平キャンパス内<br />
+            文化棟二階 一部新聞会部室
+          </p>
         </section>
       </div>
     </div>
