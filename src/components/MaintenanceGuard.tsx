@@ -44,7 +44,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
             </div>
             
             <Badge variant="outline" className="px-4 py-1 border-amber-500 text-amber-600 font-black uppercase tracking-widest mb-6">
-              稼働状況：メンテナンス中
+              稼働状況：停止中 (メンテナンス)
             </Badge>
             
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 mb-6 leading-tight">

@@ -70,7 +70,7 @@ export default function Home() {
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">
-            <AlertCircle size={14} /> 稼働状況：メンテナンス中
+            <AlertCircle size={14} /> 稼働状況：停止中 (メンテナンス)
           </Badge>
         ) : (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm">
