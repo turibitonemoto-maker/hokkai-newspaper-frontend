@@ -9,7 +9,19 @@ let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 
+/**
+ * Firebaseの各サービスを初期化します。
+ * サーバーサイドレンダリング(SSR)中はブラウザ専用のAPIをスキップします。
+ */
 export function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    return {
+      firebaseApp: null as any,
+      auth: null as any,
+      firestore: null as any
+    };
+  }
+
   if (!getApps().length) {
     try {
       firebaseApp = initializeApp(firebaseConfig);
@@ -24,6 +36,7 @@ export function initializeFirebase() {
   auth = getAuth(firebaseApp);
   firestore = getFirestore(firebaseApp);
 
+  // Authの永続性設定（ブラウザ専用）
   setPersistence(auth, browserLocalPersistence).catch((err) => {
     console.error("Firebase Auth Persistence Error:", err);
   });
