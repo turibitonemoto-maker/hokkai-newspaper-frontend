@@ -10,38 +10,32 @@ interface FirebaseClientProviderProps {
 
 /**
  * Firebaseの初期化を管理し、下位コンポーネントにFirebaseのコンテキストを提供します。
- * クライアントサイドでのみ一度だけ初期化を実行することで、
- * SSR時のエラーやFirestoreの内部状態不整合を防ぎます。
+ * ハイドレーションエラーを防ぐため、初回の描画（サーバーとクライアント共通）では
+ * 一貫してローディング画面を返し、マウント完了後にのみサービスを提供します。
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
-  // 初期化済みのインスタンスを保持する。
-  // windowが利用可能な場合は即座に取得を試みる（ハイドレーション中のちらつき防止）
+  const [isMounted, setIsMounted] = useState(false);
   const [services, setServices] = useState<{
     firebaseApp: any;
     auth: any;
     firestore: any;
-  } | null>(() => {
-    if (typeof window !== 'undefined') {
-      return initializeFirebase();
-    }
-    return null;
-  });
+  } | null>(null);
 
   useEffect(() => {
-    // マウント後に改めて初期化状態を確定させる
-    if (!services) {
-      const initialized = initializeFirebase();
-      setServices(initialized);
-    }
-  }, [services]);
+    // クライアントサイドでのマウントが完了した時点で初期化を実行
+    const initialized = initializeFirebase();
+    setServices(initialized);
+    setIsMounted(true);
+  }, []);
 
-  // 初期化完了までは安全なローディング状態を表示
-  if (!services || !services.firebaseApp) {
+  // マウント前、またはサービスの準備ができるまではサーバーとクライアントで同じローディングUIを表示
+  // これにより Hydration Mismatch を防ぎます
+  if (!isMounted || !services || !services.firebaseApp) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Initializing Connection</p>
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Connecting to Archives</p>
         </div>
       </div>
     );
