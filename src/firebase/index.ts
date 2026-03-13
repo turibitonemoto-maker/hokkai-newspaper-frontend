@@ -1,65 +1,44 @@
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
-// グローバルオブジェクトにインスタンスを保持するためのキー
-const FIREBASE_GLOBAL_KEY = '__FIREBASE_SERVICES__';
+// モジュールスコープでインスタンスをキャッシュ（ca9エラー対策）
+let cachedApp: FirebaseApp | null = null;
+let cachedAuth: Auth | null = null;
+let cachedDb: Firestore | null = null;
 
 /**
- * Firebaseの各サービスを初期化します。
- * ブラウザのグローバルオブジェクト (window) にインスタンスを保持することで、
- * Next.jsのホットリロード等による重複初期化エラー（ca9等）を徹底的に防ぎます。
+ * Firebaseの各サービスをシングルトンとして初期化します。
  */
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
-    return {
-      firebaseApp: null as any,
-      auth: null as any,
-      firestore: null as any
-    };
+    return { firebaseApp: null, auth: null, firestore: null };
   }
 
-  const win = window as any;
-
-  // 既に初期化済みの場合はグローバルから即座に返す
-  if (win[FIREBASE_GLOBAL_KEY]) {
-    return win[FIREBASE_GLOBAL_KEY];
+  // 1. Appの初期化（重複を防ぐ）
+  if (!cachedApp) {
+    const apps = getApps();
+    cachedApp = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
   }
 
-  // Appの初期化。既存のものがあれば再利用、なければ新規作成
-  let app: FirebaseApp;
-  const apps = getApps();
-  if (apps.length > 0) {
-    app = apps[0];
-  } else {
-    app = initializeApp(firebaseConfig);
+  // 2. Authの初期化
+  if (!cachedAuth) {
+    cachedAuth = getAuth(cachedApp);
   }
 
-  // Authの初期化
-  const authInstance = getAuth(app);
+  // 3. Firestoreの初期化
+  if (!cachedDb) {
+    cachedDb = getFirestore(cachedApp);
+  }
 
-  // Firestoreの初期化
-  const db = getFirestore(app);
-
-  // シングルトンとしてグローバルに保存（他の処理が走る前に登録）
-  win[FIREBASE_GLOBAL_KEY] = {
-    firebaseApp: app,
-    auth: authInstance,
-    firestore: db
+  return {
+    firebaseApp: cachedApp,
+    auth: cachedAuth,
+    firestore: cachedDb
   };
-
-  // Authの永続性設定。初期化時に一度だけ実行されるようにする
-  setPersistence(authInstance, browserLocalPersistence).catch((err) => {
-    // 既に設定されている場合などのエラーは無視
-    if (err.code !== 'auth/already-initialized') {
-      console.warn("Firebase Auth Persistence failed to set:", err);
-    }
-  });
-
-  return win[FIREBASE_GLOBAL_KEY];
 }
 
 /**
@@ -72,7 +51,6 @@ export async function signInWithGoogle() {
   try {
     return await signInWithPopup(auth, provider);
   } catch (error) {
-    console.error("Google Sign In Error:", error);
     throw error;
   }
 }
