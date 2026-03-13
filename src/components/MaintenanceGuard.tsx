@@ -3,7 +3,7 @@
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { ReactNode } from 'react';
-import { Construction, AlertTriangle } from 'lucide-react';
+import { Construction } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface MaintenanceGuardProps {
@@ -12,8 +12,8 @@ interface MaintenanceGuardProps {
 
 /**
  * 【こちら表示用サイト】
- * 管理サイト側で設定された settings/maintenance ドキュメントを常時監視し、
- * isMaintenanceMode が true の場合は全ページをブロックしてメンテナンス画面を表示します。
+ * 管理サイト側で設定された status を監視し、稼働状況を表示します。
+ * 余計な文言を排除し、シンプルなステータス表示に特化しました。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
@@ -29,15 +29,14 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
-  const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。再開まで今しばらくお待ちください。";
   
-  // 管理者メールアドレスはガードを回避してプレビュー可能
+  // 管理者メールアドレスはガードを回避可能
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
@@ -50,14 +49,14 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
               <Construction size={40} />
             </div>
             
-            <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest mb-6">MAINTENANCE MODE</Badge>
+            <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest mb-6">Status: メンテナンス中</Badge>
             
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 mb-6 leading-tight">
-              メンテナンス中です
+              現在、サイトを停止しています
             </h1>
             
             <p className="text-slate-600 font-medium leading-relaxed mb-10 text-lg">
-              {maintenanceMessage}
+              再開まで今しばらくお待ちください。
             </p>
 
             <div className="pt-8 border-t border-slate-100">
@@ -65,11 +64,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
                 Hokkai Gakuen University Ichibu Newspaper
               </p>
             </div>
-          </div>
-          
-          <div className="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-            <AlertTriangle size={12} className="text-amber-500" />
-            <span>Emergency inquiries: r06hgunews@gmail.com</span>
           </div>
         </div>
       </div>
@@ -80,7 +74,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     <>
       {isMaintenanceMode && isAdmin && (
         <div className="fixed top-0 left-0 w-full z-[100] bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest py-1.5 text-center shadow-md">
-          ADMIN PREVIEW MODE (MAINTENANCE ACTIVE FOR PUBLIC)
+          ADMIN PREVIEW MODE (MAINTENANCE ACTIVE)
         </div>
       )}
       {children}

@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 /**
  * 【こちら表示用サイト】
  * 管制からの指示を受け、ステータス報告と記事の安全な表示を管理します。
- * AI機能を排除し、軽量化された閲覧専用のトップページです。
+ * AI機能を排除し、極限まで軽量化された閲覧専用のトップページです。
  */
 export default function Home() {
   const db = useFirestore();
@@ -24,7 +24,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 公開記事のみを取得 (AI要約は使用せず、本文からの抜粋を表示)
+  // 公開記事のみを取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -36,14 +36,14 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading, error: articlesError } = useCollection(allArticlesRef);
 
-  // 管制からのステータス通知（/settings/maintenance）を取得
+  // 管制からのステータス通知を取得
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'maintenance');
   }, [db]);
   const { data: settings } = useDoc(siteSettingsRef);
 
-  // 広告データの取得
+  // 広告データの取得とフィルタリング（終了時間を厳守）
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'ads');
@@ -51,34 +51,43 @@ export default function Home() {
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
-  const activeAd = useMemo(() => ads?.[0] || null, [ads]);
+  
+  const activeAd = useMemo(() => {
+    if (!ads || ads.length === 0) return null;
+    const now = new Date();
+    // 終了時間を過ぎていない広告のみを表示
+    return ads.find(ad => {
+      if (!ad.linkUrl) return false;
+      if (!ad.displayEndTime) return true;
+      return new Date(ad.displayEndTime) > now;
+    }) || ads[0]; // 該当がない場合は最新のものを1つ表示（フォールバック）
+  }, [ads]);
 
-  // インデックスエラー判定
   const isIndexError = articlesError && 'code' in articlesError && articlesError.code === 'failed-precondition';
 
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 📡 管制からのステータス報告（systemNotice）を最優先で表示 */}
-      {settings?.systemNotice && (
+      {/* 📡 管制からのステータス報告 */}
+      {settings?.isMaintenanceMode && (
         <div className="px-4 md:px-0 mb-8 animate-fade-in">
-          <Alert className="bg-primary/10 border-primary rounded-[24px] py-6 px-8 shadow-md ring-2 ring-primary/20">
+          <Alert className="bg-primary/5 border-primary/20 rounded-[24px] py-6 px-8 shadow-sm">
             <Info className="h-6 w-6 text-primary" />
-            <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">📡 Message from Control</AlertTitle>
-            <AlertDescription className="text-slate-900 font-black text-lg">
-              {settings.systemNotice}
+            <AlertTitle className="text-primary font-black tracking-widest text-[10px] uppercase mb-2">STATUS</AlertTitle>
+            <AlertDescription className="text-slate-900 font-bold">
+              現在メンテナンスモードです。一部の機能が制限されています。
             </AlertDescription>
           </Alert>
         </div>
       )}
 
       {/* ⚠️ インデックス作成待ち通知 */}
-      {isIndexError && !settings?.systemNotice && (
+      {isIndexError && (
         <div className="px-4 md:px-0 mb-8">
           <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">
             <Info className="h-5 w-5 text-amber-600" />
             <AlertTitle className="text-amber-800 font-black tracking-widest text-xs uppercase mb-2">Database Indexing</AlertTitle>
             <AlertDescription className="text-amber-700 font-medium text-sm">
-              現在、データベースの索引（インデックス）を作成中です。反映まで数分お待ちください。
+              現在、データベースを最適化中です。反映まで数分お待ちください。
             </AlertDescription>
           </Alert>
         </div>
@@ -93,9 +102,16 @@ export default function Home() {
         
         {isAdsLoading ? (
           <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] animate-pulse" />
-        ) : activeAd ? (
-          <Link href={activeAd.linkUrl || '#'} target={activeAd.linkUrl ? "_blank" : "_self"} className="relative block w-full h-20 md:h-32 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border">
-            <Image src={activeAd.imageUrl} alt={activeAd.title || "Ad"} fill className="object-cover transition-transform group-hover:scale-105" priority />
+        ) : activeAd && activeAd.imageUrl ? (
+          <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-20 md:h-32 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border bg-slate-100">
+            <Image 
+              src={activeAd.imageUrl} 
+              alt={activeAd.title || "Ad"} 
+              fill 
+              sizes="100vw"
+              className="object-cover transition-transform group-hover:scale-105" 
+              priority 
+            />
           </Link>
         ) : (
           <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden shadow-inner border flex items-center justify-center">
@@ -116,7 +132,7 @@ export default function Home() {
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="animate-spin text-primary mb-4 size-10" strokeWidth={3} />
-          <p className="text-[8px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
+          <p className="text-[8px] font-black text-slate-300 uppercase tracking-[0.5em]">Fetching Latest News</p>
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16 px-4 md:px-0">
@@ -127,7 +143,7 @@ export default function Home() {
       ) : (
         <div className="py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
           <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
-            {isIndexError ? 'Waiting for database indexing' : 'No articles published yet'}
+            No articles available
           </p>
         </div>
       )}

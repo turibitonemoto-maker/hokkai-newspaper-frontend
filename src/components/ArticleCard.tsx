@@ -9,7 +9,8 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント
- * AIによる要約を排除し、本文からの純粋な抜粋を表示するように最適化しました。
+ * AIによる要約を完全に排除し、記者の生原稿からの抜粋のみを表示します。
+ * 画像がない場合は無理に生成せず、クリーンなレイアウトを維持します。
  */
 interface ArticleCardProps {
   article: {
@@ -27,7 +28,8 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, priority = false }: ArticleCardProps) {
-  const displayImage = article.mainImageUrl || `https://picsum.photos/seed/${article.id}/600/400`;
+  const hasImage = !!article.mainImageUrl;
+  const displayImage = article.mainImageUrl || "";
   const isExternal = article.source === 'note';
   
   const excerpt = useMemo(() => {
@@ -41,15 +43,21 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <Link href={`/articles/${article.id}`} className="group block h-full">
       <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-lg transition-all duration-300 rounded-[20px] md:rounded-[24px] ring-1 ring-slate-100 group-hover:ring-primary/20">
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-          <Image
-            src={displayImage}
-            alt={article.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            priority={priority}
-          />
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
+          {hasImage ? (
+            <Image
+              src={displayImage}
+              alt={article.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              priority={priority}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center p-6 text-center opacity-20">
+              <span className="font-black text-[10px] uppercase tracking-widest text-slate-300">No Image Available</span>
+            </div>
+          )}
           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
             <Badge className="bg-primary text-white border-none font-black text-[7px] md:text-[8px] tracking-[0.1em] uppercase py-0.5 px-1.5 md:px-2 shadow-lg">
               {article.categoryId}
