@@ -9,11 +9,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
-/**
- * 【表示用サイト：最終確定版】
- * 広告の自動終了ロジック、AI表示の完全排除、ステータス表示の簡素化を適用。
- * 1950年からの伝統を届ける、極限まで軽量化された閲覧専用ページです。
- */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -23,12 +18,10 @@ export default function Home() {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
-    // 1分ごとに現在時刻を更新して広告の終了判定を正確にする
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  // 公開記事のみを取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -40,27 +33,23 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  // サイト設定（メンテナンスモード）の取得
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'maintenance');
   }, [db]);
   const { data: settings } = useDoc(siteSettingsRef);
 
-  // 広告データの取得
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'ads');
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の「厳格な」時間フィルタリング（自動終了対応）
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
     const validAds = ads.filter(ad => {
       if (!ad.imageUrl) return false;
-      // 終了時間が設定されている場合のみ判定。なければ常時表示。
       if (!ad.displayEndTime) return true;
       try {
         const endTime = new Date(ad.displayEndTime);
@@ -71,7 +60,6 @@ export default function Home() {
     });
 
     if (validAds.length === 0) return null;
-    // 複数の有効な広告がある場合は最新のものを表示
     return validAds[0];
   }, [ads, now]);
 
@@ -79,7 +67,6 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
-      {/* 📡 稼働状況表示（簡素化：誤解を招かない表現） */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">
@@ -92,7 +79,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* 広告セクション（自動終了対応・sizes最適化） */}
       <div className="mb-10 md:mb-16">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />

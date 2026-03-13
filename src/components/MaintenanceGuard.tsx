@@ -10,11 +10,6 @@ interface MaintenanceGuardProps {
   children: ReactNode;
 }
 
-/**
- * 【表示用サイト：最終版】
- * 稼働状況を最小限のUIで表示します。
- * 「作業状況」などの紛らわしい表現を排除した、誤解を招かない軽量版です。
- */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
   const { user } = useUser();
@@ -36,7 +31,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   
-  // 管理者メールアドレスはガードを回避可能
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 

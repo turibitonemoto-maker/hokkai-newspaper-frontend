@@ -16,7 +16,7 @@
 
 ### 📡 テスト用 (Firebase Studio)
 - **表示用サイト**: [https://6000-firebase-studio-1771906628521.cluster-osvg2nzmmzhzqqjio6oojllbg4.cloudworkstations.dev/](https://6000-firebase-studio-1771906628521.cluster-osvg2nzmmzhzqqjio6oojllbg4.cloudworkstations.dev/)
-- **管理用サイト (参照用)**: [https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/](https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/)
+- **管理用サイト (参照用)**: [https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/admin/maintenance](https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/admin/maintenance)
 
 ### 🚀 公開用 (Vercel)
 - **表示用サイト**: [https://hokkai-newspaper-frontend.vercel.app/](https://hokkai-newspaper-frontend.vercel.app/)

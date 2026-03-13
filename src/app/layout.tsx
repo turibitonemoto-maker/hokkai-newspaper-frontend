@@ -25,7 +25,8 @@ export const metadata: Metadata = {
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
   keywords: ['北海学園大学', '新聞会', '学生新聞'],
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
   viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
 };
