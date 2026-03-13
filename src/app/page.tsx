@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 /**
  * 【こちら表示用サイト】
  * 管制からの指示を受け、ステータス報告と記事の安全な表示を管理します。
+ * AI機能を排除し、軽量化された閲覧専用のトップページです。
  */
 export default function Home() {
   const db = useFirestore();
@@ -23,7 +24,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 公開記事のみを取得
+  // 公開記事のみを取得 (AI要約は使用せず、本文からの抜粋を表示)
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -70,7 +71,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ⚠️ インデックス作成待ち通知（管制報告がない場合、または併記） */}
+      {/* ⚠️ インデックス作成待ち通知 */}
       {isIndexError && !settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8">
           <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">

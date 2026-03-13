@@ -30,8 +30,8 @@ export default function ContactPage() {
       <div className="max-w-4xl mx-auto space-y-16">
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest">CONTACT</Badge>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter">お問い合わせ</h1>
-          <p className="text-slate-500 font-bold">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">お問い合わせ</h1>
+          <p className="text-slate-500 font-bold max-w-2xl mx-auto leading-relaxed">
             取材依頼、広告掲載、入部希望などは、以下の公式窓口より直接ご連絡ください。<br />
             ※荒らし対策のため、Webフォームを廃止し外部SNSに集約しております。
           </p>

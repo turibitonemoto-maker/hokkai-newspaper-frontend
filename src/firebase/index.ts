@@ -65,7 +65,6 @@ export async function logout() {
 
 /**
  * 重複エクスポートによる競合を避けるため、フックは provider.tsx からのみエクスポートします。
- * auth/use-user.tsx などを直接ここからエクスポートしないことで名前の衝突を防ぎます。
  */
 export { 
   useUser, 
