@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,8 +12,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (閲覧専用)
- * AI機能（要約）を完全に排除し、最適化（sizes属性追加）を行いました。
+ * 記事詳細ページ (閲覧専用：最終版)
+ * AI機能（要約）を完全に排除し、画像最適化（sizes属性追加）を徹底しました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -134,7 +133,7 @@ export default function ArticlePage() {
                 src={displayImage}
                 alt={article.title}
                 fill
-                sizes="(max-width: 1280px) 100vw, 80vw"
+                sizes="(max-width: 1024px) 100vw, 80vw"
                 className="object-cover"
                 priority
               />

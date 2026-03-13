@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -11,8 +10,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * 【こちら表示用サイト】
- * 広告の自動終了とステータス表示の簡素化、AI機能の完全排除を適用。
+ * 【表示用サイト：最終版】
+ * 広告の自動終了ロジック、AI排除、ステータス表示の簡素化を適用。
  * 1950年からの伝統を届ける、極限まで軽量化された閲覧専用ページです。
  */
 export default function Home() {
@@ -55,7 +54,7 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の「厳格な」時間フィルタリング
+  // 広告の「厳格な」時間フィルタリング（自動終了対応）
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
@@ -71,6 +70,7 @@ export default function Home() {
     });
 
     if (validAds.length === 0) return null;
+    // 複数の有効な広告がある場合は最新のものを表示
     return validAds[0];
   }, [ads, now]);
 
@@ -78,7 +78,7 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
-      {/* 📡 稼働状況表示（簡素化） */}
+      {/* 📡 稼働状況表示（簡素化：誤解を招かない表現） */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">
@@ -91,7 +91,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 広告セクション（自動終了対応） */}
+      {/* 広告セクション（自動終了対応・sizes最適化） */}
       <div className="mb-10 md:mb-16">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />

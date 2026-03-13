@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -9,7 +8,7 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント
+ * 記事カードコンポーネント (最終版)
  * AI要約を排除し、徹底的に軽量化（sizes属性追加）しました。
  * 画像がない場合は無理な生成をせず、清潔な余白として扱います。
  */
