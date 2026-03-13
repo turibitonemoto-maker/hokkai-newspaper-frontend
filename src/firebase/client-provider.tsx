@@ -14,20 +14,29 @@ interface FirebaseClientProviderProps {
  * SSR時のエラーやFirestoreの内部状態不整合を防ぎます。
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
+  // 初期化済みのインスタンスを保持する。
+  // windowが利用可能な場合は即座に取得を試みる（ハイドレーション中のちらつき防止）
   const [services, setServices] = useState<{
     firebaseApp: any;
     auth: any;
     firestore: any;
-  } | null>(null);
+  } | null>(() => {
+    if (typeof window !== 'undefined') {
+      return initializeFirebase();
+    }
+    return null;
+  });
 
   useEffect(() => {
-    // マウント後に確実に一度だけ実行
-    const initialized = initializeFirebase();
-    setServices(initialized);
-  }, []);
+    // マウント後に改めて初期化状態を確定させる
+    if (!services) {
+      const initialized = initializeFirebase();
+      setServices(initialized);
+    }
+  }, [services]);
 
   // 初期化完了までは安全なローディング状態を表示
-  if (!services) {
+  if (!services || !services.firebaseApp) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">

@@ -24,13 +24,19 @@ export function initializeFirebase() {
 
   const win = window as any;
 
-  // 既に初期化済みの場合はグローバルから返す
+  // 既に初期化済みの場合はグローバルから即座に返す
   if (win[FIREBASE_GLOBAL_KEY]) {
     return win[FIREBASE_GLOBAL_KEY];
   }
 
-  // Appの初期化
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  // Appの初期化。既存のものがあれば再利用、なければ新規作成
+  let app: FirebaseApp;
+  const apps = getApps();
+  if (apps.length > 0) {
+    app = apps[0];
+  } else {
+    app = initializeApp(firebaseConfig);
+  }
 
   // Authの初期化
   const authInstance = getAuth(app);
@@ -38,17 +44,20 @@ export function initializeFirebase() {
   // Firestoreの初期化
   const db = getFirestore(app);
 
-  // 非同期で永続性を設定（エラーは無視せず警告のみ）
-  setPersistence(authInstance, browserLocalPersistence).catch((err) => {
-    console.warn("Firebase Auth Persistence failed to set:", err);
-  });
-
-  // グローバルに保存して使い回す
+  // シングルトンとしてグローバルに保存（他の処理が走る前に登録）
   win[FIREBASE_GLOBAL_KEY] = {
     firebaseApp: app,
     auth: authInstance,
     firestore: db
   };
+
+  // Authの永続性設定。初期化時に一度だけ実行されるようにする
+  setPersistence(authInstance, browserLocalPersistence).catch((err) => {
+    // 既に設定されている場合などのエラーは無視
+    if (err.code !== 'auth/already-initialized') {
+      console.warn("Firebase Auth Persistence failed to set:", err);
+    }
+  });
 
   return win[FIREBASE_GLOBAL_KEY];
 }
@@ -58,6 +67,7 @@ export function initializeFirebase() {
  */
 export async function signInWithGoogle() {
   const { auth } = initializeFirebase();
+  if (!auth) return;
   const provider = new GoogleAuthProvider();
   try {
     return await signInWithPopup(auth, provider);
@@ -72,6 +82,7 @@ export async function signInWithGoogle() {
  */
 export async function logout() {
   const { auth } = initializeFirebase();
+  if (!auth) return;
   return await signOut(auth);
 }
 
