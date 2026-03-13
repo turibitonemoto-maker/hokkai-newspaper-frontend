@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -10,6 +9,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
+/**
+ * トップページ (閲覧専用)
+ * 管理サイトで「公開」に設定された記事のみをリアルタイムで表示します。
+ */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -25,7 +28,7 @@ export default function Home() {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('isPublished', '==', true), // 公開済みフラグをチェック
+      where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
   }, [db]);
@@ -50,7 +53,7 @@ export default function Home() {
       <div className="mb-10 md:mb-16 mt-4 md:mt-8 px-4 md:px-0">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />
-          <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED / 広告</span>
+          <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED</span>
         </div>
         
         {isAdsLoading ? (
@@ -76,26 +79,17 @@ export default function Home() {
             )}
           </Link>
         ) : (
-          <Link 
-            href="/ads"
-            className="relative block w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group cursor-pointer shadow-inner border border-slate-100"
-          >
+          <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden shadow-inner border border-slate-100 flex items-center justify-center">
             {adPlaceholder && (
               <Image 
                 src={adPlaceholder.imageUrl} 
-                alt="Advertisement" 
+                alt="Space for ads" 
                 fill 
-                sizes="(max-width: 1280px) 100vw, 1280px"
-                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                priority
+                className="object-cover opacity-10 grayscale"
               />
             )}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-transparent transition-all">
-              <div className="bg-white/90 backdrop-blur-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full shadow-xl border">
-                <p className="text-[8px] md:text-[10px] font-black tracking-widest text-slate-900 uppercase">広告募集中</p>
-              </div>
-            </div>
-          </Link>
+            <p className="text-[8px] md:text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase relative z-10">Advertising Space</p>
+          </div>
         )}
       </div>
 
@@ -115,7 +109,7 @@ export default function Home() {
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20 md:py-24">
           <Loader2 className="animate-spin text-primary mb-4 size-10 md:size-12" strokeWidth={3} />
-          <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Feed</p>
+          <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16 px-4 md:px-0">
@@ -124,8 +118,11 @@ export default function Home() {
           ))}
         </div>
       ) : (
-        <div className="py-20 md:py-24 text-center bg-white rounded-[24px] md:rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
-          <p className="text-slate-400 font-bold uppercase text-[8px] md:text-[10px] tracking-[0.3em]">No stories found in the archives</p>
+        <div className="py-20 md:py-32 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
+          <div className="max-w-xs mx-auto space-y-4">
+            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">Archives are empty</p>
+            <p className="text-slate-300 text-xs font-medium">現在公開されている記事はありません。管理サイトからの更新をお待ちください。</p>
+          </div>
         </div>
       )}
 
@@ -133,9 +130,9 @@ export default function Home() {
         <div className="mb-20 px-4 md:px-0 text-center md:text-left">
           <Link 
             href="/category/Campus" 
-            className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-slate-900 text-white rounded-full font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl hover:scale-105 active:scale-95"
           >
-            View More Stories <ChevronRight className="size-3 md:size-[14px]" />
+            Explore More Stories <ChevronRight className="size-4" />
           </Link>
         </div>
       )}
