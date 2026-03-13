@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,8 +13,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (表示用・閲覧専用)
- * AI機能（要約）を排除し、記者の生原稿のみを純粋に表示する構成に最適化しました。
+ * 記事詳細ページ (閲覧専用)
+ * AI機能（要約）を完全に排除し、最適化（sizes属性追加）を行いました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -31,9 +32,7 @@ export default function ArticlePage() {
   // 公開設定のチェック
   const isPublic = article?.isPublished === true;
 
-  const displayImage = useMemo(() => 
-    article?.mainImageUrl || `https://picsum.photos/seed/${article?.id}/1200/600`
-  , [article?.mainImageUrl, article?.id]);
+  const displayImage = article?.mainImageUrl || "";
 
   const mainContent = useMemo(() => 
     article?.htmlContent || article?.content || ''
@@ -129,15 +128,18 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 md:mb-24 shadow-2xl shadow-slate-200 ring-1 ring-slate-100 bg-slate-50">
-            <Image
-              src={displayImage}
-              alt={article.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
+          {displayImage && (
+            <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 md:mb-24 shadow-2xl shadow-slate-200 ring-1 ring-slate-100 bg-slate-50">
+              <Image
+                src={displayImage}
+                alt={article.title}
+                fill
+                sizes="(max-width: 1280px) 100vw, 80vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
 
           <div className="max-w-3xl mx-auto relative">
             <div 

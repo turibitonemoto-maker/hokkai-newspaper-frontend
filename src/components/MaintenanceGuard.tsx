@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -12,8 +13,8 @@ interface MaintenanceGuardProps {
 
 /**
  * 【こちら表示用サイト】
- * 管理サイト側で設定された status を監視し、稼働状況を表示します。
- * 余計な文言を排除し、シンプルなステータス表示に特化しました。
+ * 管理サイト側で設定された status を監視し、稼働状況を最小限のUIで表示します。
+ * 「作業状況」などの紛らわしい表現を排除しました。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
@@ -49,18 +50,20 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
               <Construction size={40} />
             </div>
             
-            <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest mb-6">Status: メンテナンス中</Badge>
+            <Badge variant="outline" className="px-4 py-1 border-amber-500 text-amber-600 font-black uppercase tracking-widest mb-6">
+              稼働状況：メンテナンス中
+            </Badge>
             
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 mb-6 leading-tight">
-              現在、サイトを停止しています
+              現在サイトを停止しています
             </h1>
             
-            <p className="text-slate-600 font-medium leading-relaxed mb-10 text-lg">
+            <p className="text-slate-600 font-medium leading-relaxed mb-10">
               再開まで今しばらくお待ちください。
             </p>
 
             <div className="pt-8 border-t border-slate-100">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+              <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">
                 Hokkai Gakuen University Ichibu Newspaper
               </p>
             </div>

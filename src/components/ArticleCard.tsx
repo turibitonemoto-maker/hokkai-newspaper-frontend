@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -9,8 +10,8 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント
- * AIによる要約を完全に排除し、記者の生原稿からの抜粋のみを表示します。
- * 画像がない場合は無理に生成せず、クリーンなレイアウトを維持します。
+ * AI要約を排除し、軽量化（sizesプロパティ追加）を行いました。
+ * 画像がない場合は無理な生成をせず、清潔な余白として扱います。
  */
 interface ArticleCardProps {
   article: {
@@ -34,6 +35,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.htmlContent || article.content || "";
+    // HTMLタグを除去してテキストのみを抽出
     const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
   }, [article.htmlContent, article.content]);
@@ -54,8 +56,8 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               priority={priority}
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center p-6 text-center opacity-20">
-              <span className="font-black text-[10px] uppercase tracking-widest text-slate-300">No Image Available</span>
+            <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+              <span className="font-black text-[9px] uppercase tracking-[0.3em] text-slate-200">No Image</span>
             </div>
           )}
           <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
@@ -77,7 +79,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               <span>{date}</span>
             </div>
           </div>
-          <h3 className="text-sm md:text-base font-black leading-tight text-slate-900 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
+          <h3 className="text-sm md:text-base font-black leading-tight text-slate-950 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
             {article.title}
           </h3>
         </CardHeader>

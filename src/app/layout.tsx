@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter, Yuji_Mai } from 'next/font/google';
 import './globals.css';
@@ -25,8 +26,9 @@ export const metadata: Metadata = {
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
   keywords: ['北海学園大学', '新聞会', '学生新聞'],
   icons: {
-    icon: '/favicon.ico', // 公開時に新聞会のアイコンを配置してください
-  }
+    icon: '/favicon.ico',
+  },
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
 };
 
 export default function RootLayout({
@@ -36,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${inter.variable} ${yujiMai.variable}`}>
-      <body className="font-sans antialiased bg-white flex flex-col min-h-screen">
+      <body className="font-sans antialiased bg-white flex flex-col min-h-screen overflow-x-hidden">
         <FirebaseClientProvider>
           <MaintenanceGuard>
             <Navbar />
