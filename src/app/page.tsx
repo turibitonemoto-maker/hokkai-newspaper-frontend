@@ -1,33 +1,23 @@
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, doc } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Loader2, Calendar, Megaphone, ChevronRight, RefreshCw, Check, AlertCircle } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
   const db = useFirestore();
-  const { user } = useUser();
-  const { toast } = useToast();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
   }, []);
-
-  const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
-  const isAdmin = user?.email && adminEmails.includes(user.email);
 
   // 記事データの取得
   const allArticlesRef = useMemoFirebase(() => {
@@ -52,82 +42,8 @@ export default function Home() {
   const activeAd = useMemo(() => ads?.[0] || null, [ads]);
   const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
-  // note同期処理
-  const handleSyncNote = async () => {
-    if (!isAdmin || isSyncing) return;
-    setIsSyncing(true);
-    
-    toast({
-      title: "同期を開始します",
-      description: "note.com から最新の記事を取得しています...",
-    });
-
-    try {
-      const result = await fetchAndSyncNoteRss();
-      if (result.success && result.articles) {
-        if (result.articles.length === 0) {
-          toast({
-            title: "同期完了",
-            description: "新しい記事はありませんでした。",
-          });
-          return;
-        }
-
-        let count = 0;
-        for (const article of result.articles) {
-          const articleRef = doc(db, 'articles', article.id);
-          // 各記事を Firestore に保存
-          setDocumentNonBlocking(articleRef, article);
-          count++;
-        }
-        toast({
-          title: "同期成功",
-          description: `${count}件のnote記事を反映しました。一覧の更新をお待ちください。`,
-        });
-      } else {
-        throw new Error(result.error || '同期処理中にエラーが発生しました。');
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "同期失敗",
-        description: error.message,
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 管理者用同期パネル */}
-      {isAdmin && (
-        <div className="mb-8 px-4 md:px-0">
-          <div className="bg-slate-900 text-white rounded-[32px] p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-white/10">
-            <div className="flex items-center gap-4">
-              <div className="bg-primary/20 p-3 rounded-2xl">
-                <RefreshCw size={24} className={isSyncing ? "animate-spin text-primary" : "text-primary"} />
-              </div>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-1">Administrator Sync Panel</p>
-                <p className="text-sm font-bold text-slate-300">公式 note.com の最新記事をデータベースに同期します。</p>
-              </div>
-            </div>
-            <Button 
-              onClick={handleSyncNote} 
-              disabled={isSyncing}
-              className="bg-white text-slate-900 hover:bg-primary hover:text-white rounded-full px-10 font-black text-xs uppercase tracking-widest h-14 w-full md:w-auto transition-all shadow-xl"
-            >
-              {isSyncing ? (
-                <span className="flex items-center gap-2"><Loader2 className="animate-spin size-4" /> Syncing...</span>
-              ) : (
-                "Sync with note"
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* 広告セクション */}
       <div className="mb-10 md:mb-16 mt-4 md:mt-8 px-4 md:px-0">
         <div className="flex items-center gap-2 mb-3">
