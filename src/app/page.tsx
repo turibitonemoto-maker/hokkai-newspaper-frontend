@@ -1,13 +1,15 @@
+
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, where, doc } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, ChevronRight, Info } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 /**
  * 【こちら表示用サイト】
@@ -33,7 +35,14 @@ export default function Home() {
     );
   }, [db]);
 
-  const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
+  const { data: articles, isLoading: isArticlesLoading, error: articlesError } = useCollection(allArticlesRef);
+
+  // メンテナンス/ステータス設定の取得
+  const siteSettingsRef = useMemoFirebase(() => {
+    if (!db) return null;
+    return doc(db, 'settings', 'maintenance');
+  }, [db]);
+  const { data: settings } = useDoc(siteSettingsRef);
 
   // 広告データの取得
   const adsRef = useMemoFirebase(() => {
@@ -47,8 +56,37 @@ export default function Home() {
   const activeAd = useMemo(() => ads?.[0] || null, [ads]);
   const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
+  // インデックスエラー（作成中）の判定
+  const isIndexError = articlesError && 'code' in articlesError && articlesError.code === 'failed-precondition';
+
   return (
     <section className="container mx-auto px-0 pb-20">
+      {/* 管制からのステータス報告（システム通知） */}
+      {settings?.systemNotice && (
+        <div className="px-4 md:px-0 mb-8">
+          <Alert className="bg-primary/5 border-primary/20 rounded-[24px] py-6 px-8 shadow-sm">
+            <Info className="h-5 w-5 text-primary" />
+            <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">System Notice from Control</AlertTitle>
+            <AlertDescription className="text-slate-700 font-bold">
+              {settings.systemNotice}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {/* インデックス作成待ちの通知 */}
+      {isIndexError && (
+        <div className="px-4 md:px-0 mb-8">
+          <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">
+            <Info className="h-5 w-5 text-amber-600" />
+            <AlertTitle className="text-amber-800 font-black tracking-widest text-xs uppercase mb-2">Database Indexing</AlertTitle>
+            <AlertDescription className="text-amber-700 font-medium text-sm">
+              現在、データベースの索引（インデックス）を作成中です。管理用サイトで開通作業を行っています。完了までしばらくお待ちください。
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
       {/* 広告セクション */}
       <div className="mb-10 md:mb-16 mt-4 md:mt-8 px-4 md:px-0">
         <div className="flex items-center gap-2 mb-3">
@@ -120,8 +158,14 @@ export default function Home() {
       ) : (
         <div className="py-20 md:py-32 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
           <div className="max-w-xs mx-auto space-y-4">
-            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">Archives are empty</p>
-            <p className="text-slate-300 text-xs font-medium">現在公開されている記事はありません。管理サイトからの更新をお待ちください。</p>
+            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
+              {isIndexError ? 'Database Indexing in Progress' : 'Archives are empty'}
+            </p>
+            <p className="text-slate-300 text-xs font-medium">
+              {isIndexError 
+                ? '記事を取得するための索引を作成中です。反映まで少々お待ちください。' 
+                : '現在公開されている記事はありません。管理サイトからの更新をお待ちください。'}
+            </p>
           </div>
         </div>
       )}

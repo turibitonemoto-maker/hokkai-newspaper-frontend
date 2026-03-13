@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -56,9 +57,13 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (err: FirestoreError) => {
-        // インデックス不足 (FAILED_PRECONDITION) の場合はURLをコンソールに表示
+        // インデックス不足 (FAILED_PRECONDITION) の場合は詳細をコンソールに出力し、UI側へ通知
         if (err.code === 'failed-precondition') {
-          console.error("Index missing! Create it here:", err.message);
+          console.group('⚠️ Firestore Index Required');
+          console.warn('このクエリ（フィルタとソートの組み合わせ）にはインデックスが必要です。');
+          console.warn('以下のURLをクリックして管理サイト側で作成してください:');
+          console.info(err.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/)?.[0] || 'Consoleで作成してください');
+          console.groupEnd();
         } else {
           console.error("Firestore Listen Error:", err);
         }
