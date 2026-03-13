@@ -61,11 +61,14 @@ export async function logout() {
   return await signOut(auth);
 }
 
+// エクスポートの整理：
+// useUser は provider.tsx からエクスポートされるコンテキスト版を使用するため、
+// 個別の auth/use-user からのエクスポートを停止して競合を解消します。
 export * from './provider';
 export * from './client-provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
-export * from './auth/use-user';
+// export * from './auth/use-user'; // provider.tsx との競合を防ぐためコメントアウト
 export * from './non-blocking-updates';
 export * from './non-blocking-login';
 export * from './errors';
