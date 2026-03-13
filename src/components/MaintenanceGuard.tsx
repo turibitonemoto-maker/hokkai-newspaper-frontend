@@ -37,8 +37,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   const maintenanceMessage = settings?.maintenanceMessage || "現在、システムメンテナンスのためサイトを一時停止しております。再開まで今しばらくお待ちください。";
   
-  // 表示サイト側では一般ユーザー向けにブロックを徹底
-  // 管理者メールアドレスであっても、基本的にはメンテナンス画面を表示（プレビューモードはNavbar等で識別可）
+  // 管理者メールアドレスはガードを回避してプレビュー可能
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 

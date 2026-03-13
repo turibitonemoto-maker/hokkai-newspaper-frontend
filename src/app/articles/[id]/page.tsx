@@ -14,7 +14,6 @@ import { Separator } from '@/components/ui/separator';
 /**
  * 記事詳細ページ (表示用・閲覧専用)
  * 管理サイトで「公開(isPublished: true)」に設定された記事のみを表示します。
- * 1950年創立の伝統を感じさせる、重厚で読みやすいタイポグラフィを採用。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -63,8 +62,7 @@ export default function ArticlePage() {
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">記事が見つかりません</h1>
           <p className="text-slate-500 font-medium leading-relaxed">
-            お探しの記事は削除されたか、現在非公開に設定されています。<br />
-            最新のニュースはトップページからご確認いただけます。
+            お探しの記事は削除されたか、現在非公開に設定されています。
           </p>
           <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black shadow-lg shadow-primary/20">
             トップページへ戻る
@@ -131,14 +129,6 @@ export default function ArticlePage() {
                   <span>{article.authorName || '北海学園大学一部新聞会'}</span>
                 </div>
               </div>
-              
-              <div className="md:flex-grow" />
-              
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" className="rounded-full border-slate-200 text-slate-400 hover:text-primary transition-colors shadow-sm">
-                  <Share2 size={16} />
-                </Button>
-              </div>
             </div>
           </header>
 
@@ -147,7 +137,6 @@ export default function ArticlePage() {
               src={displayImage}
               alt={article.title}
               fill
-              sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
               priority
             />
@@ -156,43 +145,13 @@ export default function ArticlePage() {
           <div className="max-w-3xl mx-auto relative">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-[1.8] prose-p:text-slate-800 prose-a:text-primary prose-a:font-bold prose-strong:text-slate-950 prose-img:rounded-[32px] prose-img:shadow-2xl transition-all duration-300 font-medium",
+                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-[1.8] prose-p:text-slate-800 transition-all duration-300 font-medium",
                 fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
                 fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
                 fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 
               )}
               dangerouslySetInnerHTML={{ __html: mainContent }}
             />
-
-            {isExternal && article.noteUrl && (
-              <div className="mt-20 md:mt-40 pt-16 border-t-8 border-slate-50">
-                <div className="bg-slate-50 rounded-[48px] p-8 md:p-16 text-center space-y-10 shadow-inner">
-                  <div className="bg-green-600 w-20 h-20 rounded-[28px] flex items-center justify-center mx-auto text-white shadow-xl shadow-green-200">
-                    <ExternalLink size={40} />
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-2xl md:text-3xl font-black tracking-tight">続きは note.com でご覧いただけます</h3>
-                    <p className="text-slate-500 font-medium max-w-lg mx-auto leading-relaxed">
-                      この記事の全文や追加の写真は note 公式ページで公開されています。ぜひ併せてご確認ください。
-                    </p>
-                  </div>
-                  <a 
-                    href={article.noteUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center h-20 px-12 text-xl font-black rounded-full bg-green-600 hover:bg-green-700 text-white shadow-2xl shadow-green-100 transition-all active:scale-[0.98] gap-4 no-underline group"
-                  >
-                    公式 note で続きを読む
-                    <ExternalLink size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </a>
-                </div>
-              </div>
-            )}
-            
-            <div className="mt-32 pt-16 border-t border-slate-100 text-center">
-              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] mb-4">Hokkai Gakuen University Ichibu Newspaper</p>
-              <p className="text-slate-400 font-medium text-xs">© 1950-2025 北海学園大学一部新聞会</p>
-            </div>
           </div>
         </article>
       </div>
