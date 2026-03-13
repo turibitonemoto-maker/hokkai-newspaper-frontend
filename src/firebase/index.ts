@@ -6,9 +6,9 @@ import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'fir
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 /**
- * 【こちら表示用サイト】
- * Next.jsのホットリロード時におけるFirestoreの内部状態エラー（ID: ca9）を物理的に遮断するため、
- * globalThisを使用してインスタンスを完全に1つに固定するスーパーシングルトン・パターンを採用しています。
+ * 【こちら表示用サイト：最終安定版】
+ * Next.jsのFast Refresh時におけるFirestore内部状態エラー（ID: ca9）を物理的に遮断するため、
+ * globalThisを使用してインスタンスを完全に1つに固定するスーパーシングルトン・パターンを採用。
  */
 declare global {
   var __firebase_app: FirebaseApp | undefined;
@@ -21,18 +21,18 @@ export function initializeFirebase() {
     return { firebaseApp: null, auth: null, firestore: null };
   }
 
-  // 1. Firebase App の初期化（シングルトン固定）
+  // 1. Firebase App のシングルトン固定
   if (!globalThis.__firebase_app) {
     const apps = getApps();
     globalThis.__firebase_app = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
   }
 
-  // 2. Auth の初期化（シングルトン固定）
+  // 2. Auth のシングルトン固定
   if (!globalThis.__firebase_auth) {
     globalThis.__firebase_auth = getAuth(globalThis.__firebase_app);
   }
 
-  // 3. Firestore の初期化（シングルトン固定）
+  // 3. Firestore のシングルトン固定
   if (!globalThis.__firebase_db) {
     globalThis.__firebase_db = getFirestore(globalThis.__firebase_app);
   }
@@ -61,14 +61,15 @@ export async function logout() {
   return await signOut(auth);
 }
 
-// 【重要：エクスポートの整理】
-// useUser は provider.tsx からエクスポートされるコンテキスト版を使用します。
-// auth/use-user.tsx との競合を避けるため、一括エクスポートではなく個別に管理します。
-export * from './provider';
+/**
+ * 【重要：エクスポートの整理】
+ * 名前空間の衝突（useUser）を避けるため、provider.tsx からのみエクスポートします。
+ * auth/use-user.tsx からの直接エクスポートは禁止です。
+ */
+export { useUser } from './provider'; 
 export * from './client-provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
-// export * from './auth/use-user'; // provider.tsx との重複エラーを避けるためコメントアウトしたままにします
 export * from './non-blocking-updates';
 export * from './non-blocking-login';
 export * from './errors';

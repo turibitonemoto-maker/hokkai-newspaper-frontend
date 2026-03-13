@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 /**
  * 【こちら表示用サイト】
- * 管理サイトで「公開(isPublished: true)」に設定された記事のみをリアルタイムで取得し表示します。
+ * 管制（外部ジェミニ）からの指示を受け、ステータス報告と記事の安全な表示を管理します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -24,7 +24,7 @@ export default function Home() {
     }));
   }, []);
 
-  // 記事データの取得 (管理サイト側の「公開」設定を厳格に守る)
+  // 公開記事のみを取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -36,7 +36,7 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading, error: articlesError } = useCollection(allArticlesRef);
 
-  // メンテナンス/ステータス設定の取得
+  // 管制からのステータス通知を取得
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'maintenance');
@@ -48,21 +48,20 @@ export default function Home() {
     if (!db) return null;
     return collection(db, 'ads');
   }, [db]);
-
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
   const activeAd = useMemo(() => ads?.[0] || null, [ads]);
   const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
-  // インデックスエラー（作成中）の判定
+  // インデックスエラー判定
   const isIndexError = articlesError && 'code' in articlesError && articlesError.code === 'failed-precondition';
 
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 管制からのステータス報告（システム通知） */}
+      {/* 管制からのステータス報告 */}
       {settings?.systemNotice && (
-        <div className="px-4 md:px-0 mb-8">
+        <div className="px-4 md:px-0 mb-8 animate-fade-in">
           <Alert className="bg-primary/5 border-primary/20 rounded-[24px] py-6 px-8 shadow-sm">
             <Info className="h-5 w-5 text-primary" />
             <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">System Notice from Control</AlertTitle>
@@ -73,14 +72,14 @@ export default function Home() {
         </div>
       )}
 
-      {/* インデックス作成待ちの通知 */}
+      {/* インデックス作成待ち通知 */}
       {isIndexError && (
         <div className="px-4 md:px-0 mb-8">
           <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">
             <Info className="h-5 w-5 text-amber-600" />
             <AlertTitle className="text-amber-800 font-black tracking-widest text-xs uppercase mb-2">Database Indexing</AlertTitle>
             <AlertDescription className="text-amber-700 font-medium text-sm">
-              現在、データベースの索引（インデックス）を作成中です。管理用サイトで開通作業を行っています。完了までしばらくお待ちください。
+              現在、データベースの索引を作成中です。反映までしばらくお待ちください。
             </AlertDescription>
           </Alert>
         </div>
@@ -96,57 +95,29 @@ export default function Home() {
         {isAdsLoading ? (
           <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] animate-pulse" />
         ) : activeAd ? (
-          <Link 
-            href={activeAd.linkUrl || '#'} 
-            target={activeAd.linkUrl ? "_blank" : "_self"}
-            className="relative block w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border border-slate-100"
-          >
-            <Image 
-              src={activeAd.imageUrl} 
-              alt={activeAd.title || "Advertisement"} 
-              fill 
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              priority
-            />
-            {activeAd.title && (
-              <div className="absolute bottom-2 right-2 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                {activeAd.title}
-              </div>
-            )}
+          <Link href={activeAd.linkUrl || '#'} target={activeAd.linkUrl ? "_blank" : "_self"} className="relative block w-full h-20 md:h-32 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border">
+            <Image src={activeAd.imageUrl} alt={activeAd.title || "Ad"} fill className="object-cover transition-transform group-hover:scale-105" priority />
           </Link>
         ) : (
-          <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden shadow-inner border border-slate-100 flex items-center justify-center">
-            {adPlaceholder && (
-              <Image 
-                src={adPlaceholder.imageUrl} 
-                alt="Space for ads" 
-                fill 
-                className="object-cover opacity-10 grayscale"
-              />
-            )}
-            <p className="text-[8px] md:text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase relative z-10">Advertising Space</p>
+          <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden shadow-inner border flex items-center justify-center">
+            <p className="text-[8px] md:text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase">Advertising Space</p>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 md:mb-10 border-b border-slate-100 pb-6 md:pb-8 px-4 md:px-0">
-        <div>
-          <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
-            <span className="text-primary">最新</span>
-            <span className="text-slate-950">の</span>
-            <span className="text-primary">記事</span>
-          </div>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-slate-100 pb-8 px-4 md:px-0">
+        <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
+          <span className="text-primary">最新</span>の<span className="text-primary">記事</span>
         </div>
-        <div className="flex items-center gap-2 text-slate-400 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] bg-slate-50 px-4 md:px-5 py-2 md:py-2.5 rounded-lg md:rounded-xl border border-slate-100 w-fit">
+        <div className="flex items-center gap-2 text-slate-400 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] bg-slate-50 px-5 py-2.5 rounded-xl border border-slate-100 w-fit">
           <Calendar size={10} className="text-primary md:size-3" /> <span>{currentTime || '...'}</span>
         </div>
       </div>
 
       {isArticlesLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 md:py-24">
-          <Loader2 className="animate-spin text-primary mb-4 size-10 md:size-12" strokeWidth={3} />
-          <p className="text-[8px] md:text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="animate-spin text-primary mb-4 size-10" strokeWidth={3} />
+          <p className="text-[8px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16 px-4 md:px-0">
@@ -155,28 +126,10 @@ export default function Home() {
           ))}
         </div>
       ) : (
-        <div className="py-20 md:py-32 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
-          <div className="max-w-xs mx-auto space-y-4">
-            <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
-              {isIndexError ? 'Database Indexing in Progress' : 'Archives are empty'}
-            </p>
-            <p className="text-slate-300 text-xs font-medium">
-              {isIndexError 
-                ? '記事を取得するための索引を作成中です。反映まで少々お待ちください。' 
-                : '現在公開されている記事はありません。管理サイトからの更新をお待ちください。'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {articles && articles.length > 12 && (
-        <div className="mb-20 px-4 md:px-0 text-center md:text-left">
-          <Link 
-            href="/category/Campus" 
-            className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl hover:scale-105 active:scale-95"
-          >
-            Explore More Stories <ChevronRight className="size-4" />
-          </Link>
+        <div className="py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
+          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
+            {isIndexError ? 'Database Indexing' : 'Archives are empty'}
+          </p>
         </div>
       )}
     </section>
