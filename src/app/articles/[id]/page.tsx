@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, ExternalLink, Share2, Type } from 'lucide-react';
+import { Calendar, User, ChevronLeft, ExternalLink, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細ページ (表示用・閲覧専用)
- * 編集機能を持たず、読者が快適に記事を読めることに特化したレイアウト。
+ * 管理サイトで「公開(isPublished: true)」に設定された記事のみを表示します。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -27,6 +27,9 @@ export default function ArticlePage() {
   }, [db, id]);
 
   const { data: article, isLoading } = useDoc(articleRef);
+
+  // 公開設定のチェック
+  const isPublic = article?.isPublished === true;
 
   const displayImage = useMemo(() => 
     article?.mainImageUrl || `https://picsum.photos/seed/${article?.id}/1200/600`
@@ -49,7 +52,8 @@ export default function ArticlePage() {
     );
   }
 
-  if (!article) {
+  // 記事が存在しない、または非公開の場合は「見つかりません」を表示
+  if (!article || !isPublic) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white">
         <div className="max-w-md w-full text-center space-y-6">
@@ -57,7 +61,7 @@ export default function ArticlePage() {
             <ChevronLeft size={40} />
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">記事が見つかりません</h1>
-          <p className="text-slate-500 font-medium">お探しの記事は削除されたか、URLが間違っている可能性があります。</p>
+          <p className="text-slate-500 font-medium">お探しの記事は削除されたか、現在非公開に設定されています。</p>
           <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black shadow-lg shadow-primary/20">
             トップページへ戻る
           </Button>
@@ -69,7 +73,6 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
-        {/* 上部ナビゲーション */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -132,7 +135,6 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* アイキャッチ画像 */}
           <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[48px] overflow-hidden mb-16 shadow-2xl shadow-slate-200 ring-1 ring-slate-100 bg-slate-50">
             <Image
               src={displayImage}
@@ -144,7 +146,6 @@ export default function ArticlePage() {
             />
           </div>
 
-          {/* 本文 */}
           <div className="max-w-3xl mx-auto relative">
             <div 
               className={cn(
@@ -156,7 +157,6 @@ export default function ArticlePage() {
               dangerouslySetInnerHTML={{ __html: mainContent }}
             />
 
-            {/* note.com 誘導セクション */}
             {isExternal && article.noteUrl && (
               <div className="mt-20 md:mt-32 pt-12 border-t-4 border-slate-50">
                 <div className="bg-slate-50 rounded-[40px] p-8 md:p-12 text-center space-y-8">

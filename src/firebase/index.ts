@@ -5,39 +5,39 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
-// モジュールスコープでインスタンスをキャッシュ（ca9エラー対策）
-let cachedApp: FirebaseApp | null = null;
-let cachedAuth: Auth | null = null;
-let cachedDb: Firestore | null = null;
-
 /**
- * Firebaseの各サービスをシングルトンとして初期化します。
+ * 開発中のホットリロードによる ID: ca9 (Unexpected state) エラーを防ぐため
+ * ブラウザのグローバル空間にインスタンスを確実に保持するシングルトン管理。
  */
+const getGlobal = () => (typeof window !== 'undefined' ? (window as any) : {});
+
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
     return { firebaseApp: null, auth: null, firestore: null };
   }
 
-  // 1. Appの初期化（重複を防ぐ）
-  if (!cachedApp) {
+  const globalScope = getGlobal();
+
+  // 1. Firebase App の初期化
+  if (!globalScope._firebaseApp) {
     const apps = getApps();
-    cachedApp = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
+    globalScope._firebaseApp = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
   }
 
-  // 2. Authの初期化
-  if (!cachedAuth) {
-    cachedAuth = getAuth(cachedApp);
+  // 2. Auth の初期化
+  if (!globalScope._firebaseAuth) {
+    globalScope._firebaseAuth = getAuth(globalScope._firebaseApp);
   }
 
-  // 3. Firestoreの初期化
-  if (!cachedDb) {
-    cachedDb = getFirestore(cachedApp);
+  // 3. Firestore の初期化
+  if (!globalScope._firebaseDb) {
+    globalScope._firebaseDb = getFirestore(globalScope._firebaseApp);
   }
 
   return {
-    firebaseApp: cachedApp,
-    auth: cachedAuth,
-    firestore: cachedDb
+    firebaseApp: globalScope._firebaseApp,
+    auth: globalScope._firebaseAuth,
+    firestore: globalScope._firebaseDb
   };
 }
 
