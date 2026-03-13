@@ -2,7 +2,7 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence, Auth } from 'firebase/auth';
+import { getAuth, setPersistence, browserLocalPersistence, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 let firebaseApp: FirebaseApp;
@@ -46,6 +46,28 @@ export function initializeFirebase() {
     auth,
     firestore
   };
+}
+
+/**
+ * Googleでログインを実行します。
+ */
+export async function signInWithGoogle() {
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (error) {
+    console.error("Google Sign In Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * ログアウトを実行します。
+ */
+export async function logout() {
+  const auth = getAuth();
+  return await signOut(auth);
 }
 
 export * from './provider';
