@@ -1,24 +1,34 @@
 
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, orderBy, doc } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Loader2, Calendar, Megaphone, ChevronRight } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, ChevronRight, RefreshCw, Check } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { fetchAndSyncNoteRss } from '@/app/actions/sync-note';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
   const db = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
   }, []);
+
+  const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
+  const isAdmin = user?.email && adminEmails.includes(user.email);
 
   // 記事データの取得
   const allArticlesRef = useMemoFirebase(() => {
@@ -43,8 +53,64 @@ export default function Home() {
   const activeAd = useMemo(() => ads?.[0] || null, [ads]);
   const adPlaceholder = useMemo(() => PlaceHolderImages.find(img => img.id === 'ad-placeholder'), []);
 
+  // note同期処理
+  const handleSyncNote = async () => {
+    if (!isAdmin || isSyncing) return;
+    setIsSyncing(true);
+    
+    try {
+      const result = await fetchAndSyncNoteRss();
+      if (result.success && result.articles) {
+        let count = 0;
+        for (const article of result.articles) {
+          const articleRef = doc(db, 'articles', article.id);
+          setDocumentNonBlocking(articleRef, article);
+          count++;
+        }
+        toast({
+          title: "同期完了",
+          description: `${count}件のnote記事を同期しました。`,
+        });
+      } else {
+        throw new Error(result.error || '同期に失敗しました。');
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "同期エラー",
+        description: error.message,
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <section className="container mx-auto px-0 pb-20">
+      {/* 管理者用同期パネル */}
+      {isAdmin && (
+        <div className="mb-8 px-4 md:px-0">
+          <div className="bg-slate-900 text-white rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/20 p-2 rounded-lg">
+                <RefreshCw size={18} className={isSyncing ? "animate-spin" : ""} />
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase tracking-widest">Admin Control</p>
+                <p className="text-[10px] text-slate-400">note.com の最新記事を取り込みます</p>
+              </div>
+            </div>
+            <Button 
+              onClick={handleSyncNote} 
+              disabled={isSyncing}
+              className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-6 font-black text-[10px] uppercase tracking-widest h-10 w-full md:w-auto"
+            >
+              {isSyncing ? "Syncing..." : "Sync with note"}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* 広告セクション */}
       <div className="mb-10 md:mb-16 mt-4 md:mt-8 px-4 md:px-0">
         <div className="flex items-center gap-2 mb-3">
