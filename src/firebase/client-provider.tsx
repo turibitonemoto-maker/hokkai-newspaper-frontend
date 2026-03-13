@@ -10,8 +10,7 @@ interface FirebaseClientProviderProps {
 
 /**
  * Firebaseの初期化を管理し、下位コンポーネントにFirebaseのコンテキストを提供します。
- * ハイドレーションエラーを防ぐため、初回の描画（サーバーとクライアント共通）では
- * 一貫してローディング画面を返し、マウント完了後にのみサービスを提供します。
+ * ハイドレーションエラーを防ぐため、マウント完了後（useEffect実行後）にのみFirebaseサービスを提供します。
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const [isMounted, setIsMounted] = useState(false);
@@ -28,8 +27,7 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
     setIsMounted(true);
   }, []);
 
-  // マウント前、またはサービスの準備ができるまではサーバーとクライアントで同じローディングUIを表示
-  // これにより Hydration Mismatch を防ぎます
+  // マウント前はサーバーとクライアントで同じローディングUIを返し、ハイドレーションエラーを防止
   if (!isMounted || !services || !services.firebaseApp) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">

@@ -6,7 +6,6 @@ import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'fir
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 /**
- * 【こちら表示用サイト：最終安定版】
  * Next.js 15のホットリロード時におけるFirestore内部状態エラー（ID: ca9）を物理的に遮断するため、
  * globalThisを使用してインスタンスを完全に1つに固定するスーパーシングルトン・パターンを採用。
  */
@@ -65,9 +64,8 @@ export async function logout() {
 }
 
 /**
- * 【重要：名前空間の整理】
- * 重複エクスポートによるビルドエラーを避けるため、フックは provider.tsx からのみエクスポートします。
- * auth/use-user.tsx などを直接ここからエクスポートしないことで「渋滞」を防ぎます。
+ * 重複エクスポートによる競合を避けるため、フックは provider.tsx からのみエクスポートします。
+ * auth/use-user.tsx などを直接ここからエクスポートしないことで名前の衝突を防ぎます。
  */
 export { 
   useUser, 

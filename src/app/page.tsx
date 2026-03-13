@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 /**
  * 【こちら表示用サイト】
- * 管制（外部ジェミニ）からの指示を受け、ステータス報告と記事の安全な表示を管理します。
+ * 管制からの指示を受け、ステータス報告と記事の安全な表示を管理します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -35,7 +35,7 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading, error: articlesError } = useCollection(allArticlesRef);
 
-  // 管制からのステータス通知を取得
+  // 管制からのステータス通知（/settings/maintenance）を取得
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'maintenance');
@@ -57,7 +57,7 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 📡 管制からのステータス報告 (最優先表示) */}
+      {/* 📡 管制からのステータス報告（systemNotice）を最優先で表示 */}
       {settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8 animate-fade-in">
           <Alert className="bg-primary/10 border-primary rounded-[24px] py-6 px-8 shadow-md ring-2 ring-primary/20">
@@ -70,7 +70,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ⚠️ インデックス作成待ち通知 (管制報告がない場合、または併記) */}
+      {/* ⚠️ インデックス作成待ち通知（管制報告がない場合、または併記） */}
       {isIndexError && !settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8">
           <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">
