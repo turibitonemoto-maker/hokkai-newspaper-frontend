@@ -6,38 +6,40 @@ import { getAuth, Auth, GoogleAuthProvider, signInWithPopup, signOut } from 'fir
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 /**
- * 開発中のホットリロードによる ID: ca9 (Unexpected state) エラーを防ぐため
- * ブラウザのグローバル空間にインスタンスを確実に保持するシングルトン管理。
+ * Next.jsのホットリロード時でもFirestoreの内部状態を矛盾させないため
+ * globalThisを使用してインスタンスを物理的に1つに固定します。
  */
-const getGlobal = () => (typeof window !== 'undefined' ? (window as any) : {});
+declare global {
+  var __firebase_app: FirebaseApp | undefined;
+  var __firebase_auth: Auth | undefined;
+  var __firebase_db: Firestore | undefined;
+}
 
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
     return { firebaseApp: null, auth: null, firestore: null };
   }
 
-  const globalScope = getGlobal();
-
-  // 1. Firebase App の初期化
-  if (!globalScope._firebaseApp) {
+  // 1. Firebase App の初期化（シングルトン）
+  if (!globalThis.__firebase_app) {
     const apps = getApps();
-    globalScope._firebaseApp = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
+    globalThis.__firebase_app = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
   }
 
-  // 2. Auth の初期化
-  if (!globalScope._firebaseAuth) {
-    globalScope._firebaseAuth = getAuth(globalScope._firebaseApp);
+  // 2. Auth の初期化（シングルトン）
+  if (!globalThis.__firebase_auth) {
+    globalThis.__firebase_auth = getAuth(globalThis.__firebase_app);
   }
 
-  // 3. Firestore の初期化
-  if (!globalScope._firebaseDb) {
-    globalScope._firebaseDb = getFirestore(globalScope._firebaseApp);
+  // 3. Firestore の初期化（シングルトン）
+  if (!globalThis.__firebase_db) {
+    globalThis.__firebase_db = getFirestore(globalThis.__firebase_app);
   }
 
   return {
-    firebaseApp: globalScope._firebaseApp,
-    auth: globalScope._firebaseAuth,
-    firestore: globalScope._firebaseDb
+    firebaseApp: globalThis.__firebase_app,
+    auth: globalThis.__firebase_auth,
+    firestore: globalThis.__firebase_db
   };
 }
 

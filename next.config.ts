@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  transpilePackages: ['firebase', '@firebase/firestore'],
   images: {
     remotePatterns: [
       {
