@@ -50,7 +50,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               src={displayImage}
               alt={article.title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               priority={priority}
             />

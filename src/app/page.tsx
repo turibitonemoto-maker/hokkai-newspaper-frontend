@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * 【表示用サイト：最終版】
- * 広告の自動終了ロジック、AI排除、ステータス表示の簡素化を適用。
+ * 【表示用サイト：最終確定版】
+ * 広告の自動終了ロジック、AI表示の完全排除、ステータス表示の簡素化を適用。
  * 1950年からの伝統を届ける、極限まで軽量化された閲覧専用ページです。
  */
 export default function Home() {
@@ -63,7 +63,8 @@ export default function Home() {
       // 終了時間が設定されている場合のみ判定。なければ常時表示。
       if (!ad.displayEndTime) return true;
       try {
-        return new Date(ad.displayEndTime) > now;
+        const endTime = new Date(ad.displayEndTime);
+        return endTime > now;
       } catch (e) {
         return true;
       }
@@ -104,9 +105,9 @@ export default function Home() {
           <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-20 md:h-32 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border bg-slate-100">
             <Image 
               src={activeAd.imageUrl} 
-              alt={activeAd.title || "Ad"} 
+              alt={activeAd.title || "Advertisement"} 
               fill 
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, 1280px"
               className="object-cover transition-transform group-hover:scale-105" 
               priority 
             />

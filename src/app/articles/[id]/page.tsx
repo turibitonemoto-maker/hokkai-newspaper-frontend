@@ -133,7 +133,7 @@ export default function ArticlePage() {
                 src={displayImage}
                 alt={article.title}
                 fill
-                sizes="(max-width: 1024px) 100vw, 80vw"
+                sizes="(max-width: 1024px) 100vw, 896px"
                 className="object-cover"
                 priority
               />
