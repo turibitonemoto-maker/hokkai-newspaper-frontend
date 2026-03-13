@@ -10,8 +10,8 @@ let auth: Auth;
 let firestore: Firestore;
 
 /**
- * Firebaseの各サービスを初期化します。
- * サーバーサイドレンダリング(SSR)中はブラウザ専用のAPIをスキップします。
+ * Firebaseの各サービスを初期化します。シングルトンとして動作し、
+ * 既に初期化済みの場合は既存のインスタンスを返します。
  */
 export function initializeFirebase() {
   if (typeof window === 'undefined') {
@@ -22,24 +22,33 @@ export function initializeFirebase() {
     };
   }
 
-  if (!getApps().length) {
-    try {
-      firebaseApp = initializeApp(firebaseConfig);
-    } catch (e) {
-      console.error("Firebase Initialization Error:", e);
-      firebaseApp = initializeApp(firebaseConfig);
+  // Appの初期化（未初期化の場合のみ）
+  if (!firebaseApp) {
+    if (!getApps().length) {
+      try {
+        firebaseApp = initializeApp(firebaseConfig);
+      } catch (e) {
+        console.error("Firebase Initialization Error:", e);
+        firebaseApp = initializeApp(firebaseConfig);
+      }
+    } else {
+      firebaseApp = getApp();
     }
-  } else {
-    firebaseApp = getApp();
   }
 
-  auth = getAuth(firebaseApp);
-  firestore = getFirestore(firebaseApp);
+  // Authの初期化と永続性の設定（未初期化の場合のみ）
+  if (!auth) {
+    auth = getAuth(firebaseApp);
+    setPersistence(auth, browserLocalPersistence).catch((err) => {
+      // 永続性の設定失敗は致命的ではないため警告のみ
+      console.warn("Firebase Auth Persistence failed to set:", err);
+    });
+  }
 
-  // Authの永続性設定（ブラウザ専用）
-  setPersistence(auth, browserLocalPersistence).catch((err) => {
-    console.error("Firebase Auth Persistence Error:", err);
-  });
+  // Firestoreの初期化（未初期化の場合のみ）
+  if (!firestore) {
+    firestore = getFirestore(firebaseApp);
+  }
 
   return {
     firebaseApp,
