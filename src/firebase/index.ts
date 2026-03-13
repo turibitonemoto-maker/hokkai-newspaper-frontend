@@ -1,4 +1,3 @@
-
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -8,7 +7,7 @@ import { getFirestore, Firestore } from 'firebase/firestore';
 
 /**
  * 【こちら表示用サイト：最終安定版】
- * Next.jsのFast Refresh時におけるFirestore内部状態エラー（ID: ca9）を物理的に遮断するため、
+ * Next.js 15のホットリロード時におけるFirestore内部状態エラー（ID: ca9）を物理的に遮断するため、
  * globalThisを使用してインスタンスを完全に1つに固定するスーパーシングルトン・パターンを採用。
  */
 declare global {
@@ -66,9 +65,9 @@ export async function logout() {
 }
 
 /**
- * 【重要：エクスポートの整理】
- * 名前空間の衝突（useUser）を避けるため、provider.tsx からのみ主要フックをエクスポートします。
- * auth/use-user.tsx からの直接エクスポート、または他ファイルでの重複定義は禁止です。
+ * 【重要：名前空間の整理】
+ * 重複エクスポートによるビルドエラーを避けるため、フックは provider.tsx からのみエクスポートします。
+ * auth/use-user.tsx などを直接ここからエクスポートしないことで「渋滞」を防ぎます。
  */
 export { 
   useUser, 

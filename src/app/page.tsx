@@ -1,14 +1,12 @@
-
 'use client';
 
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where, doc } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Loader2, Calendar, Megaphone, ChevronRight, Info } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, Info } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 /**
@@ -59,10 +57,10 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-0 pb-20">
-      {/* 管制からのステータス報告 (最優先表示) */}
+      {/* 📡 管制からのステータス報告 (最優先表示) */}
       {settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8 animate-fade-in">
-          <Alert className="bg-primary/10 border-primary rounded-[24px] py-6 px-8 shadow-md">
+          <Alert className="bg-primary/10 border-primary rounded-[24px] py-6 px-8 shadow-md ring-2 ring-primary/20">
             <Info className="h-6 w-6 text-primary" />
             <AlertTitle className="text-primary font-black tracking-widest text-xs uppercase mb-2">📡 Message from Control</AlertTitle>
             <AlertDescription className="text-slate-900 font-black text-lg">
@@ -72,14 +70,14 @@ export default function Home() {
         </div>
       )}
 
-      {/* インデックス作成待ち通知 */}
-      {isIndexError && (
+      {/* ⚠️ インデックス作成待ち通知 (管制報告がない場合、または併記) */}
+      {isIndexError && !settings?.systemNotice && (
         <div className="px-4 md:px-0 mb-8">
           <Alert className="bg-amber-50 border-amber-200 rounded-[24px] py-6 px-8 shadow-sm">
             <Info className="h-5 w-5 text-amber-600" />
             <AlertTitle className="text-amber-800 font-black tracking-widest text-xs uppercase mb-2">Database Indexing</AlertTitle>
             <AlertDescription className="text-amber-700 font-medium text-sm">
-              現在、データベースの索引を作成中です。反映までしばらくお待ちください。
+              現在、データベースの索引（インデックス）を作成中です。反映まで数分お待ちください。
             </AlertDescription>
           </Alert>
         </div>
@@ -128,7 +126,7 @@ export default function Home() {
       ) : (
         <div className="py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200 mx-4 md:mx-0">
           <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
-            {isIndexError ? 'Database Indexing' : 'Archives are empty'}
+            {isIndexError ? 'Waiting for database indexing' : 'No articles published yet'}
           </p>
         </div>
       )}
