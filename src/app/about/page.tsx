@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -9,9 +8,9 @@ import { cn } from '@/lib/utils';
 import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucide-react';
 
 /**
- * About Us ページ (再構築プロトコル適用版)
- * 指定された Firestore パス (/settings/about) から content フィールドを取得して連動。
- * デザインの骨格と黄金比は死守。
+ * About Us ページ
+ * Firestore パス: /settings/about
+ * フィールド: content (string)
  */
 export default function AboutPage() {
   const db = useFirestore();
@@ -28,7 +27,7 @@ export default function AboutPage() {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Connecting to Archives...</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading...</p>
       </div>
     );
   }
@@ -62,7 +61,6 @@ export default function AboutPage() {
           )}
         </section>
 
-        {/* 骨格部分は静的に維持（必要に応じてここも連動可能） */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
@@ -71,7 +69,6 @@ export default function AboutPage() {
                 <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">私たちの目的</h2>
               </div>
               <p className="text-base leading-relaxed text-slate-600 font-medium">
-                記者が紡いできた言葉を、AIのフィルターを通さず純粋に届けること。
                 学生の視点から社会や大学の事象を捉え、批判的かつ創造的な言論空間を維持することを目指しています。
               </p>
             </CardContent>
@@ -83,8 +80,7 @@ export default function AboutPage() {
                 <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">活動内容</h2>
               </div>
               <p className="text-base leading-relaxed text-slate-600 font-medium">
-                定期的な紙面（本紙）の発行、公式ウェブサイトでのニュース配信、学内各部活動への取材、
-                および入学式・卒業式などの公式行事の報道写真撮影を行っています。
+                定期的な紙面の発行、ウェブサイトでのニュース配信、学内各部活動への取材、公式行事の報道写真撮影を行っています。
               </p>
             </CardContent>
           </Card>
