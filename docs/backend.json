@@ -17,6 +17,7 @@
         "content": { "type": "string", "description": "HTML content (supports Base64 images)." },
         "summary": { "type": "string" },
         "mainImageUrl": { "type": "string", "format": "uri" },
+        "mainImageCaption": { "type": "string", "description": "Caption for the main article image." },
         "isPublished": { "type": "boolean" },
         "categoryId": { "type": "string" },
         "authorName": { "type": "string" }

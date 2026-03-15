@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -5,18 +6,18 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink, ShieldCheck, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終・鉄壁シールド・黄金比版)
+ * 記事詳細ページ (最終・報道写真ユニット・黄金比版)
  * 
- * 1. 物理ボタン上書き: Googleのボタン位置に「本物の自前ボタン」を配置。クリックを奪い取り、独自にポップアップ。
- * 2. コピーガード: select-none により記事のコピペを封印。
- * 3. 視認性100%: 「ずらし」を廃止し、本来の正しい位置で紙面を表示。
+ * 1. 報道写真ユニット: <figure> と <figcaption> による高密度なレンダリング。
+ * 2. 鉄壁シールド: Googleのボタン位置に「本物の自前ボタン」を配置。
+ * 3. コピーガード: select-none により記事のコピペを封印。
  * 4. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
  */
 export default function ArticlePage() {
@@ -34,6 +35,7 @@ export default function ArticlePage() {
 
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
+  const displayCaption = article?.mainImageCaption || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
   const standardPdfUrl = useMemo(() => {
@@ -159,17 +161,28 @@ export default function ArticlePage() {
             </div>
           )}
 
+          {/* 報道写真ユニット (キャプション付き) */}
           {displayImage && !standardPdfUrl && (
-            <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden mb-16 shadow-2xl ring-8 ring-white bg-slate-50">
-              <Image
-                src={displayImage}
-                alt={article.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 896px"
-                className="object-cover"
-                priority
-              />
-            </div>
+            <figure className="mb-16 space-y-4">
+              <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
+                <Image
+                  src={displayImage}
+                  alt={article.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 896px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              {displayCaption && (
+                <figcaption className="flex items-start gap-3 px-6 py-2 text-slate-500 italic">
+                  <Camera size={14} className="shrink-0 mt-0.5 text-primary/40" />
+                  <span className="text-[11px] leading-relaxed font-medium">
+                    {displayCaption}
+                  </span>
+                </figcaption>
+              )}
+            </figure>
           )}
 
           <div className="max-w-3xl mx-auto select-none">
