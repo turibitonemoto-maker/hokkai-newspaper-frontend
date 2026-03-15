@@ -1,6 +1,6 @@
 'use client';
 
-import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, User, ShieldCheck } from 'lucide-react';
@@ -9,8 +9,9 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (ステルス・密度最適化版)
- * 日本仕様の行間(leading-6)と段落余白(my-3)を徹底。
+ * 会長挨拶ページ (完全同期・密度最適化版)
+ * 日本仕様の行間(leading-6)と段落余白(my-3)を適用。
+ * 不自然な whitespace-pre-wrap を追放。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -26,7 +27,7 @@ export default function GreetingPage() {
   const displayAuthorImageUrl = useMemo(() => {
     let url = greeting?.authorImageUrl || "";
     if (url.includes('drive.google.com')) {
-      url = url.replace(/\/view.*|\/edit.*|\/share.*/g, '/preview');
+      url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
     }
     return url;
   }, [greeting?.authorImageUrl]);
@@ -73,9 +74,9 @@ export default function GreetingPage() {
                   </div>
                 )}
                 {/* ゴースト・レイヤー (クリック遮断) */}
-                <div className="absolute inset-0 bg-transparent z-10" />
+                <div className="absolute inset-0 bg-transparent z-10 cursor-default" />
               </div>
-              <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white">
+              <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white animate-in zoom-in duration-500">
                 <ShieldCheck size={24} />
               </div>
             </div>

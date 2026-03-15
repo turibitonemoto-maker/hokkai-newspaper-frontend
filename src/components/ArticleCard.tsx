@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 /**
  * 記事カードコンポーネント (浄化・最適化版)
  * HTMLタグを剥離し、純粋なテキストのみを抽出。
+ * Image sizes を最適化。
  */
 interface ArticleCardProps {
   article: {
@@ -35,8 +36,13 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    // HTMLタグを剥離し、空白を整理
-    const plainText = rawContent.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
+    // HTMLタグを剥離し、空白と特殊文字を整理
+    const plainText = rawContent
+      .replace(/<[^>]*>?/gm, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .trim();
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
   }, [article.content, article.htmlContent]);
 
@@ -51,7 +57,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               src={displayImage}
               alt={article.title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               priority={priority}
             />
@@ -66,7 +72,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               {article.categoryId}
             </Badge>
             {hasPdf && (
-              <Badge className="bg-slate-900 text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1.5 items-center">
+              <Badge className="bg-slate-950 text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1.5 items-center">
                 <FileText size={10} /> PAPER
               </Badge>
             )}
