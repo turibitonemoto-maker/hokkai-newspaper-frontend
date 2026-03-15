@@ -9,9 +9,8 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (最終版)
- * AI要約（summary）を完全に排除。next/image の sizes プロパティを最適化。
- * 画像がない場合は無理な生成をせず、清潔な余白として扱います。
+ * 記事カードコンポーネント (最終・完全版)
+ * AI要約を完全排除。next/image の sizes プロパティを最適化し、表示を高速化。
  */
 interface ArticleCardProps {
   article: {
@@ -44,7 +43,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
 
   return (
     <Link href={`/articles/${article.id}`} className="group block h-full">
-      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-lg transition-all duration-300 rounded-[20px] md:rounded-[24px] ring-1 ring-slate-100 group-hover:ring-primary/20">
+      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-lg transition-all duration-300 rounded-[24px] ring-1 ring-slate-100 group-hover:ring-primary/20">
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
           {hasImage ? (
             <Image
@@ -57,35 +56,35 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
-              <span className="font-black text-[9px] uppercase tracking-[0.3em] text-slate-200">No Image</span>
+              <span className="font-black text-[10px] uppercase tracking-[0.3em] text-slate-200">No Image</span>
             </div>
           )}
-          <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-            <Badge className="bg-primary text-white border-none font-black text-[7px] md:text-[8px] tracking-[0.1em] uppercase py-0.5 px-1.5 md:px-2 shadow-lg">
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+            <Badge className="bg-primary text-white border-none font-black text-[9px] tracking-[0.1em] uppercase py-1 px-2.5 shadow-lg">
               {article.categoryId}
             </Badge>
             {isExternal && (
-              <Badge className="bg-green-600 text-white border-none font-black text-[7px] md:text-[8px] tracking-[0.1em] uppercase py-0.5 px-1.5 md:px-2 shadow-lg flex gap-1 items-center">
-                <ExternalLink className="size-[7px] md:size-2" /> NOTE
+              <Badge className="bg-green-600 text-white border-none font-black text-[9px] tracking-[0.1em] uppercase py-1 px-2.5 shadow-lg flex gap-1 items-center">
+                <ExternalLink size={10} /> NOTE
               </Badge>
             )}
           </div>
         </div>
         
-        <CardHeader className="p-4 md:p-5 pb-2">
-          <div className="flex items-center gap-2 text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
-            <div className="flex items-center gap-1">
-              <Calendar className="text-primary/60 size-[9px] md:size-[10px]" />
+        <CardHeader className="p-5 pb-2">
+          <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="text-primary/60" size={12} />
               <span>{date}</span>
             </div>
           </div>
-          <h3 className="text-sm md:text-base font-black leading-tight text-slate-950 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
+          <h3 className="text-base font-black leading-tight text-slate-950 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
             {article.title}
           </h3>
         </CardHeader>
 
-        <CardContent className="px-4 md:px-5 pb-4 md:pb-5 flex-grow">
-          <p className="text-slate-500 text-[10px] md:text-[11px] line-clamp-2 leading-relaxed font-medium">
+        <CardContent className="px-5 pb-5 flex-grow">
+          <p className="text-slate-500 text-[11px] line-clamp-2 leading-relaxed font-medium">
             {excerpt}
           </p>
         </CardContent>

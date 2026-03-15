@@ -12,8 +12,8 @@ interface MaintenanceGuardProps {
 }
 
 /**
- * メンテナンスモード管理 (最終版)
- * 紛らわしい表現を排除し、現在の稼働状況のみをシンプルに表示します。
+ * メンテナンスモード管理 (最終・完全版)
+ * 指示通り「作業状況」を「稼働状況」に統一し、シンプルに表示。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
@@ -49,12 +49,12 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
               <Construction size={40} />
             </div>
             
-            <Badge variant="outline" className="px-4 py-1 border-amber-500 text-amber-600 font-black uppercase tracking-widest mb-6">
-              稼働状況：停止中 (メンテナンス)
+            <Badge variant="outline" className="px-4 py-1.5 border-amber-500 text-amber-600 font-black uppercase tracking-widest mb-8">
+              稼働状況：停止中
             </Badge>
             
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-slate-900 mb-6 leading-tight">
-              現在サイトを停止しています
+              現在メンテナンスを行っています
             </h1>
             
             <p className="text-slate-600 font-medium leading-relaxed mb-10">
@@ -62,7 +62,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
             </p>
 
             <div className="pt-8 border-t border-slate-100">
-              <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
                 Hokkai Gakuen University Ichibu Newspaper
               </p>
             </div>
@@ -74,7 +74,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   return (
     <>
-      {/* 管理者にはメンテナンス中である警告を表示 */}
       {isMaintenanceMode && isAdmin && (
         <div className="fixed top-0 left-0 w-full z-[100] bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest py-1.5 text-center shadow-md">
           ADMIN PREVIEW MODE (MAINTENANCE ACTIVE)

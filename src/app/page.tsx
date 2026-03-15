@@ -11,8 +11,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (最終版)
- * 広告の自動終了ロジックを修正し、メンテナンス状態をシンプルに表示します。
+ * トップページ (最終・完全版)
+ * 広告の自動終了ロジックを強化し、ステータス表示を極限までシンプル化。
  */
 export default function Home() {
   const db = useFirestore();
@@ -23,7 +23,7 @@ export default function Home() {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
-    // 1分ごとに現在時刻を更新して広告の終了判定を正確にする
+    // 1分ごとに現在時刻を更新
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
@@ -51,36 +51,36 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の自動終了ロジック
+  // 広告の自動終了ロジック (Timestampと文字列の両方に対応)
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
     const validAds = ads.filter(ad => {
       if (!ad.imageUrl) return false;
-      // 終了時間が設定されている場合のみチェック
       if (!ad.displayEndTime) return true;
       try {
-        const endTime = new Date(ad.displayEndTime);
-        return endTime > now; // 現在時刻より後なら有効
+        // FirestoreのTimestampオブジェクトか、ISO文字列かを判定
+        const endTime = ad.displayEndTime?.seconds 
+          ? new Date(ad.displayEndTime.seconds * 1000) 
+          : new Date(ad.displayEndTime);
+        return endTime > now;
       } catch (e) {
-        return true; // 形式エラーの場合は一旦表示
+        return true; 
       }
     });
 
-    if (validAds.length === 0) return null;
-    // 最新の広告を表示
-    return validAds[0];
+    return validAds.length > 0 ? validAds[0] : null;
   }, [ads, now]);
 
   const latestArticles = useMemo(() => articles?.slice(0, 12) || [], [articles]);
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
-      {/* 稼働状況表示：極めてシンプルに */}
+      {/* 稼働状況表示：極限までシンプルに */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">
-            <AlertCircle size={14} /> 稼働状況：停止中 (メンテナンス)
+            <AlertCircle size={14} /> 稼働状況：停止中
           </Badge>
         ) : (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm">
@@ -93,25 +93,25 @@ export default function Home() {
       <div className="mb-10 md:mb-16">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />
-          <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">SPONSORED</span>
         </div>
         
         {isAdsLoading ? (
-          <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] animate-pulse" />
+          <div className="w-full h-20 md:h-32 bg-slate-50 rounded-[24px] animate-pulse" />
         ) : activeAd ? (
-          <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-20 md:h-32 rounded-[16px] md:rounded-[24px] overflow-hidden group shadow-md border bg-slate-100">
+          <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-20 md:h-32 rounded-[24px] overflow-hidden group shadow-md border bg-slate-100">
             <Image 
               src={activeAd.imageUrl} 
               alt={activeAd.title || "Advertisement"} 
               fill 
-              sizes="(max-width: 768px) 100vw, 1280px"
+              sizes="(max-width: 1280px) 100vw, 1280px"
               className="object-cover transition-transform group-hover:scale-105" 
               priority 
             />
           </Link>
         ) : (
-          <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[16px] md:rounded-[24px] overflow-hidden shadow-inner border flex items-center justify-center">
-            <p className="text-[8px] md:text-[10px] font-black tracking-[0.5em] text-slate-200 uppercase">Advertising Space</p>
+          <div className="relative w-full h-20 md:h-32 bg-slate-50 rounded-[24px] overflow-hidden shadow-inner border flex items-center justify-center">
+            <p className="text-[10px] font-black tracking-[0.5em] text-slate-200 uppercase">Advertising Space</p>
           </div>
         )}
       </div>
@@ -121,8 +121,8 @@ export default function Home() {
         <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
           <span className="text-primary">最新</span>の<span className="text-primary">記事</span>
         </div>
-        <div className="flex items-center gap-2 text-slate-400 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] bg-slate-50 px-5 py-2.5 rounded-xl border border-slate-100 w-fit">
-          <Calendar size={10} className="text-primary md:size-3" /> <span>{currentTime || '...'}</span>
+        <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] bg-slate-50 px-5 py-2.5 rounded-xl border border-slate-100 w-fit">
+          <Calendar size={12} className="text-primary" /> <span>{currentTime || '...'}</span>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export default function Home() {
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="animate-spin text-primary mb-4 size-10" strokeWidth={3} />
-          <p className="text-[8px] font-black text-slate-300 uppercase tracking-[0.5em]">Fetching Latest News</p>
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16">
@@ -141,7 +141,7 @@ export default function Home() {
       ) : (
         <div className="py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
           <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
-            No articles available
+            No stories published yet
           </p>
         </div>
       )}
