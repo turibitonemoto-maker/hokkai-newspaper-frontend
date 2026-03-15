@@ -8,8 +8,8 @@ import { Calendar, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (完全自前主義版)
- * note関連のバッジや外部リンクを完全に排除。
+ * 記事カードコンポーネント (自前主義・完全浄化版)
+ * note.comのアイコンや外部リンク、HTMLタグを完全に排除し、気品あるスニペットを表示。
  */
 interface ArticleCardProps {
   article: {
@@ -32,15 +32,16 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    // HTMLタグを剥離
+    // HTMLタグを物理的に剥離し、実体参照をデコード
     const plainText = rawContent
       .replace(/<[^>]*>?/gm, "")
       .replace(/&nbsp;/g, " ")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ") // 重複スペースを統合
       .trim();
-    return plainText.substring(0, 80) + (plainText.length > 80 ? "..." : "");
+    return plainText.substring(0, 100) + (plainText.length > 100 ? "..." : "");
   }, [article.content, article.htmlContent]);
 
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
@@ -87,7 +88,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
         </CardHeader>
 
         <CardContent className="px-6 pb-6 flex-grow">
-          <p className="text-slate-500 text-[11px] line-clamp-3 leading-6 font-medium">
+          <p className="text-slate-500 text-[11px] line-clamp-3 leading-relaxed font-medium tracking-wide">
             {excerpt}
           </p>
         </CardContent>

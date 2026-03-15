@@ -12,14 +12,14 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (完全自営・黄金比・セキュリティ版)
- * 外部(note)依存を排除し、人力で入魂されたコンテンツを最高密度で描画。
+ * 記事詳細ページ (完全自営・黄金比タイポグラフィ版)
+ * 外部(note)依存を完全に排除し、人力で入魂されたコンテンツを最高密度で描画。
  */
 export default function ArticlePage() {
   const { id } = useParams();
   const router = useRouter();
   const db = useFirestore();
-  const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('base');
+  const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('lg');
 
   const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
@@ -36,8 +36,11 @@ export default function ArticlePage() {
   const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    if (url.includes('/view') || url.includes('/edit') || url.includes('/share')) {
-      return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+    // Google Drive URLをプレビュー形式に変換
+    if (url.includes('drive.google.com')) {
+      if (url.includes('/view') || url.includes('/edit') || url.includes('/share')) {
+        url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+      }
     }
     return url;
   }, [article?.pdfUrl]);
@@ -121,23 +124,24 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 紙面ビューアー (ステルス・シールド版) */}
+          {/* 紙面ビューアー (ステルス・シールド・実用版) */}
           {standardPdfUrl && (
-            <div className="mb-16 space-y-4">
+            <div className="mb-20 space-y-4">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <FileText size={16} /> Paper Edition Archive
+                  <FileText size={16} /> Paper Edition Viewer
                 </div>
               </div>
               
-              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                <div className="absolute top-2 right-2 z-50">
+              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                {/* 物理ボタンでGoogleのボタンを上書きし、操作をサイト独自のポップアップに誘導 */}
+                <div className="absolute top-4 right-4 z-50">
                   <Button 
                     onClick={handleOpenExternal}
-                    className="bg-primary text-white p-2.5 h-auto rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white/20 hover:scale-105 transition-transform"
+                    className="bg-primary text-white p-3 h-auto rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white/20 hover:scale-105 transition-transform"
                   >
-                    <ExternalLink size={14} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">拡大表示</span>
+                    <ExternalLink size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">別タブで開く</span>
                   </Button>
                 </div>
 
@@ -145,7 +149,7 @@ export default function ArticlePage() {
                   src={standardPdfUrl} 
                   className="absolute inset-0 w-full h-full border-none"
                   allow="autoplay"
-                  sandbox="allow-scripts allow-same-origin allow-forms"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 />
               </div>
               
@@ -157,7 +161,7 @@ export default function ArticlePage() {
 
           {/* 報道写真ユニット */}
           {displayImage && !standardPdfUrl && (
-            <figure className="mb-16 space-y-4">
+            <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
                 <Image
                   src={displayImage}
@@ -169,9 +173,9 @@ export default function ArticlePage() {
                 />
               </div>
               {displayCaption && (
-                <figcaption className="flex items-start gap-3 px-6 py-2 text-slate-500 italic">
-                  <Camera size={14} className="shrink-0 mt-0.5 text-primary/40" />
-                  <span className="text-[11px] leading-relaxed font-medium">
+                <figcaption className="flex items-start gap-3 px-8 py-2 text-slate-500 italic border-l-4 border-primary/20">
+                  <Camera size={16} className="shrink-0 mt-1 text-primary/40" />
+                  <span className="text-sm md:text-base leading-relaxed font-medium tracking-wide">
                     {displayCaption}
                   </span>
                 </figcaption>
@@ -179,13 +183,16 @@ export default function ArticlePage() {
             </figure>
           )}
 
-          {/* 記事本文 (コピペガード付き) */}
-          <div className="max-w-3xl mx-auto select-none">
+          {/* 記事本文 (日本仕様・黄金比タイポグラフィ) */}
+          <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
-                "prose prose-slate max-w-none font-medium text-slate-800",
-                "prose-p:leading-6 prose-p:my-3 prose-li:my-1",
-                "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white",
+                "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
+                "prose-p:leading-relaxed prose-p:mb-8",
+                "prose-h2:text-2xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 prose-h2:mt-12",
+                "prose-h3:text-xl prose-h3:font-bold prose-h3:mb-4 prose-h3:mt-8",
+                "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white prose-img:my-12",
+                "prose-ul:my-6 prose-li:my-2",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 

@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, User, ShieldCheck, Lock } from 'lucide-react';
@@ -10,8 +9,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (最終定着版)
- * 日本仕様の密度 (leading-6, my-3) およびコピーガードを適用。
+ * 会長挨拶ページ (日本仕様タイポグラフィ版)
+ * 視認性を極限まで高めた黄金比 (leading-relaxed, tracking-wide) を適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -44,7 +43,7 @@ export default function GreetingPage() {
   const displayAuthorName = greeting?.authorName || "北海学園大学一部新聞会 会長";
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in select-none">
+    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in">
       <div className="max-w-3xl mx-auto space-y-20">
         <header className="text-center space-y-6">
           <Badge variant="outline" className="px-6 py-1.5 border-primary text-primary font-black uppercase tracking-widest rounded-full">
@@ -85,8 +84,8 @@ export default function GreetingPage() {
             </h2>
             <div 
               className={cn(
-                "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",
-                "prose-p:leading-6 prose-p:my-3 prose-li:my-1",
+                "prose prose-slate max-w-none font-medium text-slate-700 mx-auto tracking-wide",
+                "prose-p:leading-relaxed prose-p:mb-8",
                 "md:prose-lg"
               )}
               dangerouslySetInnerHTML={{ __html: displayContent }}
