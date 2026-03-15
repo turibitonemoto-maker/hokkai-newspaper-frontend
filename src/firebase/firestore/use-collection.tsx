@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +9,8 @@ import {
   QuerySnapshot,
   CollectionReference,
 } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 export type WithId<T> = T & { id: string };
@@ -56,19 +57,25 @@ export function useCollection<T = any>(
         setError(null);
         setIsLoading(false);
       },
-      (err: FirestoreError) => {
-        // インデックス不足 (FAILED_PRECONDITION) の場合は詳細をコンソールに出力し、UI側へ通知
+      async (err: FirestoreError) => {
+        // インデックス不足 (FAILED_PRECONDITION) の場合は詳細をコンソールに出力
         if (err.code === 'failed-precondition') {
           console.group('⚠️ Firestore Index Required');
-          console.warn('このクエリ（フィルタとソートの組み合わせ）にはインデックスが必要です。');
-          console.warn('以下のURLをクリックして管理サイト側で作成してください:');
-          console.info(err.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/)?.[0] || 'Consoleで作成してください');
+          console.warn('このクエリにはインデックスが必要です。');
+          console.warn(err.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/)?.[0] || 'Consoleで作成してください');
           console.groupEnd();
-        } else {
-          console.error("Firestore Listen Error:", err);
-        }
+        } 
         
-        setData([]); // クラッシュを防ぐため空配列を返す
+        // 権限エラー (PERMISSION_DENIED) の場合はコンテキスト付きエラーを放出
+        if (err.code === 'permission-denied') {
+          const permissionError = new FirestorePermissionError({
+            path: (memoizedTargetRefOrQuery as any).path || 'unknown',
+            operation: 'list',
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        }
+
+        setData([]);
         setError(err);
         setIsLoading(false);
       }

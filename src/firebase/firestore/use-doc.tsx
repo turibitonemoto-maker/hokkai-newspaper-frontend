@@ -8,6 +8,8 @@ import {
   FirestoreError,
   DocumentSnapshot,
 } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
@@ -53,8 +55,16 @@ export function useDoc<T = any>(
         setError(null);
         setIsLoading(false);
       },
-      (err: FirestoreError) => {
-        console.error("Firestore Doc Listen Error:", err);
+      async (err: FirestoreError) => {
+        // 権限エラー (PERMISSION_DENIED) の場合はコンテキスト付きエラーを放出
+        if (err.code === 'permission-denied') {
+          const permissionError = new FirestorePermissionError({
+            path: memoizedDocRef.path,
+            operation: 'get',
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        }
+
         setData(null);
         setError(err);
         setIsLoading(false);
