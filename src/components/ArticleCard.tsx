@@ -8,8 +8,9 @@ import { Calendar, ExternalLink, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (浄化・最適化版)
- * HTMLタグを完全に剥離し、純粋なテキストのみをスニペットとして抽出。
+ * 記事カードコンポーネント (最終浄化版)
+ * 1. HTMLタグを正規表現で完全に剥離し、純粋なテキストのみを抽出。
+ * 2. 記事内容が「content」または「htmlContent」であっても対応。
  */
 interface ArticleCardProps {
   article: {

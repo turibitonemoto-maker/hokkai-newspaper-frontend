@@ -73,7 +73,7 @@ export async function fetchAndSyncNoteRss() {
         title: title,
         noteUrl: link,
         source: 'note',
-        content: htmlContent, // 「content」フィールドに統一
+        content: htmlContent, 
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),

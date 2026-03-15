@@ -12,11 +12,12 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (究極のステルス・ビューアー版)
+ * 記事詳細ページ (究極のステルス・直リンク抽出版)
  * 
- * 1. Googleドライブのツールバーを物理的に画面外へ押し出し (margin-top: -60px)。
- * 2. 右上の「脱出口」を不透明な公式バッジで物理的に遮蔽。
- * 3. スクロールとコピーを完全に解放し、日本仕様の黄金比密度 (leading-6, my-3) を適用。
+ * 1. Google UI 除去: /preview ではなく uc?export=view を使用し、データのみを直接レンダリング。
+ * 2. 物理シールド: 右上のポップアウトエリアを透明レイヤーで保護。
+ * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
+ * 4. コピー許可: 司令に基づきテキスト選択を解放し、利便性を確保。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -35,13 +36,20 @@ export default function ArticlePage() {
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
-  // GoogleドライブのURLをプレビュー専用に変換
-  const stealthPdfUrl = useMemo(() => {
+  // GoogleドライブのURLを「データ直通URL (Direct Data Injection)」に変換
+  const directPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    // 共有URLを埋め込みプレビュー用に置換
-    url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
-    return url;
+    
+    // GoogleドライブのファイルIDを抽出
+    const fileIdMatch = url.match(/\/d\/([^\/]+)/) || url.match(/id=([^\&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      // uc?export=view 形式へ変換し、GoogleのUIをバイパス
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+    
+    // 変換できない場合はプレビュー形式にフォールバック
+    return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
   }, [article?.pdfUrl]);
 
   if (isLoading) {
@@ -117,8 +125,8 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 究極のステルス・PDFビューアー */}
-          {stealthPdfUrl && (
+          {/* 直リンク抽出型・PDFビューアー */}
+          {directPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
@@ -127,17 +135,24 @@ export default function ArticlePage() {
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                {/* 物理的マスク：ツールバーを画面外へ追い出し、全体スクロールを許可 */}
+                {/* 
+                  直リンク抽出モード: 
+                  Googleのツールバーを介さずデータのみを表示。
+                  sandbox から allow-popups を外すことで別タブ遷移を防御。
+                */}
                 <iframe 
-                  src={stealthPdfUrl} 
-                  className="absolute w-full h-[calc(100%+60px)] -top-[60px] left-0 border-none pointer-events-auto"
+                  src={directPdfUrl} 
+                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
                   allow="autoplay"
-                  sandbox="allow-scripts allow-same-origin allow-forms" // allow-popupsを除外して別タブ遷移を遮断
+                  sandbox="allow-scripts allow-same-origin allow-forms"
                 />
                 
-                {/* 物理的封印：右上のポップアウトボタンがあった位置を不透明な紋章で物理遮蔽 */}
-                <div className="absolute top-0 right-0 p-6 z-50 flex items-start justify-end">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto">
+                {/* 
+                  ピンポイント・ポップアウト・キラー:
+                  GoogleのUIが表示される数秒間の「隙」を物理的に封印。
+                */}
+                <div className="absolute top-0 right-0 w-32 h-20 z-50 pointer-events-none">
+                  <div className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto select-none">
                     <ShieldCheck size={16} className="text-emerald-500" />
                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Preview</span>
                   </div>
@@ -156,7 +171,7 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {displayImage && !stealthPdfUrl && (
+          {displayImage && !directPdfUrl && (
             <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden mb-16 shadow-2xl ring-8 ring-white bg-slate-50">
               <Image
                 src={displayImage}
