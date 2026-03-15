@@ -1,15 +1,22 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【表示用サイトの最優先規律：読み取りの完全開放】
-    // 記事、カテゴリー、広告、設定など、全ドキュメントの読み取りを許可します。
-    // method: "list" エラーを物理的に根絶するため、再帰的なワイルドカードを使用します。
+    // 【物理的・最優先規律：読み取りの完全開放】
+    // 閲覧専用サイト（デネブ）の正常稼働を保証するため、全ドキュメントの読み取りを許可します。
+    // 再帰的なワイルドカードにより、ネストされた設定ドキュメントも全てカバーします。
     match /{document=**} {
       allow read: if true;
     }
 
+    // 【明示的なパス指定による冗長化】
+    // 一部の環境での評価エラーを避けるため、主要なコレクションを明示的に開放します。
+    match /articles/{articleId} { allow read: if true; }
+    match /categories/{categoryId} { allow read: if true; }
+    match /ads/{adId} { allow read: if true; }
+    match /settings/{settingId} { allow read: if true; }
+
     // 【管理者権限：書き込みの厳格制限】
-    // データの変更は、指定された管理者メールアドレスを持つユーザーのみに許可されます。
+    // データの変更は、指定された管理者のみに許可されます。
     match /{document=**} {
       allow write: if request.auth != null && (
         request.auth.token.email == "r06hgunews@gmail.com" || 
