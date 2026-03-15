@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Article": {
@@ -8,6 +9,7 @@
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
+        "issueNumber": { "type": "string", "description": "Issue number (e.g., 第101号)." },
         "noteUrl": { "type": "string", "format": "uri" },
         "pdfUrl": { "type": "string", "description": "Google Drive PDF embed URL for paper viewer." },
         "source": { "type": "string" },

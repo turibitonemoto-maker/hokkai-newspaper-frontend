@@ -1,16 +1,20 @@
+
 'use client';
 
-import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, where, doc } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { PaperCard } from '@/components/PaperCard';
-import { Loader2, Calendar, Megaphone, CheckCircle2, AlertCircle, ChevronRight, BookOpen } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, CheckCircle2, BookOpen, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
+/**
+ * ホームページ (紙面ビューアー強化版)
+ */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export default function Home() {
     if (!db) return null;
     return collection(db, 'ads');
   }, [db]);
-  const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
+  const { data: ads } = useCollection(adsRef);
 
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
@@ -56,7 +60,10 @@ export default function Home() {
 
   const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
 
-  const latestArticles = useMemo(() => articles?.slice(0, 4) || [], [articles]);
+  const latestArticles = useMemo(() => {
+    // 最新ニュースには 'Paper' を除外した通常の記事を表示
+    return articles?.filter(a => a.categoryId !== 'Paper').slice(0, 4) || [];
+  }, [articles]);
   
   const categoryGroups = useMemo(() => {
     if (!articles) return {};
@@ -75,7 +82,8 @@ export default function Home() {
       if (!grouped[date]) grouped[date] = [];
       grouped[date].push(p);
     });
-    return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 2); // 最新2日分をトップに
+    // 日付順に並べて最新2日分を返す
+    return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 2);
   }, [categoryGroups]);
 
   return (
@@ -104,7 +112,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 広告エリア */}
+      {/* 広告エリア (戦略的配置) */}
       <div className="mb-32">
         <div className="flex items-center gap-2 mb-6">
           <Megaphone size={16} className="text-primary" />
@@ -121,7 +129,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 紙面ビューアーセクション */}
+      {/* 紙面ビューアーセクション (道新リスペクト・最上位) */}
       <div className="mb-32">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
           <div className="flex items-center gap-4">
@@ -136,25 +144,36 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-12">
-          {paperGroupedByDate.map(([date, papers]) => (
-            <div key={date} className="space-y-6">
-              <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest">
-                {date.replace(/-/g, '/')} (最新紙面)
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
-                {papers.map((paper) => (
-                  <PaperCard key={paper.id} article={paper as any} />
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="flex justify-end pt-4">
-            <Link href="/category/Paper" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
-              VIEW ARCHIVES <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
-            </Link>
+        {isArticlesLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="animate-spin text-primary" size={40} />
           </div>
-        </div>
+        ) : paperGroupedByDate.length > 0 ? (
+          <div className="space-y-12">
+            {paperGroupedByDate.map(([date, papers]) => (
+              <div key={date} className="space-y-6">
+                <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-xs tracking-widest flex items-center gap-4">
+                  <span>{date.replace(/-/g, '/')}</span>
+                  <span className="opacity-50 text-[10px]">発行分</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
+                  {papers.map((paper) => (
+                    <PaperCard key={paper.id} article={paper as any} />
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-end pt-4">
+              <Link href="/category/Paper" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
+                VIEW ARCHIVES <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-slate-50 rounded-[32px] p-20 text-center border-2 border-dashed border-slate-200">
+            <p className="text-slate-400 font-bold text-sm tracking-widest">紙面データがありません</p>
+          </div>
+        )}
       </div>
 
       {/* その他のカテゴリー */}

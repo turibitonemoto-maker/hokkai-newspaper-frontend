@@ -1,18 +1,20 @@
+
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileText } from 'lucide-react';
+import { FileText, Calendar } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 新聞紙面サムネイル・コンポーネント (道新リスペクト版)
- * 縦長の紙面比率を維持し、下にタイトルのみを表示するストイックなデザイン。
+ * 新聞紙面サムネイル・コンポーネント (道新リスペクト・号数対応版)
  */
 interface PaperCardProps {
   article: {
     id: string;
     title: string;
+    issueNumber?: string;
+    publishDate: string;
     mainImageUrl?: string;
     pdfUrl?: string;
   };
@@ -20,6 +22,7 @@ interface PaperCardProps {
 
 export function PaperCard({ article }: PaperCardProps) {
   const displayImage = article.mainImageUrl || "";
+  const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
 
   return (
     <Link href={`/articles/${article.id}`} className="group block text-center space-y-3">
@@ -39,8 +42,19 @@ export function PaperCard({ article }: PaperCardProps) {
           </div>
         )}
       </div>
-      <div className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1">
-        {article.title}
+      <div className="space-y-1">
+        {article.issueNumber && (
+          <div className="text-[10px] font-black text-primary uppercase tracking-widest">
+            {article.issueNumber}
+          </div>
+        )}
+        <div className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1">
+          {article.title}
+        </div>
+        <div className="flex items-center justify-center gap-1 text-[9px] text-slate-400 font-medium">
+          <Calendar size={10} />
+          <span>{date}</span>
+        </div>
       </div>
     </Link>
   );
