@@ -1,93 +1,72 @@
-
-'use client';
-
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MapPin, History, Target, Footprints } from 'lucide-react';
 
 /**
- * About Us ページ (完全連動・物理パージ版)
- * 固定テキストを廃止。Firestore (/settings/about_us) からのデータのみを表示。
- * 黄金比 (leading-6, my-3) を適用。
+ * About Us ページ (原点回帰・完全静的版)
+ * 連動によるトラブルを避けるため、司令官指定の文章をプログラム内に固定。
+ * 日本仕様の黄金比 (leading-relaxed, mb-8) を適用し、最高の読み心地を実現。
  */
 export default function AboutPage() {
-  const db = useFirestore();
-  
-  const aboutRef = useMemoFirebase(() => {
-    if (!db) return null;
-    return doc(db, 'settings', 'about_us');
-  }, [db]);
-
-  const { data: about, isLoading } = useDoc(aboutRef);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
-        <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Synchronizing Data...</p>
-      </div>
-    );
-  }
-
-  // データが全くない場合の物理的な「連動失敗・未設定」表示
-  if (!about) {
-    return (
-      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center text-center">
-        <div className="bg-amber-50 p-10 rounded-[48px] border-2 border-dashed border-amber-200">
-          <AlertCircle className="text-amber-500 mx-auto mb-6" size={48} />
-          <h1 className="text-2xl font-black mb-4">データが未設定です</h1>
-          <p className="text-slate-500 text-sm font-medium">管理サイトの「About Us 編集」から内容を保存してください。</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest rounded-full">ABOUT US</Badge>
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">
-            {about.title || "北海学園大学一部新聞会とは"}
+            北海学園大学一部新聞会とは
           </h1>
         </header>
 
         <section className="max-w-none">
-          {/* メイン説明: 黄金比タイポグラフィ (leading-6, my-3) */}
-          <div 
-            className={cn(
-              "prose prose-slate max-w-none font-medium text-slate-700 mx-auto tracking-wide",
-              "prose-p:leading-6 prose-p:my-3 prose-p:text-lg",
-              "md:prose-lg"
-            )}
-            dangerouslySetInnerHTML={{ __html: about.content || "" }}
-          />
+          <div className={cn(
+            "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
+            "prose-p:leading-relaxed prose-p:mb-8 prose-p:text-lg md:prose-lg"
+          )}>
+            <p>
+              1950年の創立以来、北海学園大学一部新聞会は、学生の視点から大学の「今」を記録し続けてきました。
+              学内行事の取材から、学生生活の課題、地域のニュースまで、記者が現場に足を運び、紡いできた言葉を届けることが私たちの使命です。
+            </p>
+            <p>
+              現在、メディアの形はデジタルへと移行しつつありますが、私たちの本質は変わりません。
+              AIのフィルターを通さず、人間が直接感じ、考えた真実を、純粋な形で読者の皆様へお届けします。
+            </p>
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
-              <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">私たちの目的</h2>
-              <div className="text-base leading-6 text-slate-600 font-medium whitespace-pre-wrap">
-                {about.purpose}
+              <div className="flex items-center gap-3 text-primary">
+                <Target size={24} />
+                <h2 className="text-2xl font-black tracking-tight uppercase italic">私たちの目的</h2>
               </div>
+              <p className="text-base leading-relaxed text-slate-600 font-medium">
+                記者が紡いできた言葉を、AIのフィルターを通さず純粋に届けること。
+                学生の視点から社会や大学の事象を捉え、批判的かつ創造的な言論空間を維持することを目指しています。
+              </p>
             </CardContent>
           </Card>
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
-              <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">活動内容</h2>
-              <div className="text-base leading-6 text-slate-600 font-medium whitespace-pre-wrap">
-                {about.activities}
+              <div className="flex items-center gap-3 text-primary">
+                <Footprints size={24} />
+                <h2 className="text-2xl font-black tracking-tight uppercase italic">活動内容</h2>
               </div>
+              <p className="text-base leading-relaxed text-slate-600 font-medium">
+                定期的な紙面（本紙）の発行、公式ウェブサイトでのニュース配信、学内各部活動への取材、
+                および入学式・卒業式などの公式行事の報道写真撮影を行っています。
+              </p>
             </CardContent>
           </Card>
         </div>
 
         <section className="bg-white rounded-[48px] p-10 md:p-16 border border-slate-100 shadow-2xl">
-          <h2 className="text-3xl font-black mb-10 tracking-tighter uppercase italic text-slate-950">組織概要</h2>
+          <div className="flex items-center gap-4 mb-10">
+            <History className="text-primary" size={32} />
+            <h2 className="text-3xl font-black tracking-tighter uppercase italic text-slate-950">組織概要</h2>
+          </div>
           <div className="space-y-8">
             <div className="grid grid-cols-3 border-b border-slate-100 pb-6">
               <span className="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em]">団体名</span>
@@ -99,7 +78,13 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-6">
               <span className="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em]">活動拠点</span>
-              <span className="col-span-2 font-bold text-slate-900">北海学園大学 豊平キャンパス 文化棟二階</span>
+              <div className="col-span-2 space-y-2">
+                <span className="block font-bold text-slate-900">北海学園大学 豊平キャンパス 文化棟二階</span>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <MapPin size={12} />
+                  <span className="text-[10px] font-medium">北海道札幌市豊平区旭町4丁目1-40</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
