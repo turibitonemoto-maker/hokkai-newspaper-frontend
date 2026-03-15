@@ -12,11 +12,11 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (実用性最優先・ピンポイントシールド版)
+ * 記事詳細ページ (究極のステルス・ビューアー版)
  * 
- * 1. 全面シールドを撤廃し、スクロールとテキストコピーを解放。
- * 2. 右上の「ポップアウト」ボタンのみを透明レイヤーでピンポイント遮断。
- * 3. 日本仕様の黄金比密度 (leading-6, my-3) を適用。
+ * 1. Googleドライブのツールバーを物理的に画面外へ押し出し (margin-top: -60px)。
+ * 2. 右上の「脱出口」を不透明な公式バッジで物理的に遮蔽。
+ * 3. スクロールとコピーを完全に解放し、日本仕様の黄金比密度 (leading-6, my-3) を適用。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -35,7 +35,7 @@ export default function ArticlePage() {
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
-  // GoogleドライブのURLをプレビュー専用に強制変換
+  // GoogleドライブのURLをプレビュー専用に変換
   const stealthPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
@@ -117,42 +117,41 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 実用性重視：ピンポイント・シールド・PDFビューアー */}
+          {/* 究極のステルス・PDFビューアー */}
           {stealthPdfUrl && (
             <div className="mb-16 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <FileText size={16} /> Paper Edition Viewer
-                </div>
-                <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 shadow-sm">
-                  <ShieldCheck size={12} /> Interactive Preview
+                  <FileText size={16} /> Paper Edition Archive
                 </div>
               </div>
               
-              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                {/* 本体：スクロールと操作を許可 (pointer-events-auto) */}
+              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                {/* 物理的マスク：ツールバーを画面外へ追い出し、全体スクロールを許可 */}
                 <iframe 
                   src={stealthPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
+                  className="absolute w-full h-[calc(100%+60px)] -top-[60px] left-0 border-none pointer-events-auto"
                   allow="autoplay"
-                  sandbox="allow-scripts allow-same-origin allow-forms" // allow-popupsを除外して外部遷移を遮断
+                  sandbox="allow-scripts allow-same-origin allow-forms" // allow-popupsを除外して別タブ遷移を遮断
                 />
                 
-                {/* 右上の「ポップアウト」ボタンのみをピンポイントで塞ぐ透明レイヤー */}
-                <div className="absolute top-0 right-0 w-16 h-16 bg-transparent z-50 cursor-default pointer-events-auto" />
-                
-                {/* 下部のロゴなどへの誤操作防止用保護層 (オプション) */}
-                <div className="absolute bottom-0 right-0 w-32 h-12 bg-transparent z-50 pointer-events-auto" />
+                {/* 物理的封印：右上のポップアウトボタンがあった位置を不透明な紋章で物理遮蔽 */}
+                <div className="absolute top-0 right-0 p-6 z-50 flex items-start justify-end">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto">
+                    <ShieldCheck size={16} className="text-emerald-500" />
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Preview</span>
+                  </div>
+                </div>
 
                 {/* ウォーターマーク */}
                 <div className="absolute bottom-6 left-8 flex items-center gap-2 opacity-30 pointer-events-none select-none">
                   <Lock size={12} />
-                  <span className="text-[10px] font-black tracking-widest uppercase">OFFICIAL ARCHIVE</span>
+                  <span className="text-[10px] font-black tracking-widest uppercase">TRUSTED SOURCE</span>
                 </div>
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl">
-                ※公式ビューアー。全ページ閲覧可能です。
+                ※公式紙面ビューアー。スクロールして全ページ閲覧可能です。
               </p>
             </div>
           )}

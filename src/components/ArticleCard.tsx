@@ -8,8 +8,8 @@ import { Calendar, ExternalLink, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (実用性・浄化版)
- * テキストコピーを許可し、HTMLタグを剥離。
+ * 記事カードコンポーネント (浄化・最適化版)
+ * HTMLタグを完全に剥離し、純粋なテキストのみをスニペットとして抽出。
  */
 interface ArticleCardProps {
   article: {
@@ -35,11 +35,13 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
+    // HTMLタグを剥離し、実体参照を置換
     const plainText = rawContent
       .replace(/<[^>]*>?/gm, "")
       .replace(/&nbsp;/g, " ")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&")
       .trim();
     return plainText.substring(0, 80) + (plainText.length > 80 ? "..." : "");
   }, [article.content, article.htmlContent]);

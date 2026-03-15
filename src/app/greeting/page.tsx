@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (実用性・黄金比密度版)
- * 日本仕様の行間(leading-6)と段落余白(my-3)を適用。
- * テキストコピーを許可。
+ * 会長挨拶ページ (最終統合版)
+ * 1. settings/president_greeting ドキュメントの content フィールドを唯一の真実として同期。
+ * 2. 日本仕様の黄金比密度 (leading-6, my-3) を厳格適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -72,7 +72,7 @@ export default function GreetingPage() {
                     <span className="font-black text-[9px] uppercase tracking-widest">Portrait</span>
                   </div>
                 )}
-                {/* 透明シールドレイヤー (画像への誤操作防止のみ) */}
+                {/* 物理保護レイヤー：画像への右クリックやドラッグを心理的に抑制 */}
                 <div className="absolute inset-0 bg-transparent z-50 cursor-default" />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white">
