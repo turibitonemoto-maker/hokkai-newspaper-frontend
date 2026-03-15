@@ -9,13 +9,13 @@ import { cn } from '@/lib/utils';
 
 /**
  * 会長挨拶ページ (最終・完全同期版)
- * 管理画面からの「content」フィールドを最優先し、HTMLとしてレンダリング。
- * 二重改行を防ぐため whitespace-pre-wrap を追放し、leading-6 / my-3 で密度を最適化。
+ * 管理画面の「ArticleEditor」と同じシステム（contentフィールド/HTML）に統合。
+ * 日本人が最も読みやすい黄金比の密度（leading-6 / my-3）を定義。
  */
 export default function GreetingPage() {
   const db = useFirestore();
   
-  // 管理画面側の保存パス「president_greeting」に完全一致させる
+  // 管理画面側の保存パス「settings/president_greeting」に完全一致
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'president_greeting');
@@ -43,7 +43,7 @@ export default function GreetingPage() {
     );
   }
 
-  // 管理画面側の固定フィールド「content」を最優先、互換性のために「message」もチェック
+  // 管理画面側の固定フィールド「content」を最優先
   const displayTitle = greeting?.title || defaultData.title;
   const displayContent = greeting?.content || greeting?.message || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
@@ -84,7 +84,7 @@ export default function GreetingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
                 {displayTitle}
               </h2>
-              {/* 日本人が最も読みやすい密度に固定。HTMLレンダリングを優先 */}
+              {/* 日本人が最も読みやすい密度に固定。whitespace-pre-wrap を追放 */}
               <div 
                 className={cn(
                   "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",
