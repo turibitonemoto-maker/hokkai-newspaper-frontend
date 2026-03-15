@@ -1,9 +1,9 @@
 'use client';
 
-import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, User, ShieldCheck, Lock } from 'lucide-react';
+import { Loader2, User, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
@@ -72,9 +72,6 @@ export default function GreetingPage() {
                   </div>
                 )}
               </div>
-              <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white">
-                <ShieldCheck size={24} />
-              </div>
             </div>
           </div>
           
@@ -85,7 +82,7 @@ export default function GreetingPage() {
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-700 mx-auto tracking-wide",
-                "prose-p:leading-relaxed prose-p:mb-8",
+                "prose-p:leading-6 prose-p:my-3",
                 "md:prose-lg"
               )}
               dangerouslySetInnerHTML={{ __html: displayContent }}
