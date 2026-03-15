@@ -10,8 +10,9 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (最終・完全版)
+ * トップページ (最終・完全同期版)
  * 広告の自動終了ロジックを強化し、ミリ秒単位での正確な判定を実現。
+ * ステータス表示を極限までシンプルに。
  */
 export default function Home() {
   const db = useFirestore();

@@ -8,9 +8,9 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ (最終・最適化版)
- * TiptapエディタからのHTML出力を正しくレンダリングし、行間を日本人が読みやすい密度に調整。
- * フィールド名の揺れ（message / content）にも対応するフォールバックロジックを搭載。
+ * 会長挨拶ページ (最終・完全同期版)
+ * 管理画面からの「content」フィールドを最優先し、HTMLとしてレンダリング。
+ * 二重改行を防ぐため whitespace-pre-wrap を追放し、leading-6 / my-3 で密度を最適化。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -24,11 +24,10 @@ export default function GreetingPage() {
   // デフォルト（フォールバック）データ
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
-    message: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>
+    content: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>
 <p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。
 変化の激しい現代において、正確かつ価値のある情報を発信することは私たちの重要な使命です。</p>
-<p>これからも、学生、教職員、転して地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。
-今後とも、当会への変わらぬご支援とご愛顧を賜りますようお願い申し上げます。</p>`,
+<p>これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。</p>`,
     authorName: "北海学園大学一部新聞会 会長",
     authorImageUrl: null
   };
@@ -42,9 +41,9 @@ export default function GreetingPage() {
     );
   }
 
-  // 管理画面側のフィールド名の違いを吸収するフォールバック
+  // 管理画面側の固定フィールド「content」を最優先、互換性のために「message」もチェック
   const displayTitle = greeting?.title || defaultData.title;
-  const displayMessage = greeting?.message || greeting?.content || defaultData.message;
+  const displayContent = greeting?.content || greeting?.message || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
   const displayAuthorImageUrl = greeting?.authorImageUrl || defaultData.authorImageUrl;
 
@@ -83,14 +82,14 @@ export default function GreetingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
                 {displayTitle}
               </h2>
-              {/* 日本人が最も読みやすい密度（leading-6, my-3）に固定 */}
+              {/* 日本人が最も読みやすい密度に固定。HTMLレンダリングを優先 */}
               <div 
                 className={cn(
                   "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",
                   "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl",
                   "md:prose-lg"
                 )}
-                dangerouslySetInnerHTML={{ __html: displayMessage }}
+                dangerouslySetInnerHTML={{ __html: displayContent }}
               />
             </div>
 

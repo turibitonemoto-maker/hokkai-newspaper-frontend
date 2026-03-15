@@ -12,8 +12,9 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終・最適化版)
- * 行間(leading-6)と段落間余白(my-3)を詰め、日本人が最も読みやすい密度に調整。
+ * 記事詳細ページ (最終・黄金比版)
+ * 行間(leading-6)と段落間余白(my-3)を詰め、HTMLレンダリングを最適化。
+ * whitespace-pre-wrap を排除し、リッチエディタの意図を正確に再現。
  */
 export default function ArticlePage() {
   const { id } = useParams();

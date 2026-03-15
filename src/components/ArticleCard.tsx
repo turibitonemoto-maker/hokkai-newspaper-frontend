@@ -8,8 +8,9 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (最終・最適化版)
- * AI要約を排除し、画像表示を最適化。
+ * 記事カードコンポーネント (最終・浄化版)
+ * 抜粋からHTMLタグを剥がし、純粋なテキストのみを抽出して表示。
+ * Image に sizes を設定し、読み込み警告を解消。
  */
 interface ArticleCardProps {
   article: {
@@ -32,9 +33,9 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const isExternal = article.source === 'note';
   
   const excerpt = useMemo(() => {
+    // HTMLタグを正規表現で除去。Tiptapからのリッチテキスト対応
     const rawContent = article.htmlContent || article.content || "";
-    // HTMLタグを除去してテキストのみを抽出
-    const plainText = rawContent.replace(/<[^>]*>?/gm, "") || "";
+    const plainText = rawContent.replace(/<[^>]*>?/gm, "").trim();
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
   }, [article.htmlContent, article.content]);
 

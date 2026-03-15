@@ -21,11 +21,11 @@ const yujiMai = Yuji_Mai({
 });
 
 /**
- * サイトのメタデータ (最終・完全版)
- * アイコンに icon.png を正式採用。
+ * サイトのメタデータ (最終・完全同期版)
+ * アイコンを正式な icon.png に固定。
  */
 export const metadata: Metadata = {
-  title: '北海学園大学一部新聞会 公式サイト',
+  title: '北海学園大学新聞 公式サイト',
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
   keywords: ['北海学園大学', '新聞会', '学生新聞'],
   icons: {
