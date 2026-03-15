@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,8 +13,9 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (閲覧専用：最終版)
- * AI機能（要約）を完全に排除し、画像最適化（sizes属性追加）を徹底しました。
+ * 記事詳細ページ (最終版：極限最適化)
+ * AI機能を完全に排除し、人間の筆致をそのまま届けます。
+ * next/image の sizes プロパティ追加により知恵熱（警告）を解消。
  */
 export default function ArticlePage() {
   const { id } = useParams();

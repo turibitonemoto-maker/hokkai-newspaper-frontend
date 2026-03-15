@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -9,6 +10,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
+/**
+ * トップページ (最終版)
+ * 広告の自動終了ロジックを修正し、メンテナンス状態をシンプルに表示します。
+ */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -18,6 +23,7 @@ export default function Home() {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
+    // 1分ごとに現在時刻を更新して広告の終了判定を正確にする
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
@@ -45,21 +51,24 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
+  // 広告の自動終了ロジック
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
     const validAds = ads.filter(ad => {
       if (!ad.imageUrl) return false;
+      // 終了時間が設定されている場合のみチェック
       if (!ad.displayEndTime) return true;
       try {
         const endTime = new Date(ad.displayEndTime);
-        return endTime > now;
+        return endTime > now; // 現在時刻より後なら有効
       } catch (e) {
-        return true;
+        return true; // 形式エラーの場合は一旦表示
       }
     });
 
     if (validAds.length === 0) return null;
+    // 最新の広告を表示
     return validAds[0];
   }, [ads, now]);
 
@@ -67,6 +76,7 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
+      {/* 稼働状況表示：極めてシンプルに */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">
@@ -79,6 +89,7 @@ export default function Home() {
         )}
       </div>
 
+      {/* 広告エリア */}
       <div className="mb-10 md:mb-16">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />
@@ -105,6 +116,7 @@ export default function Home() {
         )}
       </div>
 
+      {/* 見出し */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-slate-100 pb-8">
         <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
           <span className="text-primary">最新</span>の<span className="text-primary">記事</span>
@@ -114,6 +126,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 記事一覧 */}
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="animate-spin text-primary mb-4 size-10" strokeWidth={3} />

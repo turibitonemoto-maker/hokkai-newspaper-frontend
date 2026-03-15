@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -10,6 +11,10 @@ interface MaintenanceGuardProps {
   children: ReactNode;
 }
 
+/**
+ * メンテナンスモード管理 (最終版)
+ * 紛らわしい表現を排除し、現在の稼働状況のみをシンプルに表示します。
+ */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();
   const { user } = useUser();
@@ -31,6 +36,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   const isMaintenanceMode = settings?.isMaintenanceMode === true;
   
+  // 指定された管理者のみメンテナンス中もアクセス可能
   const adminEmails = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
@@ -68,6 +74,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
   return (
     <>
+      {/* 管理者にはメンテナンス中である警告を表示 */}
       {isMaintenanceMode && isAdmin && (
         <div className="fixed top-0 left-0 w-full z-[100] bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest py-1.5 text-center shadow-md">
           ADMIN PREVIEW MODE (MAINTENANCE ACTIVE)

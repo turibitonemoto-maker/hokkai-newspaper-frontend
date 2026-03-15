@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter, Yuji_Mai } from 'next/font/google';
 import './globals.css';
@@ -20,6 +21,10 @@ const yujiMai = Yuji_Mai({
   variable: '--font-yuji',
 });
 
+/**
+ * サイトのメタデータ (最終版)
+ * アイコンに icon.png を正式に設定しました。
+ */
 export const metadata: Metadata = {
   title: '北海学園大学一部新聞会 公式サイト',
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',

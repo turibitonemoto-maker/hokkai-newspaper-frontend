@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -9,7 +10,7 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント (最終版)
- * AI要約を排除し、徹底的に軽量化（sizes属性追加）しました。
+ * AI要約（summary）を完全に排除。next/image の sizes プロパティを最適化。
  * 画像がない場合は無理な生成をせず、清潔な余白として扱います。
  */
 interface ArticleCardProps {
