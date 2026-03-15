@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -12,14 +12,19 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細・物理ビューアーページ (デネブ版)
- * ベガ（管理側）が保存した複数枚のJPEG（paperImages / Cloudinaryホスト）を確実に描画する。
+ * 記事詳細・物理ビューアーページ (デネブ版・最終連携)
+ * ベガ（管理）が保存した複数枚の JPEG (paperImages) を Cloudinary から物理的に描画する。
  */
 export default function ArticlePage() {
   const { id } = useParams();
   const router = useRouter();
   const db = useFirestore();
+  const [isMounted, setIsMounted] = useState(false);
   const [fontSize, setFontSize] = useState<'base' | 'lg' | 'xl'>('lg');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const articleRef = useMemoFirebase(() => {
     if (!id || !db) return null;
@@ -32,10 +37,13 @@ export default function ArticlePage() {
   const paperImages = article?.paperImages || [];
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
+  if (!isMounted) return null;
+
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading Archive...</p>
       </div>
     );
   }
@@ -43,8 +51,8 @@ export default function ArticlePage() {
   if (!article || !isPublic) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white text-center">
-        <h1 className="text-3xl font-black mb-6 tracking-tighter text-slate-900">記事が見つかりません</h1>
-        <Button onClick={() => router.push('/')} className="rounded-full px-10 font-black tracking-widest bg-primary text-white">TOPに戻る</Button>
+        <h1 className="text-3xl font-black mb-6 tracking-tighter text-slate-900 uppercase italic">Not Found</h1>
+        <Button onClick={() => router.push('/')} className="rounded-full px-10 font-black tracking-widest bg-primary text-white shadow-lg">TOPに戻る</Button>
       </div>
     );
   }
@@ -83,11 +91,11 @@ export default function ArticlePage() {
         <article className="animate-fade-in">
           <header className="mb-12">
             <div className="flex items-center gap-4 mb-8">
-              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-sm">
+              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-md rounded-full">
                 {article.categoryId}
               </Badge>
               {article.issueNumber && (
-                <Badge variant="outline" className="border-primary text-primary font-black py-1 px-4 text-[10px] tracking-widest uppercase">
+                <Badge variant="outline" className="border-primary text-primary font-black py-1 px-4 text-[10px] tracking-widest uppercase rounded-full">
                   {article.issueNumber}
                 </Badge>
               )}
@@ -110,7 +118,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* JPEG 紙面物理ビューアー (Cloudinary最適化対応) */}
+          {/* Cloudinary 紙面物理ビューアー (JPEG 複数枚対応) */}
           {paperImages.length > 0 && (
             <div className="mb-20 space-y-12">
               <div className="flex items-center justify-between px-2">
@@ -138,12 +146,12 @@ export default function ArticlePage() {
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> VERIFIED DIGITAL ARCHIVE
+                <ShieldCheck size={12} className="text-primary" /> CLOUD OPTIMIZED ARCHIVE
               </p>
             </div>
           )}
 
-          {/* メイン画像（紙面がない場合） */}
+          {/* メイン画像（紙面がない場合、または記事メイン画像として） */}
           {article.mainImageUrl && paperImages.length === 0 && (
             <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">

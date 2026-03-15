@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -6,16 +5,21 @@ import { collection, query, where, orderBy } from 'firebase/firestore';
 import { PaperCard } from '@/components/PaperCard';
 import { Loader2, Ghost, BookOpen, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 /**
- * 紙面ビューアー・物理直結ページ
- * 虚飾を排し、Firestoreの「articles」から「Paper」カテゴリーを確実に取得・表示する。
+ * 紙面ビューアー・物理直結ページ (デネブ版)
+ * ベガ（管理）が Cloudinary 経由で保存した複数枚の JPEG データを、
+ * 道新リスペクトの「日付別・号数順」で物理的に描画する。
  */
 export default function ViewerPage() {
   const db = useFirestore();
+  const [isMounted, setIsMounted] = useState(false);
 
-  // 1. 本物のデータベース（Firestore）から直接取得
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const paperQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -28,7 +32,6 @@ export default function ViewerPage() {
 
   const { data: papers, isLoading } = useCollection(paperQuery);
 
-  // 2. 日付ごとに物理的にグルーピング
   const paperGroupedByDate = useMemo(() => {
     if (!papers) return [];
     const grouped: Record<string, any[]> = {};
@@ -39,6 +42,8 @@ export default function ViewerPage() {
     });
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]));
   }, [papers]);
+
+  if (!isMounted) return null;
 
   return (
     <div className="container mx-auto px-4 py-12 pb-24">
@@ -51,7 +56,7 @@ export default function ViewerPage() {
       <header className="mb-16">
         <div className="flex items-center justify-between flex-wrap gap-6">
           <div className="flex items-center gap-4">
-            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg">
+            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg shadow-primary/20">
               <BookOpen size={24} />
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
@@ -60,11 +65,12 @@ export default function ViewerPage() {
           </div>
           <div className="text-right">
              <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Digital Archive</span>
-             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-primary">Since 1950</span>
+             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-primary">Cloud Optimized</span>
           </div>
         </div>
         <p className="text-slate-500 font-medium max-w-2xl leading-6 my-6">
-          管理サイトからアップロードされた JPEG 紙面データが、ここにリアルタイムで反映されます。
+          Cloudinary にホストされた高解像度の紙面 JPEG データが、ここにリアルタイムで反映されます。
+          1950年の創立以来の歴史を、当時の質感そのままに振り返ることができます。
         </p>
       </header>
 
@@ -77,9 +83,9 @@ export default function ViewerPage() {
         <div className="space-y-16 animate-fade-in">
           {paperGroupedByDate.map(([date, papersList]) => (
             <div key={date} className="space-y-6">
-              <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest flex items-center gap-4">
+              <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest flex items-center gap-4 shadow-lg shadow-primary/10">
                 <span>{date.replace(/-/g, '/')}</span>
-                <span className="opacity-50 text-[10px] font-black uppercase">Published</span>
+                <span className="opacity-50 text-[10px] font-black uppercase tracking-widest">Published</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                 {papersList.map((paper) => (
@@ -94,9 +100,9 @@ export default function ViewerPage() {
           <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-10">
             <Ghost className="text-slate-200" size={48} />
           </div>
-          <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">データがありません</h3>
+          <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">アーカイブ未登録</h3>
           <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
-            管理サイトで「Paper」カテゴリーの記事を保存すると、ここに表示されます。
+            管理サイトから Cloudinary 経由で紙面をアップロードしてください。
           </p>
           <Link href="/" className="inline-block mt-8 text-primary font-bold uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">BACK TO HOME</Link>
         </div>
