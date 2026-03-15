@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
@@ -9,25 +10,41 @@ import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucid
 
 /**
  * About Us ページ
- * Firestore パス: /settings/about
+ * Firestore パス: settings/about
  * フィールド: content (string)
+ * 
+ * ハイドレーションエラー対策として mounted 状態のチェックを導入。
  */
 export default function AboutPage() {
+  const [mounted, setMounted] = useState(false);
   const db = useFirestore();
-  
-  // プロトコル指定のパス: settings/about
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const aboutRef = useMemoFirebase(() => {
     if (!db) return null;
+    // 再構築プロトコルに基づき、ドキュメント名を 'about' に固定
     return doc(db, 'settings', 'about');
   }, [db]);
 
   const { data: aboutData, isLoading } = useDoc(aboutRef);
 
+  // クライアントサイドでのハイドレーションが完了するまで何もレンダリングしない（または同じ構造を維持）
+  if (!mounted) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-primary mb-4" size={40} />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading...</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading Content...</p>
       </div>
     );
   }
@@ -46,7 +63,7 @@ export default function AboutPage() {
           {aboutData?.content ? (
             <div className={cn(
               "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
-              "prose-p:leading-relaxed prose-p:mb-8 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
+              "prose-p:leading-6 prose-p:my-3 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
             )}
             dangerouslySetInnerHTML={{ __html: aboutData.content }}
             />
