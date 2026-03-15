@@ -12,9 +12,9 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (ビルド最適化版)
- * 行間(leading-6)と段落間余白(my-3)を日本人の黄金比に設定。
- * Tiptapから送られるHTMLを正確にレンダリング。
+ * 記事詳細ページ (ビルド・黄金比最適化版)
+ * 司令部の指示に基づき、行間(leading-6)と段落間余白(my-3)を固定。
+ * Tiptapから送られるHTMLを美しくレンダリングします。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -29,10 +29,9 @@ export default function ArticlePage() {
 
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // 公開設定のチェック
+  // 公開設定とコンテンツの抽出
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
-
   const mainContent = useMemo(() => 
     article?.content || article?.htmlContent || ''
   , [article?.content, article?.htmlContent]);
@@ -42,7 +41,7 @@ export default function ArticlePage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-6">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase animate-pulse">Loading Story</p>
+          <p className="text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase animate-pulse">Syncing Story...</p>
         </div>
       </div>
     );
@@ -52,15 +51,10 @@ export default function ArticlePage() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white">
         <div className="max-w-md w-full text-center space-y-6">
-          <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-slate-200">
-            <ChevronLeft size={40} />
-          </div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">記事が見つかりません</h1>
-          <p className="text-slate-500 font-medium leading-relaxed">
-            お探しの記事は削除されたか、現在非公開に設定されています。
-          </p>
-          <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black shadow-lg shadow-primary/20">
-            トップページへ戻る
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">Story Not Found</h1>
+          <p className="text-slate-500 font-medium">お探しの記事は見つかりませんでした。</p>
+          <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black">
+            TOPに戻る
           </Button>
         </div>
       </div>
@@ -70,6 +64,7 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
+        {/* ヘッダー操作エリア */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -80,9 +75,7 @@ export default function ArticlePage() {
           </Button>
           
           <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-full border shadow-sm">
-            <div className="px-3 text-slate-400">
-              <Type size={14} />
-            </div>
+            <div className="px-3 text-slate-400"><Type size={14} /></div>
             {(['base', 'lg', 'xl'] as const).map((size) => (
               <Button 
                 key={size}
@@ -90,7 +83,7 @@ export default function ArticlePage() {
                 size="sm" 
                 onClick={() => setFontSize(size)}
                 className={cn(
-                  "rounded-full h-8 px-4 font-black text-[10px] uppercase tracking-tighter",
+                  "rounded-full h-8 px-4 font-black text-[10px] uppercase",
                   fontSize === size ? "bg-white shadow-sm text-primary" : "text-slate-400"
                 )}
               >
@@ -101,34 +94,32 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          <header className="mb-12 md:mb-20">
+          <header className="mb-12">
             <div className="flex items-center gap-4 mb-8">
-              <Badge className="bg-primary text-white hover:bg-primary border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-md">
+              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase">
                 {article.categoryId}
               </Badge>
               <Separator className="flex-grow bg-slate-100" />
             </div>
             
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-10 leading-[1.2] text-slate-950">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-10 leading-[1.15] text-slate-950">
               {article.title}
             </h1>
             
-            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-12 py-8 border-y border-slate-100">
-              <div className="flex items-center gap-8 text-[11px] text-slate-500 font-black uppercase tracking-[0.2em]">
-                <div className="flex items-center gap-2.5">
-                  <Calendar size={14} className="text-primary/60" />
-                  <span>{article.publishDate?.split('T')[0]}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <User size={14} className="text-primary/60" />
-                  <span>{article.authorName || '北海学園大学一部新聞会'}</span>
-                </div>
+            <div className="flex flex-col md:flex-row md:items-center gap-6 py-8 border-y border-slate-100 text-[11px] text-slate-500 font-black uppercase tracking-[0.2em]">
+              <div className="flex items-center gap-2.5">
+                <Calendar size={14} className="text-primary/60" />
+                <span>{article.publishDate?.split('T')[0]}</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <User size={14} className="text-primary/60" />
+                <span>{article.authorName || '北海学園大学一部新聞会'}</span>
               </div>
             </div>
           </header>
 
           {displayImage && (
-            <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 md:mb-24 shadow-2xl shadow-slate-200 ring-1 ring-slate-100 bg-slate-50">
+            <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 shadow-2xl ring-1 ring-slate-100 bg-slate-50">
               <Image
                 src={displayImage}
                 alt={article.title}
@@ -140,10 +131,11 @@ export default function ArticlePage() {
             </div>
           )}
 
-          <div className="max-w-3xl mx-auto relative">
+          {/* 本文：黄金比（leading-6, my-3）を適用 */}
+          <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 transition-all duration-300 font-medium",
+                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter transition-all font-medium",
                 "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl prose-img:shadow-lg",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",

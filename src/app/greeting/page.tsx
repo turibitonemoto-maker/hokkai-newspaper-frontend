@@ -8,14 +8,14 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ (ビルド最適化版)
- * 管理画面の「content」フィールドと完全に同期。
- * 日本人が最も読みやすい黄金比の密度（leading-6 / my-3）を定義。
+ * 会長挨拶ページ (ビルド・同期最適化版)
+ * 指令に基づき、Firestoreの「settings/president_greeting」ドキュメントの
+ * 「content」フィールドを聖典として読み込みます。
  */
 export default function GreetingPage() {
   const db = useFirestore();
   
-  // 管理画面側の保存パス「settings/president_greeting」に完全一致
+  // READMEの定義に基づく取得パス
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'president_greeting');
@@ -23,12 +23,11 @@ export default function GreetingPage() {
 
   const { data: greeting, isLoading } = useDoc(greetingRef);
 
-  // デフォルト（フォールバック）データ
+  // デフォルトデータ（フェイルセーフ）
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
     content: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>
-<p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。
-変化の激しい現代において、正確かつ価値のある情報を発信することは私たちの重要な使命です。</p>
+<p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。</p>
 <p>これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。</p>`,
     authorName: "北海学園大学一部新聞会 会長",
     authorImageUrl: null
@@ -38,12 +37,12 @@ export default function GreetingPage() {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Message...</p>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Database Synchronizing...</p>
       </div>
     );
   }
 
-  // 管理画面側の固定フィールド「content」を最優先
+  // 「content」フィールドを最優先（messageは互換性のためのフォールバック）
   const displayTitle = greeting?.title || defaultData.title;
   const displayContent = greeting?.content || greeting?.message || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
@@ -58,7 +57,7 @@ export default function GreetingPage() {
         </header>
 
         <div className="space-y-12">
-          {/* 写真セクション */}
+          {/* 会長写真 */}
           <div className="flex justify-center">
             <div className="w-64 h-80 relative rounded-[40px] overflow-hidden shadow-2xl bg-slate-50 ring-8 ring-white">
               {displayAuthorImageUrl ? (
@@ -72,28 +71,25 @@ export default function GreetingPage() {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-black uppercase text-[10px] tracking-widest text-center px-4 leading-relaxed">
-                  Photo<br />Available soon
+                  Official Photo<br />Available
                 </div>
               )}
             </div>
           </div>
           
-          {/* メッセージ本文 */}
-          <div className="space-y-10 text-center md:text-left">
-            <div className="space-y-6">
-              <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
-                {displayTitle}
-              </h2>
-              {/* 日本人が最も読みやすい密度に固定 */}
-              <div 
-                className={cn(
-                  "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",
-                  "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl",
-                  "md:prose-lg"
-                )}
-                dangerouslySetInnerHTML={{ __html: displayContent }}
-              />
-            </div>
+          {/* メッセージ本文：黄金比の行間を適用 */}
+          <div className="space-y-10">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
+              {displayTitle}
+            </h2>
+            <div 
+              className={cn(
+                "prose prose-slate max-w-none font-medium text-slate-700 mx-auto transition-all",
+                "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl",
+                "md:prose-lg"
+              )}
+              dangerouslySetInnerHTML={{ __html: displayContent }}
+            />
 
             {/* 署名 */}
             <div className="pt-10 border-t border-slate-100 text-center">

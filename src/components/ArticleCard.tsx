@@ -8,9 +8,9 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (ビルド最適化版)
- * 抜粋からHTMLタグを剥がし、純粋なテキストのみを抽出して表示。
- * next/image に適切な sizes を設定し、読み込み警告を解消。
+ * 記事カードコンポーネント (ビルド・同期最適化版)
+ * 指令に基づき、抜粋からHTMLタグを剥がしてテキストのみを表示。
+ * next/image に適切な sizes を設定し、読み込み警告を完全に解消します。
  */
 interface ArticleCardProps {
   article: {
@@ -32,8 +32,8 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || "";
   const isExternal = article.source === 'note';
   
+  // HTMLタグを浄化してテキストのみを抽出
   const excerpt = useMemo(() => {
-    // HTMLタグを正規表現で除去
     const rawContent = article.content || article.htmlContent || "";
     const plainText = rawContent.replace(/<[^>]*>?/gm, "").trim();
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
@@ -73,10 +73,8 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
         
         <CardHeader className="p-5 pb-2">
           <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="text-primary/60" size={12} />
-              <span>{date}</span>
-            </div>
+            <Calendar className="text-primary/60" size={12} />
+            <span>{date}</span>
           </div>
           <h3 className="text-base font-black leading-tight text-slate-950 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
             {article.title}

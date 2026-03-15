@@ -1,10 +1,9 @@
 'use server';
 
 /**
- * note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換する。
+ * note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換。
  * フィールド名をビルド仕様の「content」に統一。
  */
-
 export async function fetchAndSyncNoteRss() {
   const NOTE_RSS_URL = 'https://note.com/lucky_minnow287/rss';
   
@@ -17,14 +16,14 @@ export async function fetchAndSyncNoteRss() {
     });
 
     if (!response.ok) {
-      throw new Error(`RSSの取得に失敗しました: ${response.status} ${response.statusText}`);
+      throw new Error(`RSS Sync Failed: ${response.status}`);
     }
 
     const xmlText = await response.text();
     const items = xmlText.match(/<item>([\s\S]*?)<\/item>/g) || [];
     
     if (items.length === 0) {
-      return { success: true, articles: [], message: '同期対象の記事が見つかりませんでした。' };
+      return { success: true, articles: [], message: 'No articles found' };
     }
 
     const parsedArticles = items.map(item => {
@@ -43,6 +42,7 @@ export async function fetchAndSyncNoteRss() {
         htmlContent = extract('description');
       }
 
+      // note固有の「続きを見る」リンクを除去
       htmlContent = htmlContent.replace(/<a\s+href=['"][^'"]+['"][^>]*>(?:続きを?見[るる]|続きを読む|続きを見る)<\/a>/gi, '');
       htmlContent = htmlContent.replace(/(?:続きを?見[るる]|続きを読む|続きを見る)/gi, '');
       htmlContent = htmlContent.replace(/(?:<p[^>]*>\s*<\/p>|<br\s*\/?>|\s)*$/gi, '').trim();
@@ -60,6 +60,7 @@ export async function fetchAndSyncNoteRss() {
 
       const noteId = link.split('/').pop() || Math.random().toString(36).substring(7);
 
+      // カテゴリの自動判定
       let categoryId = 'Campus';
       const lowerTitle = title.toLowerCase();
       if (lowerTitle.includes('インタビュー')) categoryId = 'Interview';
@@ -72,7 +73,7 @@ export async function fetchAndSyncNoteRss() {
         title: title,
         noteUrl: link,
         source: 'note',
-        content: htmlContent, // contentフィールドに統一
+        content: htmlContent, // 「content」フィールドに統一
         mainImageUrl: imageUrl,
         publishDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         lastSyncedDate: new Date().toISOString(),
@@ -85,6 +86,6 @@ export async function fetchAndSyncNoteRss() {
     return { success: true, articles: parsedArticles };
   } catch (error: any) {
     console.error('RSS Sync Error:', error);
-    return { success: false, error: error.message || 'RSSの通信に失敗しました。' };
+    return { success: false, error: error.message };
   }
 }

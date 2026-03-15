@@ -10,9 +10,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (ビルド最適化版)
+ * トップページ (ビルド・最適化版)
  * 広告の自動終了ロジックを強化し、ミリ秒単位での正確な判定を実現。
- * 稼働状況をシンプルに表示。
  */
 export default function Home() {
   const db = useFirestore();
@@ -28,6 +27,7 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
+  // 記事データの取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -39,19 +39,21 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
+  // メンテナンス設定の取得
   const siteSettingsRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'maintenance');
   }, [db]);
   const { data: settings } = useDoc(siteSettingsRef);
 
+  // 広告データの取得
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'ads');
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の自動終了ロジック (ビルド対応版)
+  // 広告の自動終了ロジック
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
@@ -91,7 +93,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 広告エリア */}
+      {/* 広告エリア：READMEの軽量化方針に準拠 */}
       <div className="mb-10 md:mb-16">
         <div className="flex items-center gap-2 mb-3">
           <Megaphone size={12} className="text-slate-400" />
@@ -118,7 +120,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 見出し */}
+      {/* 最新記事セクション */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-slate-100 pb-8">
         <div className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
           <span className="text-primary">最新</span>の<span className="text-primary">記事</span>
@@ -128,11 +130,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 記事一覧 */}
       {isArticlesLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="animate-spin text-primary mb-4 size-10" strokeWidth={3} />
-          <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Synchronizing Archives</p>
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Syncing Archives...</p>
         </div>
       ) : latestArticles.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 animate-fade-in mb-16">
@@ -142,9 +143,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
-          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">
-            No stories published yet
-          </p>
+          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">No stories yet</p>
         </div>
       )}
     </section>
