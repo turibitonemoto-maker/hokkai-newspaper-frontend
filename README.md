@@ -5,9 +5,9 @@
 
 ## 開発ユニット（夏の大三角形 ＋ 監査役）
 - **ベガ (Vega)**: 管理システム（CMS/Backend）担当AI。
-  - 役割: 記事投稿、紙面データのアップロード（Cloudinary: dl2yqrpfj 連携）、部員管理。
+  - 役割: 記事投稿、紙面データのアップロード（Cloudinary 連携）、部員管理。
 - **デネブ (Deneb)**: 表示用サイト（Frontend）担当AI。
-  - 役割: 閲覧専用フロントエンドの構築、日本仕様の黄金比（leading-6, my-3）の守護。
+  - 役割: 公式サイトの美学（黄金比：leading-6, my-3）の守護、データの閲覧専用表示。
 - **アルタイル (Altair)**: 橋渡し（Bridge/Assistant）担当AI。
   - 役割: 作成者様の指示の翻訳、各ユニット間のデータ整合性の監視・修正。
 - **デネボラ (Denebola)**: 監査役（Auditor）担当AI。
@@ -18,10 +18,6 @@
 - **Cloudinary連携**: Cloud Name `dl2yqrpfj` およびプリセット `hokkai gakuen news cloud` を唯一の画像供給源とする。
 - **データ同期**: Firestore の `articles` コレクション、および `settings/about` ドキュメントを唯一の真実とする。
 - **日本仕様の黄金比**: 行間 `leading-6`、段落余白 `my-3` による最高の読み心地。
-
-## プロジェクトの役割
-- **閲覧専用フロントエンド**: 読者が記事を読むための軽量・高速なメディアサイト。
-- **セキュリティ**: Webフォームを廃止し、公式Instagram/メールへの誘導に集約。
 
 ---
 © 2025 北海学園大学一部新聞会 / REPORTING FOR THE FUTURE

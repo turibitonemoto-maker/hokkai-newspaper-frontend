@@ -7,11 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, CheckCircle2, Loader2, Plus } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, Loader2, Plus, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 /**
  * 紙面アーカイブ発行フォーム (物理直結・システム内完結版)
+ * Cloudinary中継API経由で複数枚のJPEGを物理的に保存します。
  */
 export default function AdminPage() {
   const db = useFirestore();
@@ -22,8 +23,13 @@ export default function AdminPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      setSelectedFiles(prev => [...prev, ...files]);
     }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleUploadAndSave = async () => {
@@ -40,7 +46,7 @@ export default function AdminPage() {
     const uploadedUrls: string[] = [];
 
     try {
-      // 1. 各画像を中継API経由でCloudinaryへアップロード
+      // 1. 各画像を中継API経由でCloudinaryへ物理的に転送
       for (const file of selectedFiles) {
         const formData = new FormData();
         formData.append("file", file);
@@ -51,7 +57,7 @@ export default function AdminPage() {
         });
 
         const data = await res.json();
-        if (!data.success) throw new Error(data.error);
+        if (!data.success) throw new Error(data.error || "Upload failed");
         uploadedUrls.push(data.result.secure_url);
       }
 
@@ -68,20 +74,20 @@ export default function AdminPage() {
 
       toast({
         title: "発行完了",
-        description: `${issueNumber} が正常に保存されました。`,
+        description: `${issueNumber} が物理的に保存されました。`,
       });
 
       // フォームリセット
       setIssueNumber("");
       setPublishDate("");
       setSelectedFiles([]);
-      (document.getElementById('file-input') as HTMLInputElement).value = "";
 
     } catch (error: any) {
+      console.error("Admin save error:", error);
       toast({
         variant: "destructive",
         title: "エラー発生",
-        description: error.message,
+        description: error.message || "予期せぬエラーが発生しました。",
       });
     } finally {
       setUploading(false);
@@ -120,13 +126,13 @@ export default function AdminPage() {
           </div>
 
           <div className="space-y-4">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Paper Images (JPEG)</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (JPEG)</label>
             <div className="relative">
               <input 
                 id="file-input"
                 type="file" 
                 multiple 
-                accept="image/jpeg"
+                accept="image/jpeg,image/jpg"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -139,9 +145,14 @@ export default function AdminPage() {
               </label>
             </div>
             {selectedFiles.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4">
+              <div className="grid grid-cols-2 gap-2 pt-4">
                 {selectedFiles.map((f, i) => (
-                  <Badge key={i} variant="secondary" className="rounded-full px-3 py-1 font-bold">{f.name}</Badge>
+                  <div key={i} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100 group">
+                    <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">{f.name}</span>
+                    <button onClick={() => removeFile(i)} className="text-slate-300 hover:text-destructive transition-colors">
+                      <X size={14} />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -155,7 +166,7 @@ export default function AdminPage() {
             {uploading ? (
               <>
                 <Loader2 className="animate-spin mr-2" />
-                アップロード & 保存中...
+                サーバー中継中...
               </>
             ) : (
               <>
@@ -165,8 +176,8 @@ export default function AdminPage() {
             )}
           </Button>
 
-          <p className="text-center text-[9px] text-slate-300 font-bold uppercase tracking-[0.4em]">
-            Backend mediated via Cloudinary dl2yqrpfj
+          <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">
+            Backend mediated via API Key: 2173...
           </p>
         </CardContent>
       </Card>
