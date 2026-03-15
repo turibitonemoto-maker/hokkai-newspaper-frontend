@@ -8,14 +8,14 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ (ビルド・同期最適化版)
+ * 会長挨拶ページ (ビルド・最適化版)
  * 指令に基づき、Firestoreの「settings/president_greeting」ドキュメントの
- * 「content」フィールドを聖典として読み込みます。
+ * 「content」フィールドを聖典として読み込み、日本仕様の密度（leading-6, my-3）で表示します。
  */
 export default function GreetingPage() {
   const db = useFirestore();
   
-  // READMEの定義に基づく取得パス
+  // READMEの定義に基づく取得パス：settings/president_greeting
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'president_greeting');
@@ -42,7 +42,7 @@ export default function GreetingPage() {
     );
   }
 
-  // 「content」フィールドを最優先（messageは互換性のためのフォールバック）
+  // 「content」フィールドを最優先。旧「message」はフォールバックとして対応。
   const displayTitle = greeting?.title || defaultData.title;
   const displayContent = greeting?.content || greeting?.message || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
@@ -77,7 +77,7 @@ export default function GreetingPage() {
             </div>
           </div>
           
-          {/* メッセージ本文：黄金比の行間を適用 */}
+          {/* メッセージ本文：日本仕様の密度（leading-6, my-3）を適用 */}
           <div className="space-y-10">
             <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
               {displayTitle}

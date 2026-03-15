@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント (ビルド・同期最適化版)
- * 指令に基づき、抜粋からHTMLタグを剥がしてテキストのみを表示。
+ * 指令に基づき、抜粋からHTMLタグを剥がしてテキストのみを表示（完全浄化）。
  * next/image に適切な sizes を設定し、読み込み警告を完全に解消します。
  */
 interface ArticleCardProps {
@@ -35,7 +35,8 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   // HTMLタグを浄化してテキストのみを抽出
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    const plainText = rawContent.replace(/<[^>]*>?/gm, "").trim();
+    // 正規表現でHTMLタグを除去
+    const plainText = rawContent.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").trim();
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
   }, [article.content, article.htmlContent]);
 

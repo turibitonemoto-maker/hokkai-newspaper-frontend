@@ -14,7 +14,7 @@ import { Separator } from '@/components/ui/separator';
 /**
  * 記事詳細ページ (ビルド・黄金比最適化版)
  * 司令部の指示に基づき、行間(leading-6)と段落間余白(my-3)を固定。
- * Tiptapから送られるHTMLを美しくレンダリングします。
+ * 日本のメディアとして最も読みやすい密度を実現します。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -29,7 +29,7 @@ export default function ArticlePage() {
 
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // 公開設定とコンテンツの抽出
+  // コンテンツの抽出 (contentフィールドを最優先)
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => 
@@ -131,7 +131,7 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* 本文：黄金比（leading-6, my-3）を適用 */}
+          {/* 本文：日本仕様黄金比（leading-6, my-3）を適用 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(

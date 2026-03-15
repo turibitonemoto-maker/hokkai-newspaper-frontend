@@ -2,7 +2,7 @@
 
 /**
  * note.comのRSSフィードから記事を取得し、Firestoreに保存可能な形式に変換。
- * フィールド名をビルド仕様の「content」に統一。
+ * フィールド名を最新のビルド仕様「content」に統一。
  */
 export async function fetchAndSyncNoteRss() {
   const NOTE_RSS_URL = 'https://note.com/lucky_minnow287/rss';
