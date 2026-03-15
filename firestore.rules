@@ -1,21 +1,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 【表示用サイトの権限設定：物理正常化】
-    
-    // 1. 公開データの読み取り許可 (ログイン不要)
-    // 記事、カテゴリー、広告、設定の各コレクションを明示的に許可します。
-    match /articles/{docId} { allow read: if true; }
-    match /categories/{docId} { allow read: if true; }
-    match /ads/{docId} { allow read: if true; }
-    match /settings/{docId} { allow read: if true; }
-    
-    // 再帰的な読み取り許可 (不測の403エラーを物理的に遮断)
+    // 【表示用サイトの最優先規律：読み取りの完全開放】
+    // 記事、カテゴリー、広告、設定など、全ドキュメントの読み取りを許可します。
+    // method: "list" エラーを物理的に根絶するため、再帰的なワイルドカードを使用します。
     match /{document=**} {
       allow read: if true;
     }
 
-    // 2. 書き込み権限 (指定された管理者のみ)
+    // 【管理者権限：書き込みの厳格制限】
+    // データの変更は、指定された管理者メールアドレスを持つユーザーのみに許可されます。
     match /{document=**} {
       allow write: if request.auth != null && (
         request.auth.token.email == "r06hgunews@gmail.com" || 
