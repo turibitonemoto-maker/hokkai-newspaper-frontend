@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 
 /**
  * トップページ (最終・完全版)
- * 広告の自動終了ロジックを強化。ステータス表示を極限までシンプル化。
+ * 広告の自動終了ロジックを強化し、ミリ秒単位での正確な判定を実現。
  */
 export default function Home() {
   const db = useFirestore();
@@ -50,7 +50,7 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の自動終了ロジック
+  // 広告の自動終了ロジック (強化版)
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
@@ -58,10 +58,16 @@ export default function Home() {
       if (!ad.imageUrl) return false;
       if (!ad.displayEndTime) return true;
       try {
-        const endTime = ad.displayEndTime?.seconds 
-          ? new Date(ad.displayEndTime.seconds * 1000) 
-          : new Date(ad.displayEndTime);
-        return endTime > now;
+        // FirestoreのTimestampオブジェクトか、ISO文字列か、JS Dateかを判別
+        let endTime: Date;
+        if (ad.displayEndTime?.seconds) {
+          endTime = new Date(ad.displayEndTime.seconds * 1000);
+        } else if (typeof ad.displayEndTime === 'string') {
+          endTime = new Date(ad.displayEndTime);
+        } else {
+          endTime = new Date(ad.displayEndTime);
+        }
+        return endTime.getTime() > now.getTime();
       } catch (e) {
         return true; 
       }

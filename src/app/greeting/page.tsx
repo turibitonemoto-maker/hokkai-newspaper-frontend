@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -6,10 +5,11 @@ import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ
- * Firestore (/settings/greeting) から動的にデータを取得します。
+ * 会長挨拶ページ (最終・最適化版)
+ * TiptapエディタからのHTML出力を正しくレンダリングし、行間を日本人が読みやすい密度に調整。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -23,12 +23,11 @@ export default function GreetingPage() {
   // デフォルト（フォールバック）データ
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
-    message: `北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。
-私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。
-変化の激しい現代において、正確かつ価値のある情報を発信することは私たちの重要な使命です。
-
-これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。
-今後とも、当会への変わらぬご支援とご愛顧を賜りますようお願い申し上げます。`,
+    message: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>
+<p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。
+変化の激しい現代において、正確かつ価値のある情報を発信することは私たちの重要な使命です。</p>
+<p>これからも、学生、教職員、転して地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。
+今後とも、当会への変わらぬご支援とご愛顧を賜りますようお願い申し上げます。</p>`,
     authorName: "北海学園大学一部新聞会 会長",
     authorImageUrl: null
   };
@@ -82,9 +81,14 @@ export default function GreetingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
                 {displayTitle}
               </h2>
-              <div className="prose prose-slate prose-lg md:prose-xl max-w-none font-medium leading-relaxed text-slate-700 whitespace-pre-wrap">
-                {displayMessage}
-              </div>
+              <div 
+                className={cn(
+                  "prose prose-slate max-w-none font-medium text-slate-700",
+                  "prose-p:leading-6 prose-p:my-3 prose-li:my-1",
+                  "md:prose-lg"
+                )}
+                dangerouslySetInnerHTML={{ __html: displayMessage }}
+              />
             </div>
 
             {/* 署名 */}

@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細ページ (最終・最適化版)
- * 行間(leading-6)と段落間余白(my-3)を詰め、日本人が最も読みやすい密度に調整しました。
+ * 行間(leading-6)と段落間余白(my-3)を詰め、日本人が最も読みやすい密度に調整。
  */
 export default function ArticlePage() {
   const { id } = useParams();
