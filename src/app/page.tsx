@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -162,7 +161,7 @@ export default function Home() {
               </div>
             ))}
             <div className="flex justify-end pt-4">
-              <Link href="/category/Paper" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
+              <Link href="/viewer" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
                 VIEW ARCHIVES <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </div>

@@ -27,7 +27,7 @@ export function Navbar() {
     { label: 'スポーツ', href: '/category/Sports' },
     { label: 'コラム', href: '/category/Column' },
     { label: 'オピニオン', href: '/category/Opinion' },
-    { label: '紙面ビューアー', href: '/category/Paper', icon: <FileText size={12} className="text-primary" /> },
+    { label: '紙面ビューアー', href: '/viewer', icon: <FileText size={12} className="text-primary" /> },
   ];
 
   const subLinks = [
@@ -57,7 +57,7 @@ export function Navbar() {
                 <span className="text-primary">北海</span>
                 <span className="text-slate-950">学園</span>
                 <span className="text-primary">大学</span>
-                <span className="text-slate-950">新聞</span>
+                <span className="text-primary">新聞</span>
               </div>
             </Link>
 
