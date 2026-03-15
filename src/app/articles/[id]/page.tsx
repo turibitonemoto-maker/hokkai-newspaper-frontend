@@ -12,12 +12,13 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (究極のステルス・直リンク抽出版)
+ * 記事詳細ページ (Google標準プレビュー回帰・実用最適化版)
  * 
- * 1. Google UI 除去: /preview ではなく uc?export=view を使用し、データのみを直接レンダリング。
- * 2. 物理シールド: 右上のポップアウトエリアを透明レイヤーで保護。
- * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
- * 4. コピー許可: 司令に基づきテキスト選択を解放し、利便性を確保。
+ * 1. Google UI 回帰: 実験を終了し、安定性の高い /preview 形式へ戻しました。
+ * 2. 物理的マスキング: iframeをわずかに上にずらし(margin-top)、ヘッダーの露出を最小限に。
+ * 3. ピンポイント・シールド: 右上のポップアウトエリアに透明レイヤーを配置し、誤操作を防止。
+ * 4. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
+ * 5. 実用性優先: 司令に基づきテキスト選択を許可し、スクロールの自由度を100%確保。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -36,19 +37,12 @@ export default function ArticlePage() {
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
-  // GoogleドライブのURLを「データ直通URL (Direct Data Injection)」に変換
-  const directPdfUrl = useMemo(() => {
+  // GoogleドライブのURLを標準的な「プレビューURL (/preview)」に変換
+  const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
     
-    // GoogleドライブのファイルIDを抽出
-    const fileIdMatch = url.match(/\/d\/([^\/]+)/) || url.match(/id=([^\&]+)/);
-    if (fileIdMatch && fileIdMatch[1]) {
-      // uc?export=view 形式へ変換し、GoogleのUIをバイパス
-      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-    }
-    
-    // 変換できない場合はプレビュー形式にフォールバック
+    // 共有リンクや編集リンクを /preview 形式へ強制変換
     return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
   }, [article?.pdfUrl]);
 
@@ -125,8 +119,8 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 直リンク抽出型・PDFビューアー */}
-          {directPdfUrl && (
+          {/* Google標準プレビュー回帰・ビューアー */}
+          {standardPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
@@ -136,23 +130,23 @@ export default function ArticlePage() {
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                 {/* 
-                  直リンク抽出モード: 
-                  Googleのツールバーを介さずデータのみを表示。
+                  物理的マスキング: 
+                  iframeを上にずらし、Googleのヘッダーを枠外へ追い出す。
                   sandbox から allow-popups を外すことで別タブ遷移を防御。
                 */}
                 <iframe 
-                  src={directPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
+                  src={standardPdfUrl} 
+                  className="absolute -top-16 inset-x-0 w-full h-[calc(100%+64px)] border-none pointer-events-auto"
                   allow="autoplay"
                   sandbox="allow-scripts allow-same-origin allow-forms"
                 />
                 
                 {/* 
                   ピンポイント・ポップアウト・キラー:
-                  GoogleのUIが表示される数秒間の「隙」を物理的に封印。
+                  Googleのツールバーが表示される右上の極小エリアを物理的に封印。
                 */}
                 <div className="absolute top-0 right-0 w-32 h-20 z-50 pointer-events-none">
-                  <div className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto select-none">
+                  <div className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto select-none">
                     <ShieldCheck size={16} className="text-emerald-500" />
                     <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Preview</span>
                   </div>
@@ -171,7 +165,7 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {displayImage && !directPdfUrl && (
+          {displayImage && !standardPdfUrl && (
             <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden mb-16 shadow-2xl ring-8 ring-white bg-slate-50">
               <Image
                 src={displayImage}
