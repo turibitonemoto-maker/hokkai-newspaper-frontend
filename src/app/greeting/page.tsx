@@ -9,10 +9,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (最終ビルド最適化版)
- * 1. settings/president_greeting ドキュメントの content フィールドを唯一の真実として同期。
- * 2. 日本仕様の黄金比密度 (leading-6, my-3) を厳格適用。
- * 3. 不要な whitespace-pre-wrap を排除し、HTMLの美しさを最大化。
+ * 会長挨拶ページ (黄金比定着版)
+ * 日本仕様の密度 (leading-6, my-3) を厳格適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -26,6 +24,7 @@ export default function GreetingPage() {
 
   const displayAuthorImageUrl = useMemo(() => {
     let url = greeting?.authorImageUrl || "";
+    // GoogleドライブURLの変換
     if (url.includes('drive.google.com')) {
       url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
     }
@@ -73,7 +72,8 @@ export default function GreetingPage() {
                     <span className="font-black text-[9px] uppercase tracking-widest">Portrait</span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-transparent z-50 cursor-default" />
+                {/* 誤操作防止の透明オーバーレイ。ただしクリックイベントは奪わない */}
+                <div className="absolute inset-0 bg-transparent z-50 cursor-default pointer-events-none" />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white">
                 <ShieldCheck size={24} />

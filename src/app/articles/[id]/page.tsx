@@ -5,20 +5,19 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck, Lock } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (Google標準プレビュー回帰・実用最適化版)
+ * 記事詳細ページ (ハイブリッド・シールド版)
  * 
- * 1. Google UI 回帰: 実験を終了し、安定性の高い /preview 形式へ戻しました。
- * 2. 物理的マスキング: iframeをわずかに上にずらし(margin-top)、ヘッダーの露出を最小限に。
- * 3. ピンポイント・シールド: 右上のポップアウトエリアに透明レイヤーを配置し、誤操作を防止。
- * 4. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
- * 5. 実用性優先: 司令に基づきテキスト選択を許可し、スクロールの自由度を100%確保。
+ * 1. カバー隠蔽: Googleのヘッダー（タイトル等）を独自の不透明レイヤーで物理的に隠します。
+ * 2. 機能解放: ポップアップ（別タブ展開）を許可し、読者の利便性を確保。
+ * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
+ * 4. テキスト解放: 文字コピーを許可し、新聞本来の使い勝手を実現。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -37,12 +36,10 @@ export default function ArticlePage() {
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
-  // GoogleドライブのURLを標準的な「プレビューURL (/preview)」に変換
   const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    
-    // 共有リンクや編集リンクを /preview 形式へ強制変換
+    // プレビュー形式に強制変換
     return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
   }, [article?.pdfUrl]);
 
@@ -119,7 +116,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* Google標準プレビュー回帰・ビューアー */}
+          {/* ハイブリッド・ステルス・ビューアー */}
           {standardPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
@@ -128,39 +125,42 @@ export default function ArticlePage() {
                 </div>
               </div>
               
-              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
                 {/* 
-                  物理的マスキング: 
-                  iframeを上にずらし、Googleのヘッダーを枠外へ追い出す。
-                  sandbox から allow-popups を外すことで別タブ遷移を防御。
+                  Googleプレビュー本体
+                  allow-popups を許可し、読者のポップアップ操作を有効化。
                 */}
                 <iframe 
                   src={standardPdfUrl} 
-                  className="absolute -top-16 inset-x-0 w-full h-[calc(100%+64px)] border-none pointer-events-auto"
+                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
                   allow="autoplay"
-                  sandbox="allow-scripts allow-same-origin allow-forms"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 />
                 
                 {/* 
-                  ピンポイント・ポップアウト・キラー:
-                  Googleのツールバーが表示される右上の極小エリアを物理的に封印。
+                  隠蔽カバー (Top Cover)
+                  Googleのタイトルや「共有」などの無機質なヘッダーを物理的に覆い隠す。
                 */}
-                <div className="absolute top-0 right-0 w-32 h-20 z-50 pointer-events-none">
-                  <div className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-100 shadow-xl pointer-events-auto select-none">
-                    <ShieldCheck size={16} className="text-emerald-500" />
-                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Preview</span>
+                <div className="absolute top-0 left-0 w-full h-14 bg-white/95 backdrop-blur-sm border-b border-slate-100 z-10 flex items-center px-6 justify-between pointer-events-none">
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck size={18} className="text-primary" />
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Press Viewer</span>
+                  </div>
+                  {/* 右側のボタンエリアは読者が触れるように空ける */}
+                  <div className="flex items-center gap-2 opacity-50">
+                    <ExternalLink size={14} />
+                    <span className="text-[8px] font-black uppercase tracking-tighter">Pop-out enabled</span>
                   </div>
                 </div>
 
-                {/* ウォーターマーク */}
-                <div className="absolute bottom-6 left-8 flex items-center gap-2 opacity-30 pointer-events-none select-none">
-                  <Lock size={12} />
-                  <span className="text-[10px] font-black tracking-widest uppercase">TRUSTED SOURCE</span>
+                {/* 操作ガイド */}
+                <div className="absolute bottom-6 right-8 opacity-30 pointer-events-none select-none">
+                  <span className="text-[9px] font-black tracking-widest uppercase">Trusted Archive</span>
                 </div>
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl">
-                ※公式紙面ビューアー。スクロールして全ページ閲覧可能です。
+                ※公式紙面ビューアー。右上のアイコンから別タブで拡大可能です。
               </p>
             </div>
           )}
