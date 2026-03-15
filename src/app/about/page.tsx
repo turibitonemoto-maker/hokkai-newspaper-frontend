@@ -71,7 +71,7 @@ export default function AboutPage() {
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
               <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">私たちの目的</h2>
-              <div className="text-base leading-6 text-slate-600 font-medium">
+              <div className="text-base leading-6 text-slate-600 font-medium whitespace-pre-wrap">
                 {about.purpose}
               </div>
             </CardContent>
@@ -79,7 +79,7 @@ export default function AboutPage() {
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
               <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">活動内容</h2>
-              <div className="text-base leading-6 text-slate-600 font-medium">
+              <div className="text-base leading-6 text-slate-600 font-medium whitespace-pre-wrap">
                 {about.activities}
               </div>
             </CardContent>
@@ -87,7 +87,7 @@ export default function AboutPage() {
         </div>
 
         <section className="bg-white rounded-[48px] p-10 md:p-16 border border-slate-100 shadow-2xl">
-          <h2 className="text-3xl font-black mb-10 tracking-tighter uppercase italic">組織概要</h2>
+          <h2 className="text-3xl font-black mb-10 tracking-tighter uppercase italic text-slate-950">組織概要</h2>
           <div className="space-y-8">
             <div className="grid grid-cols-3 border-b border-slate-100 pb-6">
               <span className="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em]">団体名</span>

@@ -27,7 +27,9 @@ export default function GreetingPage() {
   const displayAuthorImageUrl = useMemo(() => {
     let url = greeting?.authorImageUrl || "";
     if (url.includes('drive.google.com')) {
-      url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+      if (url.includes('/view') || url.includes('/edit') || url.includes('/share')) {
+        url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+      }
     }
     return url;
   }, [greeting?.authorImageUrl]);
@@ -91,7 +93,7 @@ export default function GreetingPage() {
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-700 mx-auto tracking-wide",
-                "prose-p:leading-6 prose-p:my-3",
+                "prose-p:leading-6 prose-p:my-3 prose-p:text-lg",
                 "md:prose-lg"
               )}
               dangerouslySetInnerHTML={{ __html: greeting.content || "" }}
