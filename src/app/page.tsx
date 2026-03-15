@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (大規模メディア・セクション構成版)
- * 「最新4枚」＋「カテゴリー別各4枚」の重層構造で、情報の網羅性を極限まで高めました。
+ * トップページ (大規模メディア・戦略的再編版)
+ * 「最新」→「広告」→「紙面ビューアー」→「各ジャンル」の順で構成。
  */
 export default function Home() {
   const db = useFirestore();
@@ -72,8 +72,8 @@ export default function Home() {
     return validAds.length > 0 ? validAds[0] : null;
   }, [ads, now]);
 
-  // カテゴリーリスト（表示順）
-  const categoryList = ['Campus', 'Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
+  // カテゴリーリスト（改革後の表示順：Paperを最優先、Campusを削除）
+  const categoryList = ['Paper', 'Event', 'Interview', 'Sports', 'Column', 'Opinion'];
 
   // データ分類ロジック
   const latestArticles = useMemo(() => articles?.slice(0, 4) || [], [articles]);
@@ -102,33 +102,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* 広告エリア */}
-      <div className="mb-16">
-        <div className="flex items-center gap-2 mb-4">
-          <Megaphone size={14} className="text-slate-400" />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">SPONSORED MEDIA</span>
-        </div>
-        
-        {isAdsLoading ? (
-          <div className="w-full h-32 bg-slate-50 rounded-[32px] animate-pulse" />
-        ) : activeAd ? (
-          <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-24 md:h-36 rounded-[32px] md:rounded-[48px] overflow-hidden group shadow-xl ring-1 ring-slate-100 bg-slate-50">
-            <Image 
-              src={activeAd.imageUrl} 
-              alt={activeAd.title || "Ad"} 
-              fill 
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              className="object-cover transition-transform duration-700 group-hover:scale-105" 
-              priority 
-            />
-          </Link>
-        ) : (
-          <div className="relative w-full h-24 md:h-32 bg-slate-50 rounded-[32px] overflow-hidden shadow-inner border border-dashed border-slate-200 flex items-center justify-center">
-            <p className="text-[10px] font-black tracking-[0.5em] text-slate-300 uppercase">Public Information Space</p>
-          </div>
-        )}
-      </div>
-
       {/* --- セクション 1: 最新ニュース --- */}
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-12">
@@ -154,6 +127,34 @@ export default function Home() {
         ) : (
           <div className="py-20 text-center bg-white rounded-[48px] border-2 border-dashed border-slate-100">
             <p className="text-slate-300 font-black uppercase text-xs tracking-[0.5em]">No stories available</p>
+          </div>
+        )}
+      </div>
+
+      {/* 広告エリア (最新ニュースの直下に移設) */}
+      <div className="mb-32">
+        <div className="flex items-center gap-2 mb-6">
+          <Megaphone size={16} className="text-primary" />
+          <span className="text-xs font-black uppercase tracking-[0.5em] text-slate-900 italic">SPONSORED MEDIA</span>
+        </div>
+        
+        {isAdsLoading ? (
+          <div className="w-full h-32 bg-slate-50 rounded-[32px] animate-pulse" />
+        ) : activeAd ? (
+          <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-32 md:h-48 rounded-[40px] md:rounded-[56px] overflow-hidden group shadow-2xl ring-1 ring-slate-100 bg-slate-50 transition-all hover:ring-primary/20">
+            <Image 
+              src={activeAd.imageUrl} 
+              alt={activeAd.title || "Ad"} 
+              fill 
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover transition-transform duration-1000 group-hover:scale-105" 
+              priority 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+          </Link>
+        ) : (
+          <div className="relative w-full h-32 bg-slate-50 rounded-[40px] overflow-hidden shadow-inner border border-dashed border-slate-200 flex items-center justify-center">
+            <p className="text-[10px] font-black tracking-[0.6em] text-slate-300 uppercase">Public Information Space</p>
           </div>
         )}
       </div>
