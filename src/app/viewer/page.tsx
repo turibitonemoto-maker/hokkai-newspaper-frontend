@@ -6,12 +6,11 @@ import { PaperCard } from '@/components/PaperCard';
 import { Loader2, Ghost, BookOpen, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 
 /**
  * 紙面ビューアー専用ページ (/viewer)
- * 道新リスペクトの「日付別・縦長サムネイル」グリッドレイアウト。
- * 管理サイトから届く「第〇号」という号数情報を活用。
+ * デネブ (Deneb) による管理サイトとの高度な連動。
+ * 発行日ごとのグルーピングと、第〇号という号数情報を活用。
  */
 export default function ViewerPage() {
   const db = useFirestore();
@@ -36,7 +35,6 @@ export default function ViewerPage() {
       if (!grouped[date]) grouped[date] = [];
       grouped[date].push(p);
     });
-    // 日付の降順でソート
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]));
   }, [papers]);
 
@@ -45,7 +43,7 @@ export default function ViewerPage() {
       <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
         <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
         <ChevronRight size={12} className="text-slate-200" />
-        <span className="text-primary">紙面ビューアー</span>
+        <span className="text-primary uppercase tracking-widest font-black">Archive Viewer</span>
       </nav>
 
       <header className="mb-16">
@@ -58,11 +56,12 @@ export default function ViewerPage() {
               紙面ビューアー
             </h1>
           </div>
-          <div className="flex gap-2 text-xs font-bold text-slate-400">
-             <span>Digital Archive / Ichibu Newspaper</span>
+          <div className="flex flex-col text-right">
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Digital Archive</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Since 1950</span>
           </div>
         </div>
-        <p className="text-slate-500 font-medium max-w-2xl leading-relaxed mt-6">
+        <p className="text-slate-500 font-medium max-w-2xl leading-6 my-6">
           1950年の創立以来、記者が紡いできた北海学園の歴史を、当時の紙面そのままに振り返ることができます。
         </p>
       </header>
@@ -70,7 +69,7 @@ export default function ViewerPage() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-40">
           <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
-          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em]">Synchronizing Archives</p>
+          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Synchronizing Archives</p>
         </div>
       ) : papers && papers.length > 0 ? (
         <div className="space-y-16 animate-fade-in">
@@ -78,7 +77,7 @@ export default function ViewerPage() {
             <div key={date} className="space-y-6">
               <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest flex items-center gap-4">
                 <span>{date.replace(/-/g, '/')}</span>
-                <span className="opacity-50 text-[10px]">発行分</span>
+                <span className="opacity-50 text-[10px] font-black uppercase">Published Date</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                 {papersList.map((paper) => (
