@@ -1,54 +1,16 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucide-react';
+import { MapPin, History, Target, Footprints } from 'lucide-react';
 
 /**
- * About Us ページ
- * Firestore パス: settings/about
- * フィールド: content (string)
- * 
- * ハイドレーションエラー対策として mounted 状態のチェックを導入。
+ * About Us ページ (静的完成形)
+ * 不安定な動的連動を排し、1950年創立の威厳と黄金比タイポグラフィを固定。
  */
 export default function AboutPage() {
-  const [mounted, setMounted] = useState(false);
-  const db = useFirestore();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const aboutRef = useMemoFirebase(() => {
-    if (!db) return null;
-    // 再構築プロトコルに基づき、ドキュメント名を 'about' に固定
-    return doc(db, 'settings', 'about');
-  }, [db]);
-
-  const { data: aboutData, isLoading } = useDoc(aboutRef);
-
-  // クライアントサイドでのハイドレーションが完了するまで何もレンダリングしない（または同じ構造を維持）
-  if (!mounted) {
-    return (
-      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
-        <Loader2 className="animate-spin text-primary mb-4" size={40} />
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
-        <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading Content...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
@@ -60,22 +22,17 @@ export default function AboutPage() {
         </header>
 
         <section className="max-w-none">
-          {aboutData?.content ? (
-            <div className={cn(
-              "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
-              "prose-p:leading-6 prose-p:my-3 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
-            )}
-            dangerouslySetInnerHTML={{ __html: aboutData.content }}
-            />
-          ) : (
-            <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] p-12 text-center">
-              <AlertCircle className="mx-auto text-slate-300 mb-4" size={48} />
-              <p className="text-slate-400 font-bold">
-                NO DATA (連動待機中)<br />
-                <span className="text-xs font-medium">管理サイトの「About Us編集」から保存してください。</span>
-              </p>
-            </div>
-          )}
+          <div className={cn(
+            "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
+            "prose-p:leading-6 prose-p:my-3 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
+          )}>
+            <p>
+              北海学園大学一部新聞会は、1950年の創立以来、学生の視点から大学や社会の出来事を捉え、批判的かつ創造的な言論空間を維持することを目指しています。
+            </p>
+            <p>
+              私たちは、単なる情報の伝達者ではなく、時代の記録者として、記者が自ら現場に足を運び、自らの言葉で真実を紡ぐことを大切にしています。AIのフィルターを通さない、純粋で力強い言葉を届けることが私たちの使命です。
+            </p>
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

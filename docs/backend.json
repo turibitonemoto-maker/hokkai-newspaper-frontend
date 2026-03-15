@@ -45,32 +45,6 @@
         "displayEndTime": { "type": "string" }
       },
       "required": ["id", "imageUrl"]
-    },
-    "Greeting": {
-      "title": "Greeting",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "content": { "type": "string" },
-        "authorName": { "type": "string" },
-        "authorImageUrl": { "type": "string", "format": "uri" }
-      }
-    },
-    "AboutContent": {
-      "title": "AboutContent",
-      "type": "object",
-      "properties": {
-        "content": { "type": "string", "description": "The main content text for the About Us page." }
-      },
-      "required": ["content"]
-    },
-    "SiteSettings": {
-      "title": "SiteSettings",
-      "type": "object",
-      "properties": {
-        "isMaintenanceMode": { "type": "boolean" },
-        "maintenanceMessage": { "type": "string" }
-      }
     }
   },
   "auth": { "providers": ["google.com"] },
@@ -78,8 +52,6 @@
     "/articles/{articleId}": { "schema": { "$ref": "#/backend/entities/Article" }, "description": "Articles collection." },
     "/categories/{categoryId}": { "schema": { "$ref": "#/backend/entities/Category" }, "description": "Categories." },
     "/ads/{adId}": { "schema": { "$ref": "#/backend/entities/Advertisement" }, "description": "Ads." },
-    "/settings/president_greeting": { "schema": { "$ref": "#/backend/entities/Greeting" }, "description": "President greeting." },
-    "/settings/about": { "schema": { "$ref": "#/backend/entities/AboutContent" }, "description": "About Us content path." },
-    "/settings/maintenance": { "schema": { "$ref": "#/backend/entities/SiteSettings" }, "description": "Global settings." }
+    "/settings/about": { "schema": { "type": "object", "properties": { "content": { "type": "string" } } }, "description": "About Us data." }
   }
 }

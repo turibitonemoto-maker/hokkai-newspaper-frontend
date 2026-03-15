@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 /**
- * ホームページ (紙面ビューアー強化版)
+ * ホームページ (紙面ビューアー強化版・広告最優先レイアウト)
  */
 export default function Home() {
   const db = useFirestore();
@@ -61,7 +61,6 @@ export default function Home() {
   const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
 
   const latestArticles = useMemo(() => {
-    // 最新ニュースには 'Paper' を除外した通常の記事を表示
     return articles?.filter(a => a.categoryId !== 'Paper').slice(0, 4) || [];
   }, [articles]);
   
@@ -82,7 +81,6 @@ export default function Home() {
       if (!grouped[date]) grouped[date] = [];
       grouped[date].push(p);
     });
-    // 日付順に並べて最新2日分を返す
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 2);
   }, [categoryGroups]);
 
