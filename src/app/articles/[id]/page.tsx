@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,8 +12,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細・物理ビューアーページ
- * ベガ（管理側）が保存した複数枚のJPEG（paperImages）を確実に描画する。
+ * 記事詳細・物理ビューアーページ (デネブ版)
+ * ベガ（管理側）が保存した複数枚のJPEG（paperImages / Cloudinaryホスト）を確実に描画する。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -53,7 +52,6 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
-        {/* 操作エリア */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -112,7 +110,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* JPEG 紙面物理ビューアー */}
+          {/* JPEG 紙面物理ビューアー (Cloudinary最適化対応) */}
           {paperImages.length > 0 && (
             <div className="mb-20 space-y-12">
               <div className="flex items-center justify-between px-2">
@@ -168,7 +166,6 @@ export default function ArticlePage() {
             </figure>
           )}
 
-          {/* 記事本文 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
