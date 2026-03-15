@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 /**
  * お問い合わせページ (表示用サイト専用)
- * 【重要】荒らし対策のためフォームを廃止し、外部SNSおよびメールへの直接連絡のみを案内します。
+ * 荒らし対策のためフォームを廃止し、外部SNSおよびメール連絡に一本化。
  */
 export default function ContactPage() {
   const { toast } = useToast();

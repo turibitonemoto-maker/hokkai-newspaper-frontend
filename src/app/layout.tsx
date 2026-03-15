@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Inter, Yuji_Mai } from 'next/font/google';
 import './globals.css';

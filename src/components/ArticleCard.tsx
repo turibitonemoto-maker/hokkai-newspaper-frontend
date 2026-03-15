@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -10,7 +9,7 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント (最終・完全版)
- * AI要約を完全排除。next/image の sizes プロパティを最適化し、表示を高速化。
+ * AI要約を完全排除。next/image の sizes プロパティを最適化。
  */
 interface ArticleCardProps {
   article: {

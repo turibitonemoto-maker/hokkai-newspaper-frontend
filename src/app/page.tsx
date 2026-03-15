@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -12,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 
 /**
  * トップページ (最終・完全版)
- * 広告の自動終了ロジックを強化し、ステータス表示を極限までシンプル化。
+ * 広告の自動終了ロジックを強化。ステータス表示を極限までシンプル化。
  */
 export default function Home() {
   const db = useFirestore();
@@ -23,7 +22,7 @@ export default function Home() {
     setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
     }));
-    // 1分ごとに現在時刻を更新
+    // 1分ごとに現在時刻を更新して広告フィルターを適用
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
@@ -51,7 +50,7 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の自動終了ロジック (Timestampと文字列の両方に対応)
+  // 広告の自動終了ロジック
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
@@ -59,7 +58,6 @@ export default function Home() {
       if (!ad.imageUrl) return false;
       if (!ad.displayEndTime) return true;
       try {
-        // FirestoreのTimestampオブジェクトか、ISO文字列かを判定
         const endTime = ad.displayEndTime?.seconds 
           ? new Date(ad.displayEndTime.seconds * 1000) 
           : new Date(ad.displayEndTime);

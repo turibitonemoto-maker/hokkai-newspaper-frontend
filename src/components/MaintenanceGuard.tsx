@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -13,7 +12,7 @@ interface MaintenanceGuardProps {
 
 /**
  * メンテナンスモード管理 (最終・完全版)
- * 指示通り「作業状況」を「稼働状況」に統一し、シンプルに表示。
+ * 「作業状況」という紛らわしい表現を排除し、「稼働状況」に統一。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();

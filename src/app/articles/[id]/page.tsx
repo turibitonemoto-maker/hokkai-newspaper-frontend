@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,9 +12,9 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終版：極限最適化)
- * AI機能を完全に排除し、人間の筆致をそのまま届けます。
- * next/image の sizes プロパティ追加により知恵熱（警告）を解消。
+ * 記事詳細ページ (最終・完全版)
+ * AI機能を完全に排除し、記者の筆致をそのまま届けます。
+ * Typography導入により note のような美しいレンダリングを実現。
  */
 export default function ArticlePage() {
   const { id } = useParams();
