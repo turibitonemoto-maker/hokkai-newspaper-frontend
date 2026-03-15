@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 import { MapPin, History, Target, Footprints } from 'lucide-react';
 
 /**
- * About Us ページ (原点回帰・完全静的版)
- * 連動によるトラブルを避けるため、司令官指定の文章をプログラム内に固定。
+ * About Us ページ (原点回帰・完全静的・黄金比版)
+ * 不安定な連動を排除し、プログラム内に司令官指定の文章を直接刻印。
  * 日本仕様の黄金比 (leading-relaxed, mb-8) を適用し、最高の読み心地を実現。
  */
 export default function AboutPage() {
@@ -40,7 +40,7 @@ export default function AboutPage() {
             <CardContent className="p-10 space-y-6">
               <div className="flex items-center gap-3 text-primary">
                 <Target size={24} />
-                <h2 className="text-2xl font-black tracking-tight uppercase italic">私たちの目的</h2>
+                <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">私たちの目的</h2>
               </div>
               <p className="text-base leading-relaxed text-slate-600 font-medium">
                 記者が紡いできた言葉を、AIのフィルターを通さず純粋に届けること。
@@ -52,7 +52,7 @@ export default function AboutPage() {
             <CardContent className="p-10 space-y-6">
               <div className="flex items-center gap-3 text-primary">
                 <Footprints size={24} />
-                <h2 className="text-2xl font-black tracking-tight uppercase italic">活動内容</h2>
+                <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">活動内容</h2>
               </div>
               <p className="text-base leading-relaxed text-slate-600 font-medium">
                 定期的な紙面（本紙）の発行、公式ウェブサイトでのニュース配信、学内各部活動への取材、
