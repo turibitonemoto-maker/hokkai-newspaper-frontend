@@ -12,9 +12,11 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (真・ステルス＆コピーガード版)
- * 「ずらし」を廃止し、透明シールド層で操作を完全に絶縁。
- * 本文のコピーガード (select-none) を実装し、日本仕様の黄金比密度を適用。
+ * 記事詳細ページ (実用性最優先・ピンポイントシールド版)
+ * 
+ * 1. 全面シールドを撤廃し、スクロールとテキストコピーを解放。
+ * 2. 右上の「ポップアウト」ボタンのみを透明レイヤーでピンポイント遮断。
+ * 3. 日本仕様の黄金比密度 (leading-6, my-3) を適用。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -37,6 +39,7 @@ export default function ArticlePage() {
   const stealthPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
+    // 共有URLを埋め込みプレビュー用に置換
     url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
     return url;
   }, [article?.pdfUrl]);
@@ -52,14 +55,14 @@ export default function ArticlePage() {
   if (!article || !isPublic) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white text-center">
-        <h1 className="text-3xl font-black mb-6 tracking-tighter">Article Not Found</h1>
-        <Button onClick={() => router.push('/')} className="rounded-full px-10 font-black tracking-widest">TOPに戻る</Button>
+        <h1 className="text-3xl font-black mb-6 tracking-tighter text-slate-900">記事が見つかりません</h1>
+        <Button onClick={() => router.push('/')} className="rounded-full px-10 font-black tracking-widest bg-primary text-white">TOPに戻る</Button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-16 pb-32 select-none">
+    <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-10">
           <Button 
@@ -114,7 +117,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 真・ステルス・シールド・PDFビューアー */}
+          {/* 実用性重視：ピンポイント・シールド・PDFビューアー */}
           {stealthPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between">
@@ -122,34 +125,34 @@ export default function ArticlePage() {
                   <FileText size={16} /> Paper Edition Viewer
                 </div>
                 <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 shadow-sm">
-                  <ShieldCheck size={12} /> Protected Content
+                  <ShieldCheck size={12} /> Interactive Preview
                 </div>
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                {/* ビューアー本体（ずらしを廃止し、本来のレイアウトへ） */}
+                {/* 本体：スクロールと操作を許可 (pointer-events-auto) */}
                 <iframe 
                   src={stealthPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none pointer-events-none"
+                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
                   allow="autoplay"
+                  sandbox="allow-scripts allow-same-origin allow-forms" // allow-popupsを除外して外部遷移を遮断
                 />
                 
-                {/* 全画面透明シールド (Ghost Shield) */}
-                {/* この層がすべてのマウスイベントをインターセプトし、Googleのボタンへの接触を遮断します */}
-                <div className="absolute inset-0 bg-transparent z-50 cursor-default pointer-events-auto" />
+                {/* 右上の「ポップアウト」ボタンのみをピンポイントで塞ぐ透明レイヤー */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-transparent z-50 cursor-default pointer-events-auto" />
                 
-                {/* 境界保護オーバーレイ */}
-                <div className="absolute inset-0 pointer-events-none ring-inset ring-[1px] ring-black/5 rounded-[32px]" />
-                
+                {/* 下部のロゴなどへの誤操作防止用保護層 (オプション) */}
+                <div className="absolute bottom-0 right-0 w-32 h-12 bg-transparent z-50 pointer-events-auto" />
+
                 {/* ウォーターマーク */}
-                <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-30 pointer-events-none select-none">
+                <div className="absolute bottom-6 left-8 flex items-center gap-2 opacity-30 pointer-events-none select-none">
                   <Lock size={12} />
                   <span className="text-[10px] font-black tracking-widest uppercase">OFFICIAL ARCHIVE</span>
                 </div>
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl">
-                ※公式ビューアーによる保護。無断転載・複製を固く禁じます。
+                ※公式ビューアー。全ページ閲覧可能です。
               </p>
             </div>
           )}

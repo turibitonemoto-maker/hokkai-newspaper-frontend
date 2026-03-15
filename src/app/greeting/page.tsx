@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (コピーガード＆黄金比密度版)
+ * 会長挨拶ページ (実用性・黄金比密度版)
  * 日本仕様の行間(leading-6)と段落余白(my-3)を適用。
- * コピーガード (select-none) を実装。
+ * テキストコピーを許可。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -44,7 +44,7 @@ export default function GreetingPage() {
   const displayAuthorName = greeting?.authorName || "北海学園大学一部新聞会 会長";
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in select-none">
+    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in">
       <div className="max-w-3xl mx-auto space-y-20">
         <header className="text-center space-y-6">
           <Badge variant="outline" className="px-6 py-1.5 border-primary text-primary font-black uppercase tracking-widest rounded-full">
@@ -72,7 +72,7 @@ export default function GreetingPage() {
                     <span className="font-black text-[9px] uppercase tracking-widest">Portrait</span>
                   </div>
                 )}
-                {/* 透明シールドレイヤー */}
+                {/* 透明シールドレイヤー (画像への誤操作防止のみ) */}
                 <div className="absolute inset-0 bg-transparent z-50 cursor-default" />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-emerald-500 shadow-xl rounded-2xl p-2.5 text-white border-4 border-white">
