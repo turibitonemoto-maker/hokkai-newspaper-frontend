@@ -5,15 +5,16 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink, ShieldCheck, Camera } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, Image as ImageIcon, ExternalLink, ShieldCheck, Camera, Layers } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (紙面ビューアー統合版)
- * PDFが存在する場合はビューアーを最優先で表示。
+ * 記事詳細ページ (デネブ版・JPEG複数枚ビューアー統合)
+ * ベガから送られる paperImages (JPEG配列) を縦に並べて表示。
+ * 黄金比 (leading-6, my-3) を記事本文に適用。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -29,27 +30,8 @@ export default function ArticlePage() {
   const { data: article, isLoading } = useDoc(articleRef);
 
   const isPublic = article?.isPublished === true;
-  const displayImage = article?.mainImageUrl || "";
-  const displayCaption = article?.mainImageCaption || "";
-  const mainContent = useMemo(() => article?.content || article?.htmlContent || '', [article?.content, article?.htmlContent]);
-
-  const standardPdfUrl = useMemo(() => {
-    if (!article?.pdfUrl) return null;
-    let url = article.pdfUrl;
-    // Google Drive URLをプレビュー形式に変換
-    if (url.includes('drive.google.com')) {
-      if (url.includes('/view') || url.includes('/edit') || url.includes('/share')) {
-        url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
-      }
-    }
-    return url;
-  }, [article?.pdfUrl]);
-
-  const handleOpenExternal = () => {
-    if (standardPdfUrl) {
-      window.open(standardPdfUrl, '_blank');
-    }
-  };
+  const paperImages = article?.paperImages || [];
+  const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
   if (isLoading) {
     return (
@@ -71,6 +53,7 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
+        {/* ヘッダー操作エリア */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -129,46 +112,44 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 紙面ビューアー */}
-          {standardPdfUrl && (
-            <div className="mb-20 space-y-4">
+          {/* JPEG 紙面ビューアー (ベガの複数枚JPEGに対応) */}
+          {paperImages.length > 0 && (
+            <div className="mb-20 space-y-8">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <FileText size={16} /> Paper Edition Viewer
+                  <Layers size={16} /> Digital Paper Viewer ({paperImages.length} Pages)
                 </div>
               </div>
               
-              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                <div className="absolute top-4 right-4 z-50">
-                  <Button 
-                    onClick={handleOpenExternal}
-                    className="bg-primary text-white p-3 h-auto rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white/20 hover:scale-105 transition-transform"
-                  >
-                    <ExternalLink size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">別タブで開く</span>
-                  </Button>
-                </div>
-
-                <iframe 
-                  src={standardPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none"
-                  allow="autoplay"
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                />
+              <div className="space-y-12">
+                {paperImages.map((imgUrl: string, index: number) => (
+                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[16px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                    <Image
+                      src={imgUrl}
+                      alt={`${article.title} - Page ${index + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                    />
+                    <div className="absolute top-4 left-4 bg-slate-900/60 text-white text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-sm">
+                      P.{index + 1}
+                    </div>
+                  </div>
+                ))}
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> OFFICIAL ARCHIVE PROTECTED
+                <ShieldCheck size={12} className="text-primary" /> OFFICIAL DIGITAL ARCHIVE
               </p>
             </div>
           )}
 
-          {/* 報道写真ユニット (PDFがない場合のみ表示) */}
-          {displayImage && !standardPdfUrl && (
+          {/* メイン画像 (紙面データがない場合のみ表示) */}
+          {article.mainImageUrl && paperImages.length === 0 && (
             <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
                 <Image
-                  src={displayImage}
+                  src={article.mainImageUrl}
                   alt={article.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 896px"
@@ -176,23 +157,23 @@ export default function ArticlePage() {
                   priority
                 />
               </div>
-              {displayCaption && (
+              {article.mainImageCaption && (
                 <figcaption className="flex items-start gap-3 px-8 py-2 text-slate-500 italic border-l-4 border-primary/20">
                   <Camera size={16} className="shrink-0 mt-1 text-primary/40" />
                   <span className="text-sm md:text-base leading-relaxed font-medium tracking-wide">
-                    {displayCaption}
+                    {article.mainImageCaption}
                   </span>
                 </figcaption>
               )}
             </figure>
           )}
 
-          {/* 記事本文 */}
+          {/* 記事本文 (日本仕様の黄金比適用) */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
-                "prose-p:leading-relaxed prose-p:mb-8",
+                "prose-p:leading-6 prose-p:my-3", // 日本仕様の黄金比
                 "prose-h2:text-2xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 prose-h2:mt-12",
                 "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white prose-img:my-12",
                 fontSize === 'base' && "text-base md:text-lg", 

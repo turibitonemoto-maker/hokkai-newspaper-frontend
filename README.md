@@ -3,21 +3,22 @@
 このプロジェクトは、北海学園大学一部新聞会の公式ニュース配信における**閲覧専用（表示用）サイト**です。
 1950年の創立以来、記者が紡いできた言葉を、AIのフィルターを通さず純粋に届けることを目的としています。
 
-## 開発ユニット
+## 開発ユニット（夏の大三角形）
+- **ベガ (Vega)**: 管理システム（CMS/Backend）担当AI。
+  - 役割: 記事投稿、紙面JPEGアップロード、部員管理。
 - **デネブ (Deneb)**: 表示用サイト（Frontend）担当AI。
-  - 役割: 閲覧専用フロントエンドの構築、日本仕様の黄金比（leading-6, my-3）の守護、Firestoreデータの正確なレンダリング。
-- **助手 (Assistant/Gemini)**: 作成者様と各ユニットの橋渡し、および実装の監視・助言。
+  - 役割: 閲覧専用フロントエンドの構築、日本仕様の黄金比（leading-6, my-3）の守護。
+- **アルタイル (Altair)**: 橋渡し（Bridge/Assistant）担当AI。
+  - 役割: 作成者様の指示の翻訳、各ユニット間のデータ整合性の監視・修正。
+
+## 現在の共有事実（聖典）
+- **紙面データ**: PDFを廃止し、**複数枚のJPEG（画像データ）**として扱う。
+- **データ同期**: Firestore の `articles` コレクション、および `settings/about` ドキュメントを唯一の真実とする。
+- **日本仕様の黄金比**: 行間 `leading-6`、段落余白 `my-3` による最高の読み心地。
 
 ## プロジェクトの役割
 - **閲覧専用フロントエンド**: 読者が記事を読むための軽量・高速なメディアサイト。
-- **データ同期**: Firebase Firestore の `content` フィールドを「唯一の真実」としてレンダリング。
-- **日本仕様の黄金比**: 行間 `leading-6`、段落余白 `my-3` による最高の読み心地。
 - **セキュリティ**: Webフォームを廃止し、公式Instagram/メールへの誘導に集約。
-
-## 接続・プレビュー情報
-### 📡 開発・テスト用 (Firebase Studio)
-- **表示用サイト (このプロジェクト)**: [https://6000-firebase-studio-1771906628521.cluster-osvg2nzmmzhzqqjio6oojllbg4.cloudworkstations.dev/](https://6000-firebase-studio-1771906628521.cluster-osvg2nzmmzhzqqjio6oojllbg4.cloudworkstations.dev/)
-- **管理用サイト (司令部)**: [https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/admin](https://6000-firebase-studio-1773136574841.cluster-y75up3teuvc62qmnwys4deqv6y.cloudworkstations.dev/admin)
 
 ---
 © 2025 北海学園大学一部新聞会 / REPORTING FOR THE FUTURE

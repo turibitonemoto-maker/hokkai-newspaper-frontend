@@ -4,17 +4,21 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Article",
       "type": "object",
-      "description": "Represents a news article. Supports rich HTML (content) and PDF paper viewer (pdfUrl).",
+      "description": "Represents a news article. Supports rich HTML (content) and multiple JPEG paper viewer (paperImages).",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
         "issueNumber": { "type": "string", "description": "Issue number (e.g., 第101号)." },
         "noteUrl": { "type": "string", "format": "uri" },
-        "pdfUrl": { "type": "string", "description": "Google Drive PDF embed URL for paper viewer." },
+        "paperImages": { 
+          "type": "array", 
+          "items": { "type": "string", "format": "uri" },
+          "description": "Array of JPEG image URLs for paper viewer (replacing PDF)."
+        },
         "source": { "type": "string" },
         "publishDate": { "type": "string", "format": "date-time" },
         "lastSyncedDate": { "type": "string", "format": "date-time" },
-        "content": { "type": "string", "description": "HTML content (supports Base64 images)." },
+        "content": { "type": "string", "description": "HTML content." },
         "summary": { "type": "string" },
         "mainImageUrl": { "type": "string", "format": "uri" },
         "mainImageCaption": { "type": "string", "description": "Caption for the main article image." },
@@ -51,6 +55,7 @@
     "/articles/{articleId}": { "schema": { "$ref": "#/backend/entities/Article" }, "description": "Articles collection." },
     "/categories/{categoryId}": { "schema": { "$ref": "#/backend/entities/Category" }, "description": "Categories." },
     "/ads/{adId}": { "schema": { "$ref": "#/backend/entities/Advertisement" }, "description": "Ads." },
-    "/settings/about": { "schema": { "type": "object", "properties": { "content": { "type": "string" } } }, "description": "About Us data." }
+    "/settings/about": { "schema": { "type": "object", "properties": { "content": { "type": "string" } } }, "description": "About Us data." },
+    "/settings/president_greeting": { "schema": { "type": "object" }, "description": "President greeting data." }
   }
 }

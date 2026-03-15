@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileText, Calendar } from 'lucide-react';
+import { FileImage, Calendar } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 新聞紙面サムネイル・コンポーネント (道新リスペクト・号数対応版)
+ * 新聞紙面サムネイル・コンポーネント (デネブ版・JPEG複数枚対応)
+ * ベガから届く paperImages 配列の1枚目をサムネイルとして使用。
  * アスペクト比 1:1.414 (新聞紙面) を維持。
- * 管理サイトから届く issueNumber を最優先で表示します。
  */
 interface PaperCardProps {
   article: {
@@ -17,13 +17,21 @@ interface PaperCardProps {
     issueNumber?: string;
     publishDate: string;
     mainImageUrl?: string;
-    pdfUrl?: string;
+    paperImages?: string[];
   };
 }
 
 export function PaperCard({ article }: PaperCardProps) {
-  const displayImage = article.mainImageUrl || "";
+  // 複数枚ある場合は最初の1枚を、なければメイン画像を使用
+  const displayImage = useMemo(() => {
+    if (article.paperImages && article.paperImages.length > 0) {
+      return article.paperImages[0];
+    }
+    return article.mainImageUrl || "";
+  }, [article.paperImages, article.mainImageUrl]);
+
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
+  const hasMultiplePages = (article.paperImages?.length || 0) > 1;
 
   return (
     <Link href={`/articles/${article.id}`} className="group block text-center space-y-3">
@@ -38,8 +46,14 @@ export function PaperCard({ article }: PaperCardProps) {
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-slate-50 text-slate-300 gap-2">
-            <FileText size={32} strokeWidth={1} />
+            <FileImage size={32} strokeWidth={1} />
             <span className="text-[10px] font-black uppercase tracking-widest">Digital Archive</span>
+          </div>
+        )}
+        
+        {hasMultiplePages && (
+          <div className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[9px] font-black px-2 py-1 rounded-sm backdrop-blur-sm">
+            {article.paperImages?.length} PAGES
           </div>
         )}
       </div>
