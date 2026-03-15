@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,12 +12,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終・報道写真ユニット・黄金比版)
- * 
- * 1. 報道写真ユニット: <figure> と <figcaption> による高密度なレンダリング。
- * 2. 鉄壁シールド: Googleのボタン位置に「本物の自前ボタン」を配置。
- * 3. コピーガード: select-none により記事のコピペを封印。
- * 4. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
+ * 記事詳細ページ (完全自営・黄金比・セキュリティ版)
+ * 外部(note)依存を排除し、人力で入魂されたコンテンツを最高密度で描画。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -36,7 +31,7 @@ export default function ArticlePage() {
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
   const displayCaption = article?.mainImageCaption || "";
-  const mainContent = useMemo(() => article?.content || '', [article?.content]);
+  const mainContent = useMemo(() => article?.content || article?.htmlContent || '', [article?.content, article?.htmlContent]);
 
   const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
@@ -126,7 +121,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 紙面ビューアー (物理シールド版) */}
+          {/* 紙面ビューアー (ステルス・シールド版) */}
           {standardPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
@@ -136,14 +131,13 @@ export default function ArticlePage() {
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                {/* 物理ボタン: Googleのボタンを完全に覆い、クリックを奪い取る */}
                 <div className="absolute top-2 right-2 z-50">
                   <Button 
                     onClick={handleOpenExternal}
                     className="bg-primary text-white p-2.5 h-auto rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white/20 hover:scale-105 transition-transform"
                   >
                     <ExternalLink size={14} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">紙面を拡大表示</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest">拡大表示</span>
                   </Button>
                 </div>
 
@@ -156,12 +150,12 @@ export default function ArticlePage() {
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> 本紙面は公式アーカイブにより保護されています
+                <ShieldCheck size={12} className="text-primary" /> OFFICIAL ARCHIVE PROTECTED
               </p>
             </div>
           )}
 
-          {/* 報道写真ユニット (キャプション付き) */}
+          {/* 報道写真ユニット */}
           {displayImage && !standardPdfUrl && (
             <figure className="mb-16 space-y-4">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
@@ -185,6 +179,7 @@ export default function ArticlePage() {
             </figure>
           )}
 
+          {/* 記事本文 (コピペガード付き) */}
           <div className="max-w-3xl mx-auto select-none">
             <div 
               className={cn(

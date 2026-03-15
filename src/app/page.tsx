@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (ビルド・最適化版)
- * 行間密度を黄金比に詰め、知恵熱(警告)を鎮圧。
+ * トップページ (改革・自前主義版)
+ * note同期などの外部依存を排除し、人力で紡がれた記事のみを表示。
  */
 export default function Home() {
   const db = useFirestore();
@@ -103,7 +103,6 @@ export default function Home() {
               className="object-cover transition-transform duration-700 group-hover:scale-105" 
               priority 
             />
-            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
           </Link>
         ) : (
           <div className="relative w-full h-24 md:h-32 bg-slate-50 rounded-[32px] overflow-hidden shadow-inner border border-dashed border-slate-200 flex items-center justify-center">

@@ -4,13 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ExternalLink, FileText } from 'lucide-react';
+import { Calendar, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (最終浄化版)
- * 1. HTMLタグを正規表現で完全に剥離し、純粋なテキストのみを抽出。
- * 2. 記事内容が「content」または「htmlContent」であっても対応。
+ * 記事カードコンポーネント (完全自前主義版)
+ * note関連のバッジや外部リンクを完全に排除。
  */
 interface ArticleCardProps {
   article: {
@@ -21,8 +20,6 @@ interface ArticleCardProps {
     categoryId: string;
     publishDate: string;
     mainImageUrl?: string;
-    source?: string;
-    noteUrl?: string;
     pdfUrl?: string;
   };
   priority?: boolean;
@@ -31,12 +28,11 @@ interface ArticleCardProps {
 export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const hasImage = !!article.mainImageUrl;
   const displayImage = article.mainImageUrl || "";
-  const isExternal = article.source === 'note';
   const hasPdf = !!article.pdfUrl;
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    // HTMLタグを剥離し、実体参照を置換
+    // HTMLタグを剥離
     const plainText = rawContent
       .replace(/<[^>]*>?/gm, "")
       .replace(/&nbsp;/g, " ")
@@ -75,11 +71,6 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             {hasPdf && (
               <Badge className="bg-slate-950 text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1.5 items-center">
                 <FileText size={10} /> PAPER
-              </Badge>
-            )}
-            {isExternal && (
-              <Badge className="bg-emerald-600 text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1.5 items-center">
-                <ExternalLink size={10} /> NOTE
               </Badge>
             )}
           </div>
