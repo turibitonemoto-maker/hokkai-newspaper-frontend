@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (最終・黄金比定着版)
- * 日本仕様の密度 (leading-6, my-3) を厳格適用。
+ * 会長挨拶ページ (最終定着版)
+ * 日本仕様の密度 (leading-6, my-3) およびコピーガードを適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -43,7 +43,7 @@ export default function GreetingPage() {
   const displayAuthorName = greeting?.authorName || "北海学園大学一部新聞会 会長";
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in">
+    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in select-none">
       <div className="max-w-3xl mx-auto space-y-20">
         <header className="text-center space-y-6">
           <Badge variant="outline" className="px-6 py-1.5 border-primary text-primary font-black uppercase tracking-widest rounded-full">
