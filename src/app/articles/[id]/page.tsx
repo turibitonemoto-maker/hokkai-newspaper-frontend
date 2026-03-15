@@ -5,19 +5,19 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck, ExternalLink } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (ハイブリッド・シールド版)
+ * 記事詳細ページ (実用性最優先・最終定着版)
  * 
- * 1. カバー隠蔽: Googleのヘッダー（タイトル等）を独自の不透明レイヤーで物理的に隠します。
- * 2. 機能解放: ポップアップ（別タブ展開）を許可し、読者の利便性を確保。
- * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を厳格適用。
- * 4. テキスト解放: 文字コピーを許可し、新聞本来の使い勝手を実現。
+ * 1. 機能全解放: Google ドライブのツールバー、ポップアップ（別タブ展開）を一切隠さず解放。
+ * 2. 視認性確保: 物理的な「ずらし」や「覆い」を撤去し、紙面の隅々まで閲覧可能に。
+ * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を全域に適用。
+ * 4. コピー許可: 新聞としての利便性を重視し、テキストの選択・コピーを全面的に許可。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -39,8 +39,11 @@ export default function ArticlePage() {
   const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    // プレビュー形式に強制変換
-    return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+    // プレビュー形式に変換してUIを安定させる
+    if (url.includes('/view') || url.includes('/edit')) {
+      return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
+    }
+    return url;
   }, [article?.pdfUrl]);
 
   if (isLoading) {
@@ -116,7 +119,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* ハイブリッド・ステルス・ビューアー */}
+          {/* 紙面ビューアー (全機能解放版) */}
           {standardPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
@@ -126,41 +129,16 @@ export default function ArticlePage() {
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                {/* 
-                  Googleプレビュー本体
-                  allow-popups を許可し、読者のポップアップ操作を有効化。
-                */}
                 <iframe 
                   src={standardPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none pointer-events-auto"
+                  className="absolute inset-0 w-full h-full border-none"
                   allow="autoplay"
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 />
-                
-                {/* 
-                  隠蔽カバー (Top Cover)
-                  Googleのタイトルや「共有」などの無機質なヘッダーを物理的に覆い隠す。
-                */}
-                <div className="absolute top-0 left-0 w-full h-14 bg-white/95 backdrop-blur-sm border-b border-slate-100 z-10 flex items-center px-6 justify-between pointer-events-none">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck size={18} className="text-primary" />
-                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Official Press Viewer</span>
-                  </div>
-                  {/* 右側のボタンエリアは読者が触れるように空ける */}
-                  <div className="flex items-center gap-2 opacity-50">
-                    <ExternalLink size={14} />
-                    <span className="text-[8px] font-black uppercase tracking-tighter">Pop-out enabled</span>
-                  </div>
-                </div>
-
-                {/* 操作ガイド */}
-                <div className="absolute bottom-6 right-8 opacity-30 pointer-events-none select-none">
-                  <span className="text-[9px] font-black tracking-widest uppercase">Trusted Archive</span>
-                </div>
               </div>
               
-              <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl">
-                ※公式紙面ビューアー。右上のアイコンから別タブで拡大可能です。
+              <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
+                <ExternalLink size={12} /> 右上のアイコンから別タブで拡大・印刷が可能です
               </p>
             </div>
           )}
