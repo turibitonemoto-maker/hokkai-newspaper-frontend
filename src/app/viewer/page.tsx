@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 /**
  * 紙面ビューアー専用ページ (/viewer)
  * 道新リスペクトの「日付別・縦長サムネイル」グリッドレイアウト。
- * 閲覧専用フロントエンドとして、歴史を美しく整理して表示します。
+ * 管理サイトから届く「第〇号」という号数情報を活用。
  */
 export default function ViewerPage() {
   const db = useFirestore();
@@ -36,6 +36,7 @@ export default function ViewerPage() {
       if (!grouped[date]) grouped[date] = [];
       grouped[date].push(p);
     });
+    // 日付の降順でソート
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]));
   }, [papers]);
 
@@ -57,13 +58,12 @@ export default function ViewerPage() {
               紙面ビューアー
             </h1>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">サンプルを見る</Button>
-            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">使い方を見る</Button>
+          <div className="flex gap-2 text-xs font-bold text-slate-400">
+             <span>Digital Archive / Ichibu Newspaper</span>
           </div>
         </div>
         <p className="text-slate-500 font-medium max-w-2xl leading-relaxed mt-6">
-          1950年の創立以来、記者が紡いできた歴史を、当時の紙面そのままに振り返ることができます。
+          1950年の創立以来、記者が紡いできた北海学園の歴史を、当時の紙面そのままに振り返ることができます。
         </p>
       </header>
 
@@ -94,7 +94,7 @@ export default function ViewerPage() {
             <Ghost className="text-slate-200" size={48} />
           </div>
           <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">紙面がありません</h3>
-          <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">まだ公開された紙面データがないようです。</p>
+          <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">管理サイトからPDF紙面をアップロードしてください。</p>
           <Link href="/" className="inline-block mt-8 text-primary font-bold uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">BACK TO HOME</Link>
         </div>
       )}

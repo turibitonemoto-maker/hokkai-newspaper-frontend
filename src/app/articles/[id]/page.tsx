@@ -12,8 +12,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (完全自営・黄金比タイポグラフィ版)
- * 外部(note)依存を完全に排除し、人力で入魂されたコンテンツを最高密度で描画。
+ * 記事詳細ページ (紙面ビューアー統合版)
+ * PDFが存在する場合はビューアーを最優先で表示。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -105,6 +105,11 @@ export default function ArticlePage() {
               <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-sm">
                 {article.categoryId}
               </Badge>
+              {article.issueNumber && (
+                <Badge variant="outline" className="border-primary text-primary font-black py-1 px-4 text-[10px] tracking-widest uppercase">
+                  {article.issueNumber}
+                </Badge>
+              )}
               <Separator className="flex-grow bg-slate-100" />
             </div>
             
@@ -124,7 +129,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 紙面ビューアー (ステルス・シールド・実用版) */}
+          {/* 紙面ビューアー */}
           {standardPdfUrl && (
             <div className="mb-20 space-y-4">
               <div className="flex items-center justify-between px-2">
@@ -134,7 +139,6 @@ export default function ArticlePage() {
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                {/* 物理ボタンでGoogleのボタンを上書きし、操作をサイト独自のポップアップに誘導 */}
                 <div className="absolute top-4 right-4 z-50">
                   <Button 
                     onClick={handleOpenExternal}
@@ -159,7 +163,7 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* 報道写真ユニット */}
+          {/* 報道写真ユニット (PDFがない場合のみ表示) */}
           {displayImage && !standardPdfUrl && (
             <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
@@ -183,16 +187,14 @@ export default function ArticlePage() {
             </figure>
           )}
 
-          {/* 記事本文 (日本仕様・黄金比タイポグラフィ) */}
+          {/* 記事本文 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
                 "prose-p:leading-relaxed prose-p:mb-8",
                 "prose-h2:text-2xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 prose-h2:mt-12",
-                "prose-h3:text-xl prose-h3:font-bold prose-h3:mb-4 prose-h3:mt-8",
                 "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white prose-img:my-12",
-                "prose-ul:my-6 prose-li:my-2",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 

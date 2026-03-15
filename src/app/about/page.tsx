@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { MapPin, History, Target, Footprints } from 'lucide-react';
 
 /**
- * About Us ページ (静的完成形)
+ * About Us ページ (静的完成形・原点回帰版)
  * 不安定な動的連動を排し、1950年創立の威厳と黄金比タイポグラフィを固定。
  * 閲覧専用サイトとして、常に最高速度で正確な情報を表示します。
  */
