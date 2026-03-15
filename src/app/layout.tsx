@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter, Yuji_Mai } from 'next/font/google';
 import './globals.css';
@@ -21,8 +22,7 @@ const yujiMai = Yuji_Mai({
 });
 
 /**
- * サイトのメタデータ (ビルド最適化版)
- * アイコンを正式な icon.png に設定。
+ * サイトのメタデータ (ステルス・公式版)
  */
 export const metadata: Metadata = {
   title: '北海学園大学新聞 公式サイト',

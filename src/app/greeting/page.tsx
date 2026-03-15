@@ -4,13 +4,14 @@
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (Plan C・安定化版)
- * Base64画像対応および、日本仕様の黄金比密度（leading-6, my-3）を適用。
+ * 会長挨拶ページ (ステルス・セキュリティ版)
+ * Googleドライブ画像からのUI露出を防ぎ、日本仕様の密度(leading-6, my-3)を適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -22,13 +23,22 @@ export default function GreetingPage() {
 
   const { data: greeting, isLoading } = useDoc(greetingRef);
 
+  // 画像URLのステルス化（御真影の保護）
+  const displayAuthorImageUrl = useMemo(() => {
+    let url = greeting?.authorImageUrl || "";
+    if (url.includes('drive.google.com')) {
+      // preview形式にしてドライブの余計なUIを排除したソースとして扱う
+      url = url.replace(/\/view\?usp=sharing|\/view\?usp=drivesdk|\/edit\?usp=sharing|\/view$/g, '/preview');
+    }
+    return url;
+  }, [greeting?.authorImageUrl]);
+
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
     content: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>
 <p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。</p>
 <p>これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。</p>`,
-    authorName: "北海学園大学一部新聞会 会長",
-    authorImageUrl: ""
+    authorName: "北海学園大学一部新聞会 会長"
   };
 
   if (isLoading) {
@@ -43,7 +53,6 @@ export default function GreetingPage() {
   const displayTitle = greeting?.title || defaultData.title;
   const displayContent = greeting?.content || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
-  const displayAuthorImageUrl = greeting?.authorImageUrl || defaultData.authorImageUrl;
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
@@ -54,24 +63,31 @@ export default function GreetingPage() {
         </header>
 
         <div className="space-y-12">
-          {/* 会長写真 (フォールバック強化) */}
+          {/* 会長写真 (ステルス・レイヤー) */}
           <div className="flex justify-center">
-            <div className="w-64 h-80 relative rounded-[40px] overflow-hidden shadow-2xl bg-slate-50 ring-8 ring-white">
-              {displayAuthorImageUrl ? (
-                <Image
-                  src={displayAuthorImageUrl}
-                  alt={displayAuthorName}
-                  fill
-                  sizes="256px"
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4 bg-slate-100">
-                  <User size={64} className="opacity-20" />
-                  <span className="font-black text-[9px] uppercase tracking-widest text-center px-4">Official Portrait</span>
-                </div>
-              )}
+            <div className="relative group">
+              <div className="w-64 h-80 relative rounded-[40px] overflow-hidden shadow-2xl bg-slate-50 ring-8 ring-white transition-transform duration-500 group-hover:scale-[1.02]">
+                {displayAuthorImageUrl ? (
+                  <Image
+                    src={displayAuthorImageUrl}
+                    alt={displayAuthorName}
+                    fill
+                    sizes="256px"
+                    className="object-cover"
+                    priority
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4 bg-slate-100">
+                    <User size={64} className="opacity-20" />
+                    <span className="font-black text-[9px] uppercase tracking-widest text-center px-4">Official Portrait</span>
+                  </div>
+                )}
+                {/* 保護レイヤー（透明なオーバーレイで右クリック等の心理的障壁） */}
+                <div className="absolute inset-0 bg-transparent" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 bg-white shadow-xl rounded-2xl p-2 border border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ShieldCheck className="text-primary" size={20} />
+              </div>
             </div>
           </div>
           

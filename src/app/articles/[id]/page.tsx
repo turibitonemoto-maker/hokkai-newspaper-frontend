@@ -6,14 +6,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (道新スタイル・PDFビューアー統合版)
+ * 記事詳細ページ (道新スタイル・ステルスビューアー統合版)
+ * GoogleドライブのUIを隠蔽し、コピーリスクを軽減。
  * 日本仕様の行間(leading-6)と段落間余白(my-3)を適用。
  */
 export default function ArticlePage() {
@@ -33,13 +34,19 @@ export default function ArticlePage() {
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
-  // GoogleドライブのPDFリンクを埋め込み用に変換
-  const embedPdfUrl = useMemo(() => {
+  // 【ステルス変換】GoogleドライブのURLをUI排除版(preview)に強制変換
+  const stealthPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
-    if (article.pdfUrl.includes('drive.google.com')) {
-      return article.pdfUrl.replace(/\/view\?usp=sharing|\/view\?usp=drivesdk/g, '/preview');
+    let url = article.pdfUrl;
+    if (url.includes('drive.google.com')) {
+      // /view や /edit などの末尾を /preview に置換してUIを隠す
+      url = url.replace(/\/view\?usp=sharing|\/view\?usp=drivesdk|\/edit\?usp=sharing|\/view$/g, '/preview');
+      // 埋め込み用パラメータを追加（Googleドライブの制限内でUIを最小化）
+      if (!url.includes('preview')) {
+          url = url.split('?')[0] + '/preview';
+      }
     }
-    return article.pdfUrl;
+    return url;
   }, [article?.pdfUrl]);
 
   if (isLoading) {
@@ -98,7 +105,7 @@ export default function ArticlePage() {
         <article className="animate-fade-in">
           <header className="mb-12">
             <div className="flex items-center gap-4 mb-8">
-              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase">
+              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-sm">
                 {article.categoryId}
               </Badge>
               <Separator className="flex-grow bg-slate-100" />
@@ -120,24 +127,37 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* PDF紙面ビューアー (道新スタイル) */}
-          {embedPdfUrl && (
+          {/* ステルス・PDF紙面ビューアー (道新スタイル) */}
+          {stealthPdfUrl && (
             <div className="mb-16 space-y-4">
-              <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                <FileText size={16} /> Paper Edition Viewer
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
+                  <FileText size={16} /> Paper Edition Viewer
+                </div>
+                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-300 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border">
+                  <ShieldCheck size={12} /> Protected Content
+                </div>
               </div>
-              <div className="relative aspect-[1/1.4] w-full rounded-[32px] overflow-hidden border shadow-2xl bg-slate-100 ring-1 ring-slate-200">
+              
+              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border shadow-2xl bg-slate-100 ring-1 ring-slate-200">
+                {/* ステルスiframe: sandbox属性でDLやポップアップを制限 */}
                 <iframe 
-                  src={embedPdfUrl} 
+                  src={stealthPdfUrl} 
                   className="absolute inset-0 w-full h-full border-none"
                   allow="autoplay"
+                  sandbox="allow-scripts allow-same-origin"
                 />
+                {/* 読書を妨げない程度の「保護感」を演出する透明な枠 */}
+                <div className="absolute inset-0 pointer-events-none ring-inset ring-[20px] ring-white/10" />
               </div>
-              <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">※ビューアーが表示されない場合は再読み込みしてください</p>
+              
+              <p className="text-[9px] text-center text-slate-400 font-bold uppercase tracking-[0.3em] py-2">
+                ※公式ビューアーで閲覧中。無断転載・複製を禁じます。
+              </p>
             </div>
           )}
 
-          {displayImage && !embedPdfUrl && (
+          {displayImage && !stealthPdfUrl && (
             <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 shadow-2xl ring-1 ring-slate-100 bg-slate-50">
               <Image
                 src={displayImage}
