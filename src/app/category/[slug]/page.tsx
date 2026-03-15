@@ -53,7 +53,7 @@ export default function CategoryPage() {
             <div className="bg-primary p-3 rounded-2xl text-white shadow-lg shadow-primary/20">
               {isPaper ? <BookOpen size={24} /> : <Filter size={24} />}
             </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic font-yuji">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
               {isPaper ? '紙面ビューアー' : slug}
             </h1>
           </div>

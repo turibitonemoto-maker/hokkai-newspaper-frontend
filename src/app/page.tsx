@@ -121,14 +121,14 @@ export default function Home() {
         )}
       </div>
 
-      {/* 紙面ビューアーセクション (道新リバイバル) */}
+      {/* 紙面ビューアーセクション */}
       <div className="mb-32">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
           <div className="flex items-center gap-4">
             <div className="bg-primary p-3 rounded-2xl text-white shadow-lg">
               <BookOpen size={24} />
             </div>
-            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 font-yuji">紙面ビューアー</h2>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 uppercase italic">紙面ビューアー</h2>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">サンプルを見る</Button>
