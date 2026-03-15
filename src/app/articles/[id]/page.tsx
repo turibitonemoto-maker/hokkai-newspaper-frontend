@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -5,16 +6,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, Image as ImageIcon, ExternalLink, ShieldCheck, Camera, Layers } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, ShieldCheck, Layers, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (デネブ版・JPEG複数枚ビューアー統合)
- * ベガから送られる paperImages (JPEG配列) を縦に並べて表示。
- * 黄金比 (leading-6, my-3) を記事本文に適用。
+ * 記事詳細・物理ビューアーページ
+ * ベガ（管理側）が保存した複数枚のJPEG（paperImages）を確実に描画する。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -53,7 +53,7 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
-        {/* ヘッダー操作エリア */}
+        {/* 操作エリア */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -112,39 +112,40 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* JPEG 紙面ビューアー (ベガの複数枚JPEGに対応) */}
+          {/* JPEG 紙面物理ビューアー */}
           {paperImages.length > 0 && (
-            <div className="mb-20 space-y-8">
+            <div className="mb-20 space-y-12">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <Layers size={16} /> Digital Paper Viewer ({paperImages.length} Pages)
+                  <Layers size={16} /> Digital Archive Viewer ({paperImages.length} Pages)
                 </div>
               </div>
               
-              <div className="space-y-12">
+              <div className="space-y-16">
                 {paperImages.map((imgUrl: string, index: number) => (
                   <div key={index} className="relative aspect-[1/1.414] w-full rounded-[16px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                     <Image
                       src={imgUrl}
-                      alt={`${article.title} - Page ${index + 1}`}
+                      alt={`${article.title} - P.${index + 1}`}
                       fill
                       className="object-contain"
                       sizes="(max-width: 1024px) 100vw, 896px"
+                      priority={index === 0}
                     />
                     <div className="absolute top-4 left-4 bg-slate-900/60 text-white text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-sm">
-                      P.{index + 1}
+                      PAGE {index + 1}
                     </div>
                   </div>
                 ))}
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> OFFICIAL DIGITAL ARCHIVE
+                <ShieldCheck size={12} className="text-primary" /> VERIFIED DIGITAL ARCHIVE
               </p>
             </div>
           )}
 
-          {/* メイン画像 (紙面データがない場合のみ表示) */}
+          {/* メイン画像（紙面がない場合） */}
           {article.mainImageUrl && paperImages.length === 0 && (
             <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
@@ -154,7 +155,6 @@ export default function ArticlePage() {
                   fill
                   sizes="(max-width: 1024px) 100vw, 896px"
                   className="object-cover"
-                  priority
                 />
               </div>
               {article.mainImageCaption && (
@@ -168,12 +168,12 @@ export default function ArticlePage() {
             </figure>
           )}
 
-          {/* 記事本文 (日本仕様の黄金比適用) */}
+          {/* 記事本文 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
-                "prose-p:leading-6 prose-p:my-3", // 日本仕様の黄金比
+                "prose-p:leading-6 prose-p:my-3",
                 "prose-h2:text-2xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 prose-h2:mt-12",
                 "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white prose-img:my-12",
                 fontSize === 'base' && "text-base md:text-lg", 
