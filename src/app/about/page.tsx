@@ -5,13 +5,13 @@ import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * About Us ページ (動的連動・プロ仕様タイポグラフィ版)
- * 管理サイトからの編集内容をリアルタイムに反映。
- * 「leading-relaxed」と「mb-6」による日本仕様の黄金比を適用。
+ * About Us ページ (完全連動・物理パージ版)
+ * 固定テキストを廃止。Firestore (/settings/about_us) からのデータのみを表示。
+ * 黄金比 (leading-6, my-3) を適用。
  */
 export default function AboutPage() {
   const db = useFirestore();
@@ -27,36 +27,43 @@ export default function AboutPage() {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Synchronizing Data...</p>
       </div>
     );
   }
 
-  // デフォルト値の設定 (Firestoreにデータがない場合のバックアップ)
-  const displayTitle = about?.title || "北海学園大学一部新聞会とは";
-  const displayContent = about?.content || `
-    <p>北海学園大学一部新聞会は、北海学園大学唯一の学生新聞団体です。学内の出来事から地域の話題、学生の活躍、教員のインタビューなど、「いま」の北海学園を広く深く伝えることを使命としています。</p>
-    <p>私たちは単なるニュース配信に留まらず、学生の視点から社会を捉え、考えるきっかけを提供することを目指しています。</p>
-  `;
-  const displayPurpose = about?.purpose || "学内の正確な情報を共有し、学生同士、また大学と学生の橋渡しとなること。言論の自由を尊重し、学生ならではの鋭い視点で真実を追求すること。";
-  const displayActivities = about?.activities || "月刊または不定期での新聞発行、ウェブサイトでのリアルタイムなニュース更新、著名人への独占インタビュー、スポーツ大会の現地取材、イベントレポートなど。";
+  // データが全くない場合の物理的な「連動失敗・未設定」表示
+  if (!about) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center text-center">
+        <div className="bg-amber-50 p-10 rounded-[48px] border-2 border-dashed border-amber-200">
+          <AlertCircle className="text-amber-500 mx-auto mb-6" size={48} />
+          <h1 className="text-2xl font-black mb-4">データが未設定です</h1>
+          <p className="text-slate-500 text-sm font-medium">管理サイトの「About Us 編集」から内容を保存してください。</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest rounded-full">ABOUT US</Badge>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">{displayTitle}</h1>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">
+            {about.title || "北海学園大学一部新聞会とは"}
+          </h1>
         </header>
 
         <section className="max-w-none">
-          {/* メイン説明: プロ仕様の黄金比タイポグラフィ */}
+          {/* メイン説明: 黄金比タイポグラフィ (leading-6, my-3) */}
           <div 
             className={cn(
               "prose prose-slate max-w-none font-medium text-slate-700 mx-auto tracking-wide",
-              "prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg",
-              "md:prose-lg whitespace-pre-wrap"
+              "prose-p:leading-6 prose-p:my-3 prose-p:text-lg",
+              "md:prose-lg"
             )}
-            dangerouslySetInnerHTML={{ __html: displayContent }}
+            dangerouslySetInnerHTML={{ __html: about.content || "" }}
           />
         </section>
 
@@ -64,16 +71,16 @@ export default function AboutPage() {
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
               <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">私たちの目的</h2>
-              <div className="text-base leading-relaxed text-slate-600 font-medium whitespace-pre-wrap">
-                {displayPurpose}
+              <div className="text-base leading-6 text-slate-600 font-medium">
+                {about.purpose}
               </div>
             </CardContent>
           </Card>
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
               <h2 className="text-2xl font-black tracking-tight text-primary uppercase italic">活動内容</h2>
-              <div className="text-base leading-relaxed text-slate-600 font-medium whitespace-pre-wrap">
-                {displayActivities}
+              <div className="text-base leading-6 text-slate-600 font-medium">
+                {about.activities}
               </div>
             </CardContent>
           </Card>
