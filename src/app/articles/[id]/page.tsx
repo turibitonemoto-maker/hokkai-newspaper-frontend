@@ -5,19 +5,18 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (実用性最優先・最終定着版)
+ * 記事詳細ページ (最終・黄金比・ステルス統合版)
  * 
- * 1. 機能全解放: Google ドライブのツールバー、ポップアップ（別タブ展開）を一切隠さず解放。
- * 2. 視認性確保: 物理的な「ずらし」や「覆い」を撤去し、紙面の隅々まで閲覧可能に。
- * 3. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を全域に適用。
- * 4. コピー許可: 新聞としての利便性を重視し、テキストの選択・コピーを全面的に許可。
+ * 1. ピンポイント・カバースキン: Googleドライブのボタン上に独自のバッジを重ね、UIを私物化。
+ * 2. 黄金比密度: leading-6 (行間) と my-3 (段落余白) を全域に適用。
+ * 3. 視認性100%: 無理なずらしを撤去し、紙面の全域を正しい位置で表示。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -39,8 +38,7 @@ export default function ArticlePage() {
   const standardPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    // プレビュー形式に変換してUIを安定させる
-    if (url.includes('/view') || url.includes('/edit')) {
+    if (url.includes('/view') || url.includes('/edit') || url.includes('/share')) {
       return url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
     }
     return url;
@@ -119,7 +117,7 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* 紙面ビューアー (全機能解放版) */}
+          {/* 紙面ビューアー (カバースキン版) */}
           {standardPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between px-2">
@@ -129,6 +127,14 @@ export default function ArticlePage() {
               </div>
               
               <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200">
+                {/* ポップアップボタンの上に重なるように独自のバッジを配置 */}
+                <div className="absolute top-2 right-2 z-30 pointer-events-none">
+                  <div className="bg-primary text-white p-2.5 rounded-2xl shadow-xl flex items-center gap-2 border-2 border-white/20 backdrop-blur-md">
+                    <ExternalLink size={14} className="animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-widest">Official Viewer</span>
+                  </div>
+                </div>
+
                 <iframe 
                   src={standardPdfUrl} 
                   className="absolute inset-0 w-full h-full border-none"
@@ -138,7 +144,7 @@ export default function ArticlePage() {
               </div>
               
               <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ExternalLink size={12} /> 右上のアイコンから別タブで拡大・印刷が可能です
+                <ShieldCheck size={12} className="text-primary" /> 上記紙面は公式アーカイブより提供されています
               </p>
             </div>
           )}

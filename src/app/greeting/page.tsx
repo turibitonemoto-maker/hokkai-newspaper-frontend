@@ -1,6 +1,6 @@
 'use client';
 
-import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, User, ShieldCheck, Lock } from 'lucide-react';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (実用・黄金比定着版)
+ * 会長挨拶ページ (最終・黄金比定着版)
  * 日本仕様の密度 (leading-6, my-3) を厳格適用。
  */
 export default function GreetingPage() {
@@ -24,7 +24,6 @@ export default function GreetingPage() {
 
   const displayAuthorImageUrl = useMemo(() => {
     let url = greeting?.authorImageUrl || "";
-    // GoogleドライブURLの変換
     if (url.includes('drive.google.com')) {
       url = url.replace(/\/(view|edit|share|usp=drivesdk).*/g, '/preview');
     }
