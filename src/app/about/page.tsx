@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,7 @@ import { MapPin, History, Target, Footprints } from 'lucide-react';
 /**
  * About Us ページ (静的完成形)
  * 不安定な動的連動を排し、1950年創立の威厳と黄金比タイポグラフィを固定。
+ * 閲覧専用サイトとして、常に最高速度で正確な情報を表示します。
  */
 export default function AboutPage() {
   return (
@@ -42,7 +42,7 @@ export default function AboutPage() {
                 <Target size={24} />
                 <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">私たちの目的</h2>
               </div>
-              <p className="text-base leading-relaxed text-slate-600 font-medium">
+              <p className="text-base leading-6 text-slate-600 font-medium">
                 学生の視点から社会や大学の事象を捉え、批判的かつ創造的な言論空間を維持することを目指しています。
               </p>
             </CardContent>
@@ -53,7 +53,7 @@ export default function AboutPage() {
                 <Footprints size={24} />
                 <h2 className="text-2xl font-black tracking-tight uppercase italic text-slate-950">活動内容</h2>
               </div>
-              <p className="text-base leading-relaxed text-slate-600 font-medium">
+              <p className="text-base leading-6 text-slate-600 font-medium">
                 定期的な紙面の発行、ウェブサイトでのニュース配信、学内各部活動への取材、公式行事の報道写真撮影を行っています。
               </p>
             </CardContent>

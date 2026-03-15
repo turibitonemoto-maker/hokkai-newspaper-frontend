@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -9,6 +8,7 @@ import { useMemo } from 'react';
 /**
  * 新聞紙面サムネイル・コンポーネント (道新リスペクト・号数対応版)
  * アスペクト比 1:1.414 (新聞紙面) を維持。
+ * 閲覧専用フロントエンドとしての視認性を追求。
  */
 interface PaperCardProps {
   article: {

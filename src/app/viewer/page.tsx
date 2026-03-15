@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 /**
  * 紙面ビューアー専用ページ (/viewer)
  * 道新リスペクトの「日付別・縦長サムネイル」グリッドレイアウト。
+ * 閲覧専用フロントエンドとして、歴史を美しく整理して表示します。
  */
 export default function ViewerPage() {
   const db = useFirestore();

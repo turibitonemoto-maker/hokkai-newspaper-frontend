@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 
 /**
  * ホームページ (紙面ビューアー強化版・広告最優先レイアウト)
+ * 閲覧専用フロントエンドとして、多角的なニュース体験を提供。
  */
 export default function Home() {
   const db = useFirestore();
