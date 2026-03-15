@@ -3,16 +3,14 @@
 import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where, doc } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
-import { Loader2, Calendar, Megaphone, CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react';
+import { PaperCard } from '@/components/PaperCard';
+import { Loader2, Calendar, Megaphone, CheckCircle2, AlertCircle, ChevronRight, BookOpen } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
-/**
- * トップページ (大規模メディア・戦略的再編版)
- * 「最新」→「広告」→「紙面ビューアー」→「各ジャンル」の順で構成。
- */
 export default function Home() {
   const db = useFirestore();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
@@ -26,7 +24,6 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  // 全公開記事の取得
   const allArticlesRef = useMemoFirebase(() => {
     if (!db) return null;
     return query(
@@ -38,14 +35,6 @@ export default function Home() {
 
   const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
 
-  // メンテナンス設定
-  const siteSettingsRef = useMemoFirebase(() => {
-    if (!db) return null;
-    return doc(db, 'settings', 'maintenance');
-  }, [db]);
-  const { data: settings } = useDoc(siteSettingsRef);
-
-  // 広告取得
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, 'ads');
@@ -58,51 +47,47 @@ export default function Home() {
       if (!ad.imageUrl) return false;
       if (!ad.displayEndTime) return true;
       try {
-        let endTime: Date;
-        if (ad.displayEndTime?.seconds) {
-          endTime = new Date(ad.displayEndTime.seconds * 1000);
-        } else {
-          endTime = new Date(ad.displayEndTime);
-        }
+        let endTime = new Date(ad.displayEndTime?.seconds ? ad.displayEndTime.seconds * 1000 : ad.displayEndTime);
         return endTime.getTime() > now.getTime();
-      } catch (e) {
-        return true; 
-      }
+      } catch (e) { return true; }
     });
     return validAds.length > 0 ? validAds[0] : null;
   }, [ads, now]);
 
-  // カテゴリーリスト（改革後の表示順：Paperを最優先、Campusを削除）
-  const categoryList = ['Paper', 'Event', 'Interview', 'Sports', 'Column', 'Opinion'];
+  const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
 
-  // データ分類ロジック
   const latestArticles = useMemo(() => articles?.slice(0, 4) || [], [articles]);
   
   const categoryGroups = useMemo(() => {
     if (!articles) return {};
     const groups: Record<string, any[]> = {};
     categoryList.forEach(cat => {
-      groups[cat] = articles.filter(a => a.categoryId === cat).slice(0, 4);
+      groups[cat] = articles.filter(a => a.categoryId === cat);
     });
     return groups;
   }, [articles]);
+
+  const paperGroupedByDate = useMemo(() => {
+    const papers = categoryGroups['Paper'] || [];
+    const grouped: Record<string, any[]> = {};
+    papers.forEach(p => {
+      const date = p.publishDate?.split('T')[0] || 'Unknown Date';
+      if (!grouped[date]) grouped[date] = [];
+      grouped[date].push(p);
+    });
+    return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 2); // 最新2日分をトップに
+  }, [categoryGroups]);
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
       {/* 稼働ステータス */}
       <div className="mb-10 flex justify-start">
-        {settings?.isMaintenanceMode ? (
-          <Badge variant="outline" className="gap-2 px-5 py-2 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm text-[10px] tracking-widest uppercase">
-            <AlertCircle size={14} /> STATUS: MAINTENANCE
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="gap-2 px-5 py-2 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm text-[10px] tracking-widest uppercase">
-            <CheckCircle2 size={14} /> STATUS: OPERATIONAL
-          </Badge>
-        )}
+        <Badge variant="outline" className="gap-2 px-5 py-2 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm text-[10px] tracking-widest uppercase">
+          <CheckCircle2 size={14} /> STATUS: OPERATIONAL
+        </Badge>
       </div>
 
-      {/* --- セクション 1: 最新ニュース --- */}
+      {/* 最新ニュース */}
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-12">
           <div className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
@@ -112,81 +97,85 @@ export default function Home() {
             <Calendar size={14} className="text-primary" /> <span>{currentTime || 'Synchronizing...'}</span>
           </div>
         </div>
-
-        {isArticlesLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="animate-spin text-primary mb-6 size-12" strokeWidth={3} />
-            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Syncing Archives...</p>
-          </div>
-        ) : latestArticles.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10 animate-fade-in">
-            {latestArticles.map((article, idx) => (
-              <ArticleCard key={article.id} article={article as any} priority={idx < 4} />
-            ))}
-          </div>
-        ) : (
-          <div className="py-20 text-center bg-white rounded-[48px] border-2 border-dashed border-slate-100">
-            <p className="text-slate-300 font-black uppercase text-xs tracking-[0.5em]">No stories available</p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
+          {latestArticles.map((article, idx) => (
+            <ArticleCard key={article.id} article={article as any} priority={idx < 4} />
+          ))}
+        </div>
       </div>
 
-      {/* 広告エリア (最新ニュースの直下に移設) */}
+      {/* 広告エリア */}
       <div className="mb-32">
         <div className="flex items-center gap-2 mb-6">
           <Megaphone size={16} className="text-primary" />
           <span className="text-xs font-black uppercase tracking-[0.5em] text-slate-900 italic">SPONSORED MEDIA</span>
         </div>
-        
-        {isAdsLoading ? (
-          <div className="w-full h-32 bg-slate-50 rounded-[32px] animate-pulse" />
-        ) : activeAd ? (
+        {activeAd ? (
           <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-32 md:h-48 rounded-[40px] md:rounded-[56px] overflow-hidden group shadow-2xl ring-1 ring-slate-100 bg-slate-50 transition-all hover:ring-primary/20">
-            <Image 
-              src={activeAd.imageUrl} 
-              alt={activeAd.title || "Ad"} 
-              fill 
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              className="object-cover transition-transform duration-1000 group-hover:scale-105" 
-              priority 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+            <Image src={activeAd.imageUrl} alt="Ad" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" priority />
           </Link>
         ) : (
-          <div className="relative w-full h-32 bg-slate-50 rounded-[40px] overflow-hidden shadow-inner border border-dashed border-slate-200 flex items-center justify-center">
-            <p className="text-[10px] font-black tracking-[0.6em] text-slate-300 uppercase">Public Information Space</p>
+          <div className="w-full h-32 bg-slate-50 rounded-[40px] border border-dashed border-slate-200 flex items-center justify-center text-[10px] font-black tracking-[0.6em] text-slate-300 uppercase">
+            Public Information Space
           </div>
         )}
       </div>
 
-      {/* --- セクション 2～N: カテゴリー別ニュース --- */}
-      <div className="space-y-32">
-        {categoryList.map((category) => {
-          const catArticles = categoryGroups[category] || [];
-          if (catArticles.length === 0) return null;
+      {/* 紙面ビューアーセクション (道新リバイバル) */}
+      <div className="mb-32">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg">
+              <BookOpen size={24} />
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 font-yuji">紙面ビューアー</h2>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">サンプルを見る</Button>
+            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">使い方を見る</Button>
+          </div>
+        </div>
 
+        <div className="space-y-12">
+          {paperGroupedByDate.map(([date, papers]) => (
+            <div key={date} className="space-y-6">
+              <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest">
+                {date.replace(/-/g, '/')} (最新紙面)
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
+                {papers.map((paper) => (
+                  <PaperCard key={paper.id} article={paper as any} />
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="flex justify-end pt-4">
+            <Link href="/category/Paper" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
+              VIEW ARCHIVES <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* その他のカテゴリー */}
+      <div className="space-y-32">
+        {categoryList.filter(c => c !== 'Paper').map((category) => {
+          const catArticles = categoryGroups[category]?.slice(0, 4) || [];
+          if (catArticles.length === 0) return null;
           return (
-            <div key={category} className="animate-fade-in">
+            <div key={category}>
               <div className="flex items-center justify-between mb-10 border-l-8 border-primary pl-6">
                 <div>
-                  <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-slate-950">
-                    {category === 'Paper' ? '紙面ビューアー' : category}
-                  </h2>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2">
-                    {category} SECTION
-                  </p>
+                  <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-slate-950">{category}</h2>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2">{category} SECTION</p>
                 </div>
-                <Link 
-                  href={`/category/${category}`} 
-                  className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors"
-                >
-                  VIEW ALL <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+                <Link href={`/category/${category}`} className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-slate-950 transition-colors">
+                  VIEW ALL <ChevronRight size={14} />
                 </Link>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
                 {catArticles.map((article) => (
-                  <ArticleCard key={`${category}-${article.id}`} article={article as any} />
+                  <ArticleCard key={article.id} article={article as any} />
                 ))}
               </div>
             </div>
