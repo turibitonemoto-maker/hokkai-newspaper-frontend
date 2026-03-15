@@ -1,14 +1,38 @@
+
+'use client';
+
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { MapPin, History, Target, Footprints } from 'lucide-react';
+import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucide-react';
 
 /**
- * About Us ページ (原点回帰・完全静的・黄金比版)
- * 不安定な連動を排除し、プログラム内に司令官指定の文章を直接刻印。
- * 日本仕様の黄金比 (leading-relaxed, mb-8) を適用し、最高の読み心地を実現。
+ * About Us ページ (再構築プロトコル適用版)
+ * 指定された Firestore パス (/settings/about) から content フィールドを取得して連動。
+ * デザインの骨格と黄金比は死守。
  */
 export default function AboutPage() {
+  const db = useFirestore();
+  
+  // プロトコル指定のパス: settings/about
+  const aboutRef = useMemoFirebase(() => {
+    if (!db) return null;
+    return doc(db, 'settings', 'about');
+  }, [db]);
+
+  const { data: aboutData, isLoading } = useDoc(aboutRef);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-primary mb-4" size={40} />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Connecting to Archives...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
@@ -20,21 +44,25 @@ export default function AboutPage() {
         </header>
 
         <section className="max-w-none">
-          <div className={cn(
-            "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
-            "prose-p:leading-relaxed prose-p:mb-8 prose-p:text-lg md:prose-lg"
-          )}>
-            <p>
-              1950年の創立以来、北海学園大学一部新聞会は、学生の視点から大学の「今」を記録し続けてきました。
-              学内行事の取材から、学生生活の課題、地域のニュースまで、記者が現場に足を運び、紡いできた言葉を届けることが私たちの使命です。
-            </p>
-            <p>
-              現在、メディアの形はデジタルへと移行しつつありますが、私たちの本質は変わりません。
-              AIのフィルターを通さず、人間が直接感じ、考えた真実を、純粋な形で読者の皆様へお届けします。
-            </p>
-          </div>
+          {aboutData?.content ? (
+            <div className={cn(
+              "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
+              "prose-p:leading-relaxed prose-p:mb-8 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
+            )}
+            dangerouslySetInnerHTML={{ __html: aboutData.content }}
+            />
+          ) : (
+            <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] p-12 text-center">
+              <AlertCircle className="mx-auto text-slate-300 mb-4" size={48} />
+              <p className="text-slate-400 font-bold">
+                NO DATA (連動待機中)<br />
+                <span className="text-xs font-medium">管理サイトの「About Us編集」から保存してください。</span>
+              </p>
+            </div>
+          )}
         </section>
 
+        {/* 骨格部分は静的に維持（必要に応じてここも連動可能） */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="rounded-[40px] border-none shadow-xl bg-slate-50 ring-1 ring-slate-100/50">
             <CardContent className="p-10 space-y-6">
