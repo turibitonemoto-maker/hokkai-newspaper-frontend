@@ -8,9 +8,9 @@ import { Calendar, ExternalLink, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (浄化・最適化版)
+ * 記事カードコンポーネント (浄化・コピーガード版)
  * HTMLタグを剥離し、純粋なテキストのみを抽出。
- * Image sizes を最適化。
+ * select-none を適用し、不用意なコピーを防止。
  */
 interface ArticleCardProps {
   article: {
@@ -36,7 +36,6 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    // HTMLタグを剥離し、空白と特殊文字を整理
     const plainText = rawContent
       .replace(/<[^>]*>?/gm, "")
       .replace(/&nbsp;/g, " ")
@@ -49,7 +48,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
 
   return (
-    <Link href={`/articles/${article.id}`} className="group block h-full">
+    <Link href={`/articles/${article.id}`} className="group block h-full select-none">
       <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-2xl transition-all duration-500 rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20">
         <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
           {hasImage ? (
