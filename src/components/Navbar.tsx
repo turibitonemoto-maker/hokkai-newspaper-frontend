@@ -23,13 +23,13 @@ export function Navbar() {
 
   const mainLinks = [
     { label: 'トップ', href: '/' },
-    { label: '紙面ビューアー', href: '/category/Paper', icon: <FileText size={12} className="text-primary" /> },
     { label: 'キャンパス', href: '/category/Campus' },
     { label: 'イベント', href: '/category/Event' },
     { label: 'インタビュー', href: '/category/Interview' },
     { label: 'スポーツ', href: '/category/Sports' },
     { label: 'コラム', href: '/category/Column' },
     { label: 'オピニオン', href: '/category/Opinion' },
+    { label: '紙面ビューアー', href: '/category/Paper', icon: <FileText size={12} className="text-primary" /> },
   ];
 
   const subLinks = [
