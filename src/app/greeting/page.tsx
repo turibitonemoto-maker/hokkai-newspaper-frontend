@@ -4,14 +4,13 @@
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ (ビルド・最適化版)
- * 「content」フィールドを唯一の真実として読み込み、
- * 日本仕様の黄金比密度（leading-6, my-3）を適用します。
+ * 会長挨拶ページ (Plan C・安定化版)
+ * Base64画像対応および、日本仕様の黄金比密度（leading-6, my-3）を適用。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -36,14 +35,13 @@ export default function GreetingPage() {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
         <Loader2 className="animate-spin text-primary mb-4" size={40} />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Database Synchronizing...</p>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Message...</p>
       </div>
     );
   }
 
-  // 「content」フィールドを最優先。
   const displayTitle = greeting?.title || defaultData.title;
-  const displayContent = greeting?.content || greeting?.message || defaultData.content;
+  const displayContent = greeting?.content || defaultData.content;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
   const displayAuthorImageUrl = greeting?.authorImageUrl || defaultData.authorImageUrl;
 
@@ -56,7 +54,7 @@ export default function GreetingPage() {
         </header>
 
         <div className="space-y-12">
-          {/* 会長写真 */}
+          {/* 会長写真 (フォールバック強化) */}
           <div className="flex justify-center">
             <div className="w-64 h-80 relative rounded-[40px] overflow-hidden shadow-2xl bg-slate-50 ring-8 ring-white">
               {displayAuthorImageUrl ? (
@@ -69,14 +67,14 @@ export default function GreetingPage() {
                   priority
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-black uppercase text-[10px] tracking-widest text-center px-4 leading-relaxed">
-                  Official Photo<br />Available
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-4 bg-slate-100">
+                  <User size={64} className="opacity-20" />
+                  <span className="font-black text-[9px] uppercase tracking-widest text-center px-4">Official Portrait</span>
                 </div>
               )}
             </div>
           </div>
           
-          {/* メッセージ本文：日本仕様の黄金比密度を適用 */}
           <div className="space-y-10">
             <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
               {displayTitle}
@@ -90,7 +88,6 @@ export default function GreetingPage() {
               dangerouslySetInnerHTML={{ __html: displayContent }}
             />
 
-            {/* 署名 */}
             <div className="pt-10 border-t border-slate-100 text-center">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">President of Ichibu Newspaper Group</p>
               <p className="text-3xl md:text-5xl font-black italic text-slate-950">{displayAuthorName}</p>

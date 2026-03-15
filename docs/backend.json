@@ -5,146 +5,51 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Article",
       "type": "object",
-      "description": "Represents a news article. Supports both rich HTML (htmlContent) and plain text (content) for compatibility with management tools.",
+      "description": "Represents a news article. Supports rich HTML (content) and PDF paper viewer (pdfUrl).",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Article entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The main title of the article."
-        },
-        "noteUrl": {
-          "type": "string",
-          "description": "The full URL of the original article on note.com, if applicable.",
-          "format": "uri"
-        },
-        "source": {
-          "type": "string",
-          "description": "The origin of the article (e.g., 'note', 'internal')."
-        },
-        "publishDate": {
-          "type": "string",
-          "description": "The date and time the article was published.",
-          "format": "date-time"
-        },
-        "lastSyncedDate": {
-          "type": "string",
-          "description": "The date and time when the article's content was last synchronized.",
-          "format": "date-time"
-        },
-        "htmlContent": {
-          "type": "string",
-          "description": "The full HTML content of the article (Primary)."
-        },
-        "content": {
-          "type": "string",
-          "description": "The plain text content of the article (Fallback for simple management tools)."
-        },
-        "summary": {
-          "type": "string",
-          "description": "A concise, AI-generated summary of the article's content."
-        },
-        "mainImageUrl": {
-          "type": "string",
-          "description": "URL of the primary image associated with the article.",
-          "format": "uri"
-        },
-        "isPublished": {
-          "type": "boolean",
-          "description": "Flag indicating whether the article is visible to public users."
-        },
-        "categoryId": {
-          "type": "string",
-          "description": "Reference to the Category this article belongs to."
-        },
-        "authorName": {
-          "type": "string",
-          "description": "The name of the author."
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "noteUrl": { "type": "string", "format": "uri" },
+        "pdfUrl": { "type": "string", "description": "Google Drive PDF embed URL for paper viewer." },
+        "source": { "type": "string" },
+        "publishDate": { "type": "string", "format": "date-time" },
+        "lastSyncedDate": { "type": "string", "format": "date-time" },
+        "content": { "type": "string", "description": "HTML content (supports Base64 images)." },
+        "summary": { "type": "string" },
+        "mainImageUrl": { "type": "string", "format": "uri" },
+        "isPublished": { "type": "boolean" },
+        "categoryId": { "type": "string" },
+        "authorName": { "type": "string" }
       },
-      "required": [
-        "id",
-        "title",
-        "publishDate",
-        "isPublished",
-        "categoryId"
-      ]
+      "required": ["id", "title", "publishDate", "isPublished", "categoryId"]
     },
     "Category": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Category",
       "type": "object",
-      "description": "Organizes articles into thematic groups.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Category entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The human-readable name of the category."
-        }
+        "id": { "type": "string" },
+        "name": { "type": "string" }
       },
-      "required": [
-        "id",
-        "name"
-      ]
-    },
-    "HeroImage": {
-      "title": "HeroImage",
-      "type": "object",
-      "description": "トップページのヒーローセクションに表示される背景画像。",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "imageUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "order": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "id",
-        "imageUrl"
-      ]
+      "required": ["id", "name"]
     },
     "Advertisement": {
       "title": "Advertisement",
       "type": "object",
-      "description": "サイト内に表示される広告枠。",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "imageUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "linkUrl": {
-          "type": "string",
-          "format": "uri"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "linkUrl": { "type": "string", "format": "uri" },
+        "displayEndTime": { "type": "string" }
       },
-      "required": [
-        "id",
-        "imageUrl"
-      ]
+      "required": ["id", "imageUrl"]
     },
     "Greeting": {
       "title": "Greeting",
       "type": "object",
-      "description": "会長挨拶のデータ。",
       "properties": {
         "title": { "type": "string" },
-        "message": { "type": "string" },
+        "content": { "type": "string" },
         "authorName": { "type": "string" },
         "authorImageUrl": { "type": "string", "format": "uri" }
       }
@@ -152,60 +57,18 @@
     "SiteSettings": {
       "title": "SiteSettings",
       "type": "object",
-      "description": "サイト全体の動作設定。",
       "properties": {
-        "isMaintenanceMode": {
-          "type": "boolean",
-          "description": "メンテナンスモードの有効/無効フラグ。"
-        },
-        "maintenanceMessage": {
-          "type": "string",
-          "description": "メンテナンス画面に表示するメッセージ。"
-        }
+        "isMaintenanceMode": { "type": "boolean" },
+        "maintenanceMessage": { "type": "string" }
       }
     }
   },
-  "auth": {
-    "providers": [
-      "google.com"
-    ]
-  },
+  "auth": { "providers": ["google.com"] },
   "firestore": {
-    "/articles/{articleId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Article"
-      },
-      "description": "Stores individual articles."
-    },
-    "/categories/{categoryId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Category"
-      },
-      "description": "Stores article categories."
-    },
-    "/hero-images/{imageId}": {
-      "schema": {
-        "$ref": "#/backend/entities/HeroImage"
-      },
-      "description": "トップページの背景画像リスト。"
-    },
-    "/ads/{adId}": {
-      "schema": {
-        "$ref": "#/backend/entities/Advertisement"
-      },
-      "description": "広告データ。"
-    },
-    "/settings/greeting": {
-      "schema": {
-        "$ref": "#/backend/entities/Greeting"
-      },
-      "description": "会長挨拶データ。"
-    },
-    "/settings/maintenance": {
-      "schema": {
-        "$ref": "#/backend/entities/SiteSettings"
-      },
-      "description": "メンテナンスモード設定。"
-    }
+    "/articles/{articleId}": { "schema": { "$ref": "#/backend/entities/Article" }, "description": "Articles collection." },
+    "/categories/{categoryId}": { "schema": { "$ref": "#/backend/entities/Category" }, "description": "Categories." },
+    "/ads/{adId}": { "schema": { "$ref": "#/backend/entities/Advertisement" }, "description": "Ads." },
+    "/settings/president_greeting": { "schema": { "$ref": "#/backend/entities/Greeting" }, "description": "President greeting." },
+    "/settings/maintenance": { "schema": { "$ref": "#/backend/entities/SiteSettings" }, "description": "Global settings." }
   }
 }

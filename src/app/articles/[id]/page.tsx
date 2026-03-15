@@ -6,14 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (ビルド・黄金比最適化版)
+ * 記事詳細ページ (道新スタイル・PDFビューアー統合版)
  * 日本仕様の行間(leading-6)と段落間余白(my-3)を適用。
  */
 export default function ArticlePage() {
@@ -31,16 +31,23 @@ export default function ArticlePage() {
 
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
-  const mainContent = useMemo(() => 
-    article?.content || article?.htmlContent || ''
-  , [article?.content, article?.htmlContent]);
+  const mainContent = useMemo(() => article?.content || '', [article?.content]);
+
+  // GoogleドライブのPDFリンクを埋め込み用に変換
+  const embedPdfUrl = useMemo(() => {
+    if (!article?.pdfUrl) return null;
+    if (article.pdfUrl.includes('drive.google.com')) {
+      return article.pdfUrl.replace(/\/view\?usp=sharing|\/view\?usp=drivesdk/g, '/preview');
+    }
+    return article.pdfUrl;
+  }, [article?.pdfUrl]);
 
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-6">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase animate-pulse">Syncing Story...</p>
+          <p className="text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase animate-pulse">Synchronizing Media...</p>
         </div>
       </div>
     );
@@ -50,11 +57,8 @@ export default function ArticlePage() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white">
         <div className="max-w-md w-full text-center space-y-6">
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">Story Not Found</h1>
-          <p className="text-slate-500 font-medium">お探しの記事は見つかりませんでした。</p>
-          <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black">
-            TOPに戻る
-          </Button>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">Not Found</h1>
+          <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black">TOPに戻る</Button>
         </div>
       </div>
     );
@@ -116,7 +120,24 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {displayImage && (
+          {/* PDF紙面ビューアー (道新スタイル) */}
+          {embedPdfUrl && (
+            <div className="mb-16 space-y-4">
+              <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
+                <FileText size={16} /> Paper Edition Viewer
+              </div>
+              <div className="relative aspect-[1/1.4] w-full rounded-[32px] overflow-hidden border shadow-2xl bg-slate-100 ring-1 ring-slate-200">
+                <iframe 
+                  src={embedPdfUrl} 
+                  className="absolute inset-0 w-full h-full border-none"
+                  allow="autoplay"
+                />
+              </div>
+              <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">※ビューアーが表示されない場合は再読み込みしてください</p>
+            </div>
+          )}
+
+          {displayImage && !embedPdfUrl && (
             <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 shadow-2xl ring-1 ring-slate-100 bg-slate-50">
               <Image
                 src={displayImage}
@@ -132,7 +153,7 @@ export default function ArticlePage() {
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter transition-all font-medium",
+                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter font-medium",
                 "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl prose-img:shadow-lg",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
