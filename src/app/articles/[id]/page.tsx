@@ -13,8 +13,8 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細ページ (ビルド・黄金比最適化版)
- * 司令部の指示に基づき、行間(leading-6)と段落間余白(my-3)を固定。
- * 日本のメディアとして最も読みやすい密度を実現します。
+ * 管制の指示に基づき、行間(leading-6)と段落間余白(my-3)を固定。
+ * whitespace-pre-wrap を追放し、リッチテキストとしての密度を最大化。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -131,7 +131,7 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* 本文：日本仕様黄金比（leading-6, my-3）を適用 */}
+          {/* 本文：日本仕様黄金比を適用 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(

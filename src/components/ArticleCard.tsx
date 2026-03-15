@@ -9,8 +9,8 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント (ビルド・同期最適化版)
- * 指令に基づき、抜粋からHTMLタグを剥がしてテキストのみを表示（完全浄化）。
- * next/image に適切な sizes を設定し、読み込み警告を完全に解消します。
+ * 指令に基づき、スニペットからHTMLタグを剥がしてテキストのみを表示（完全浄化）。
+ * Firebaseの content フィールドを最優先で参照。
  */
 interface ArticleCardProps {
   article: {
@@ -32,7 +32,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || "";
   const isExternal = article.source === 'note';
   
-  // HTMLタグを浄化してテキストのみを抽出
+  // HTMLタグを浄化してテキストのみを抽出 (contentを最優先)
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
     // 正規表現でHTMLタグを除去
