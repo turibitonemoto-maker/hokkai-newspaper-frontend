@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -14,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 /**
  * 記事詳細ページ (最終・完全版)
  * AI機能を完全に排除し、記者の筆致をそのまま届けます。
- * Typography導入により note のような美しいレンダリングを実現。
+ * Typographyの行間・余白設定を日本人向けに最適化しました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -144,7 +145,8 @@ export default function ArticlePage() {
           <div className="max-w-3xl mx-auto relative">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 prose-p:leading-[1.8] prose-p:text-slate-800 transition-all duration-300 font-medium",
+                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 transition-all duration-300 font-medium",
+                "prose-p:leading-relaxed prose-p:my-4 prose-p:text-slate-800",
                 fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
                 fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
                 fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 

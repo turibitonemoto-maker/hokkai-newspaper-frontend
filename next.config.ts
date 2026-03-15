@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -11,6 +12,12 @@ const nextConfig: NextConfig = {
   transpilePackages: ['firebase', '@firebase/firestore', '@firebase/app', '@firebase/auth'],
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: 'placehold.co',
