@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,15 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, FileText, ShieldCheck, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (道新スタイル・ステルスビューアー統合版)
- * GoogleドライブのUIを隠蔽し、コピーリスクを軽減。
+ * 記事詳細ページ (ステルス・シールド強化版)
+ * Googleドライブのポップアウトボタンを物理レイヤーで遮断。
  * 日本仕様の行間(leading-6)と段落間余白(my-3)を適用。
  */
 export default function ArticlePage() {
@@ -38,35 +37,24 @@ export default function ArticlePage() {
   const stealthPdfUrl = useMemo(() => {
     if (!article?.pdfUrl) return null;
     let url = article.pdfUrl;
-    if (url.includes('drive.google.com')) {
-      // /view や /edit などの末尾を /preview に置換してUIを隠す
-      url = url.replace(/\/view\?usp=sharing|\/view\?usp=drivesdk|\/edit\?usp=sharing|\/view$/g, '/preview');
-      // 埋め込み用パラメータを追加（Googleドライブの制限内でUIを最小化）
-      if (!url.includes('preview')) {
-          url = url.split('?')[0] + '/preview';
-      }
-    }
+    // /view, /edit, /share などを全て /preview に置換
+    url = url.replace(/\/view.*|\/edit.*|\/share.*/g, '/preview');
     return url;
   }, [article?.pdfUrl]);
 
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-6">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-slate-300 tracking-[0.5em] uppercase animate-pulse">Synchronizing Media...</p>
-        </div>
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!article || !isPublic) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white">
-        <div className="max-w-md w-full text-center space-y-6">
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">Not Found</h1>
-          <Button onClick={() => router.push('/')} className="rounded-full px-10 h-12 font-black">TOPに戻る</Button>
-        </div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 bg-white text-center">
+        <h1 className="text-3xl font-black mb-6">Article Not Found</h1>
+        <Button onClick={() => router.push('/')} className="rounded-full px-10">TOPに戻る</Button>
       </div>
     );
   }
@@ -127,38 +115,48 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* ステルス・PDF紙面ビューアー (道新スタイル) */}
+          {/* ステルス・シールド・PDFビューアー */}
           {stealthPdfUrl && (
             <div className="mb-16 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
                   <FileText size={16} /> Paper Edition Viewer
                 </div>
-                <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-300 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border">
-                  <ShieldCheck size={12} /> Protected Content
+                <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 shadow-sm">
+                  <ShieldCheck size={12} /> Official Protection Enabled
                 </div>
               </div>
               
-              <div className="relative aspect-[1/1.414] w-full rounded-[32px] overflow-hidden border shadow-2xl bg-slate-100 ring-1 ring-slate-200">
-                {/* ステルスiframe: sandbox属性でDLやポップアップを制限 */}
+              <div className="relative aspect-[1/1.414] w-full rounded-[40px] overflow-hidden border-8 border-white shadow-2xl bg-slate-100 ring-1 ring-slate-200 group">
+                {/* ステルスiframe */}
                 <iframe 
                   src={stealthPdfUrl} 
-                  className="absolute inset-0 w-full h-full border-none"
+                  className="absolute inset-0 w-full h-[105%] -top-[2.5%] border-none"
                   allow="autoplay"
                   sandbox="allow-scripts allow-same-origin"
                 />
-                {/* 読書を妨げない程度の「保護感」を演出する透明な枠 */}
-                <div className="absolute inset-0 pointer-events-none ring-inset ring-[20px] ring-white/10" />
+                
+                {/* ゴースト・カバー (Ghost Cover): 右上のポップアウトボタンを物理的に隠蔽 */}
+                <div className="absolute top-0 right-0 w-32 h-16 bg-transparent z-20 cursor-default" />
+                
+                {/* 境界保護レイヤー */}
+                <div className="absolute inset-0 pointer-events-none ring-inset ring-[1px] ring-black/5 rounded-[32px]" />
+                
+                {/* ウォーターマーク演出 */}
+                <div className="absolute bottom-4 right-8 flex items-center gap-2 opacity-20 pointer-events-none select-none">
+                  <Lock size={12} />
+                  <span className="text-[10px] font-black tracking-widest uppercase">HGU NEWS OFFICIAL</span>
+                </div>
               </div>
               
-              <p className="text-[9px] text-center text-slate-400 font-bold uppercase tracking-[0.3em] py-2">
+              <p className="text-[9px] text-center text-slate-400 font-bold uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl">
                 ※公式ビューアーで閲覧中。無断転載・複製を禁じます。
               </p>
             </div>
           )}
 
           {displayImage && !stealthPdfUrl && (
-            <div className="relative aspect-[16/9] rounded-[32px] md:rounded-[56px] overflow-hidden mb-16 shadow-2xl ring-1 ring-slate-100 bg-slate-50">
+            <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden mb-16 shadow-2xl ring-8 ring-white bg-slate-50">
               <Image
                 src={displayImage}
                 alt={article.title}
@@ -173,8 +171,9 @@ export default function ArticlePage() {
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
-                "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter font-medium",
-                "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl prose-img:shadow-lg",
+                "prose prose-slate max-w-none font-medium text-slate-800",
+                "prose-p:leading-6 prose-p:my-3 prose-li:my-1",
+                "prose-img:rounded-[32px] prose-img:shadow-xl prose-img:ring-8 prose-img:ring-white",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 
