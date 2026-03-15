@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -9,8 +10,7 @@ import { useMemo } from 'react';
 
 /**
  * 記事カードコンポーネント (ビルド・同期最適化版)
- * 指令に基づき、スニペットからHTMLタグを剥がしてテキストのみを表示（完全浄化）。
- * Firebaseの content フィールドを最優先で参照。
+ * HTMLタグを完全に剥離し、純粋なテキストのみを抽出します。
  */
 interface ArticleCardProps {
   article: {
@@ -32,7 +32,6 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const displayImage = article.mainImageUrl || "";
   const isExternal = article.source === 'note';
   
-  // HTMLタグを浄化してテキストのみを抽出 (contentを最優先)
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
     // 正規表現でHTMLタグを除去

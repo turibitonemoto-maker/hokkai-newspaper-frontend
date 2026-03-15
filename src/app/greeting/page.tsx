@@ -10,14 +10,12 @@ import { cn } from '@/lib/utils';
 
 /**
  * 会長挨拶ページ (ビルド・最適化版)
- * 指令に基づき、Firestoreの「settings/president_greeting」ドキュメントの
- * 「content」フィールドを唯一の真実として読み込みます。
- * 日本仕様の密度（leading-6, my-3）を適用し、不自然な余白を排除。
+ * 「content」フィールドを唯一の真実として読み込み、
+ * 日本仕様の黄金比密度（leading-6, my-3）を適用します。
  */
 export default function GreetingPage() {
   const db = useFirestore();
   
-  // READMEおよび聖典の指示に基づく取得パス：settings/president_greeting
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'president_greeting');
@@ -25,7 +23,6 @@ export default function GreetingPage() {
 
   const { data: greeting, isLoading } = useDoc(greetingRef);
 
-  // デフォルトデータ（フェイルセーフ）
   const defaultData = {
     title: "「伝える力」で、大学をより豊かに。",
     content: `<p>北海学園大学一部新聞会のウェブサイトを訪問いただき、ありがとうございます。</p>

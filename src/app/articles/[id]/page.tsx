@@ -15,7 +15,6 @@ import { Separator } from '@/components/ui/separator';
 /**
  * 記事詳細ページ (ビルド・黄金比最適化版)
  * 日本仕様の行間(leading-6)と段落間余白(my-3)を適用。
- * Firebase Storage等の画像ドメインを許可し、表示を安定化。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -30,7 +29,6 @@ export default function ArticlePage() {
 
   const { data: article, isLoading } = useDoc(articleRef);
 
-  // コンテンツの抽出 (contentフィールドを最優先)
   const isPublic = article?.isPublished === true;
   const displayImage = article?.mainImageUrl || "";
   const mainContent = useMemo(() => 
@@ -65,7 +63,6 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
-        {/* ヘッダー操作エリア */}
         <div className="flex items-center justify-between mb-10">
           <Button 
             variant="ghost" 
@@ -132,7 +129,6 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* 本文：日本仕様黄金比を適用 */}
           <div className="max-w-3xl mx-auto">
             <div 
               className={cn(
