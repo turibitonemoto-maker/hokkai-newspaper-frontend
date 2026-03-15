@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -16,7 +17,7 @@ import { cn } from '@/lib/utils';
 export default function GreetingPage() {
   const db = useFirestore();
   
-  // READMEおよび管制の指示に基づく取得パス：settings/president_greeting
+  // READMEおよび聖典の指示に基づく取得パス：settings/president_greeting
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
     return doc(db, 'settings', 'president_greeting');
@@ -31,7 +32,7 @@ export default function GreetingPage() {
 <p>私たちは1950年の創立以来、学生の視点から大学の「いま」を記録し続けてきました。</p>
 <p>これからも、学生、教職員、そして地域社会の皆様を繋ぐ架け橋として、真摯に活動を続けてまいります。</p>`,
     authorName: "北海学園大学一部新聞会 会長",
-    authorImageUrl: null
+    authorImageUrl: ""
   };
 
   if (isLoading) {
@@ -86,7 +87,7 @@ export default function GreetingPage() {
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-700 mx-auto transition-all",
-                "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl",
+                "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl prose-img:shadow-md",
                 "md:prose-lg"
               )}
               dangerouslySetInnerHTML={{ __html: displayContent }}

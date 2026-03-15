@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,8 +14,8 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細ページ (ビルド・黄金比最適化版)
- * 管制の指示に基づき、行間(leading-6)と段落間余白(my-3)を固定。
- * whitespace-pre-wrap を追放し、リッチテキストとしての密度を最大化。
+ * 日本仕様の行間(leading-6)と段落間余白(my-3)を適用。
+ * Firebase Storage等の画像ドメインを許可し、表示を安定化。
  */
 export default function ArticlePage() {
   const { id } = useParams();
