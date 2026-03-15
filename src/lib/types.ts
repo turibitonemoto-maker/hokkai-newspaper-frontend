@@ -1,4 +1,4 @@
-export type Category = 'Campus' | 'Event' | 'Interview' | 'Sports' | 'Opinion';
+export type Category = 'Campus' | 'Event' | 'Interview' | 'Sports' | 'Column' | 'Opinion' | 'Paper';
 
 export interface Article {
   id: string;

@@ -25,8 +25,11 @@ export function Navbar() {
     { label: 'トップ', href: '/' },
     { label: '紙面ビューアー', href: '/category/Paper', icon: <FileText size={12} className="text-primary" /> },
     { label: 'キャンパス', href: '/category/Campus' },
+    { label: 'イベント', href: '/category/Event' },
     { label: 'インタビュー', href: '/category/Interview' },
     { label: 'スポーツ', href: '/category/Sports' },
+    { label: 'コラム', href: '/category/Column' },
+    { label: 'オピニオン', href: '/category/Opinion' },
   ];
 
   const subLinks = [
@@ -62,7 +65,7 @@ export function Navbar() {
 
             {!isSearchOpen && (
               <nav className="flex items-center gap-1 md:gap-2 py-2 overflow-hidden">
-                <div className="hidden md:flex items-center gap-1">
+                <div className="hidden xl:flex items-center gap-1">
                   {mainLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -78,13 +81,13 @@ export function Navbar() {
                   ))}
                 </div>
 
-                <div className="flex md:hidden items-center gap-0.5">
-                  {mainLinks.slice(0, 3).map((link) => (
+                <div className="flex xl:hidden items-center gap-0.5">
+                  {mainLinks.slice(0, 4).map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       className={cn(
-                        "text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1",
+                        "text-[10px] md:text-xs font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg transition-all whitespace-nowrap flex items-center gap-1",
                         pathname === link.href ? "bg-slate-100 text-primary" : "text-slate-600 hover:text-primary hover:bg-slate-50"
                       )}
                     >
@@ -94,12 +97,12 @@ export function Navbar() {
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-0.5">
+                      <button className="text-[10px] md:text-xs font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-0.5">
                         その他 <ChevronDown size={10} />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl min-w-[120px]">
-                      {mainLinks.slice(3).map((link) => (
+                      {mainLinks.slice(4).map((link) => (
                         <DropdownMenuItem key={link.href} asChild>
                           <Link href={link.href} className="w-full text-xs font-bold py-2">
                             {link.label}
