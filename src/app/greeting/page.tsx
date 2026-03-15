@@ -8,8 +8,8 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * 会長挨拶ページ (最終・完全同期版)
- * 管理画面の「ArticleEditor」と同じシステム（contentフィールド/HTML）に統合。
+ * 会長挨拶ページ (ビルド最適化版)
+ * 管理画面の「content」フィールドと完全に同期。
  * 日本人が最も読みやすい黄金比の密度（leading-6 / my-3）を定義。
  */
 export default function GreetingPage() {
@@ -84,7 +84,7 @@ export default function GreetingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
                 {displayTitle}
               </h2>
-              {/* 日本人が最も読みやすい密度に固定。whitespace-pre-wrap を追放 */}
+              {/* 日本人が最も読みやすい密度に固定 */}
               <div 
                 className={cn(
                   "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",

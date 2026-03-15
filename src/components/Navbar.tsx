@@ -16,7 +16,7 @@ import {
 
 /**
  * 2段構成のナビゲーションバー。
- * ロゴは「北海学園大学新聞」とし、団体正式名称とは使い分け。
+ * ロゴを「北海学園大学新聞」に設定。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -51,14 +51,8 @@ export function Navbar() {
     }
   };
 
-  // モバイルで最初に表示する数
-  const mobileVisibleCount = 3;
-  const mobileVisibleLinks = mainLinks.slice(0, mobileVisibleCount);
-  const mobileHiddenLinks = mainLinks.slice(mobileVisibleCount);
-
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
-      {/* 1段目: ロゴと主要メニュー */}
       <div className="w-full border-b bg-white relative">
         <div className="max-w-[1280px] mx-auto px-4 h-20 md:h-24 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-8 flex-grow">
@@ -72,8 +66,7 @@ export function Navbar() {
             </Link>
 
             {!isSearchOpen && (
-              <nav className="flex items-center gap-1 md:gap-2 py-2 animate-in fade-in duration-500 overflow-hidden">
-                {/* PC版: すべて表示 */}
+              <nav className="flex items-center gap-1 md:gap-2 py-2 overflow-hidden">
                 <div className="hidden md:flex items-center gap-1">
                   {mainLinks.map((link) => (
                     <Link
@@ -81,9 +74,7 @@ export function Navbar() {
                       href={link.href}
                       className={cn(
                         "text-sm font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-all whitespace-nowrap",
-                        pathname === link.href 
-                          ? "bg-slate-100 text-primary" 
-                          : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                        pathname === link.href ? "bg-slate-100 text-primary" : "text-slate-600 hover:text-primary hover:bg-slate-50"
                       )}
                     >
                       {link.label}
@@ -91,17 +82,14 @@ export function Navbar() {
                   ))}
                 </div>
 
-                {/* モバイル版: 一部表示 + その他 */}
                 <div className="flex md:hidden items-center gap-0.5">
-                  {mobileVisibleLinks.map((link) => (
+                  {mainLinks.slice(0, 3).map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       className={cn(
                         "text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 rounded-lg transition-all whitespace-nowrap",
-                        pathname === link.href 
-                          ? "bg-slate-100 text-primary" 
-                          : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                        pathname === link.href ? "bg-slate-100 text-primary" : "text-slate-600 hover:text-primary hover:bg-slate-50"
                       )}
                     >
                       {link.label}
@@ -115,8 +103,8 @@ export function Navbar() {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl min-w-[120px]">
-                      {mobileHiddenLinks.map((link) => (
-                        <DropdownMenuItem key={link.href} asChild className="focus:bg-slate-50 focus:text-primary rounded-lg cursor-pointer">
+                      {mainLinks.slice(3).map((link) => (
+                        <DropdownMenuItem key={link.href} asChild>
                           <Link href={link.href} className="w-full text-xs font-bold py-2">
                             {link.label}
                           </Link>
@@ -131,28 +119,20 @@ export function Navbar() {
 
           <div className="flex items-center gap-2 md:gap-4 ml-4">
             {isSearchOpen ? (
-              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300 w-full max-w-md">
-                <div className="relative flex-grow">
-                  <Input 
-                    autoFocus
-                    placeholder="キーワードで検索"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="rounded-full border-slate-200 bg-slate-50 h-10 md:h-12 w-[160px] md:w-[300px] pr-10"
-                  />
-                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none size-4 md:size-5" />
-                </div>
-                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)} className="rounded-full h-10 w-10">
+              <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full max-w-md">
+                <Input 
+                  autoFocus
+                  placeholder="キーワードで検索"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="rounded-full bg-slate-50 h-10 md:h-12 w-[160px] md:w-[300px]"
+                />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setIsSearchOpen(false)}>
                   <X size={20} className="text-slate-400" />
                 </Button>
               </form>
             ) : (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsSearchOpen(true)}
-                className="rounded-full hover:bg-slate-50 transition-colors h-10 w-10 md:h-12 md:w-12"
-              >
+              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
                 <Search size={20} className="text-slate-400 md:size-6" />
               </Button>
             )}
@@ -160,7 +140,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 2段目: サブリンク */}
       <div className="w-full bg-primary text-white">
         <div className="max-w-[1280px] mx-auto px-4 h-12 md:h-16 flex items-center justify-start overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-4 md:gap-8">
@@ -168,7 +147,7 @@ export function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-[10px] md:text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2 border-b-2 border-transparent hover:border-white/40"
+                className="text-[10px] md:text-sm font-bold uppercase tracking-[0.05em] whitespace-nowrap hover:text-white/80 transition-colors py-2"
               >
                 {link.label}
               </Link>

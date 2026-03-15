@@ -10,9 +10,9 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
 /**
- * トップページ (最終・完全同期版)
+ * トップページ (ビルド最適化版)
  * 広告の自動終了ロジックを強化し、ミリ秒単位での正確な判定を実現。
- * ステータス表示を極限までシンプルに。
+ * 稼働状況をシンプルに表示。
  */
 export default function Home() {
   const db = useFirestore();
@@ -51,7 +51,7 @@ export default function Home() {
   }, [db]);
   const { data: ads, isLoading: isAdsLoading } = useCollection(adsRef);
 
-  // 広告の自動終了ロジック (強化版)
+  // 広告の自動終了ロジック (ビルド対応版)
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
     
@@ -59,12 +59,9 @@ export default function Home() {
       if (!ad.imageUrl) return false;
       if (!ad.displayEndTime) return true;
       try {
-        // FirestoreのTimestampオブジェクトか、ISO文字列か、JS Dateかを判別
         let endTime: Date;
         if (ad.displayEndTime?.seconds) {
           endTime = new Date(ad.displayEndTime.seconds * 1000);
-        } else if (typeof ad.displayEndTime === 'string') {
-          endTime = new Date(ad.displayEndTime);
         } else {
           endTime = new Date(ad.displayEndTime);
         }
@@ -81,7 +78,7 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-20">
-      {/* 稼働状況表示：極限までシンプルに */}
+      {/* 稼働状況表示 */}
       <div className="mb-8 flex justify-start">
         {settings?.isMaintenanceMode ? (
           <Badge variant="outline" className="gap-2 px-4 py-1.5 border-amber-200 bg-amber-50 text-amber-700 font-black rounded-full shadow-sm">

@@ -8,16 +8,16 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (最終・浄化版)
+ * 記事カードコンポーネント (ビルド最適化版)
  * 抜粋からHTMLタグを剥がし、純粋なテキストのみを抽出して表示。
- * Image に sizes を設定し、読み込み警告を解消。
+ * next/image に適切な sizes を設定し、読み込み警告を解消。
  */
 interface ArticleCardProps {
   article: {
     id: string;
     title: string;
-    htmlContent?: string;
     content?: string;
+    htmlContent?: string;
     categoryId: string;
     publishDate: string;
     mainImageUrl?: string;
@@ -33,11 +33,11 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const isExternal = article.source === 'note';
   
   const excerpt = useMemo(() => {
-    // HTMLタグを正規表現で除去。Tiptapからのリッチテキスト対応
-    const rawContent = article.htmlContent || article.content || "";
+    // HTMLタグを正規表現で除去
+    const rawContent = article.content || article.htmlContent || "";
     const plainText = rawContent.replace(/<[^>]*>?/gm, "").trim();
     return plainText.substring(0, 60) + (plainText.length > 60 ? "..." : "");
-  }, [article.htmlContent, article.content]);
+  }, [article.content, article.htmlContent]);
 
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
 

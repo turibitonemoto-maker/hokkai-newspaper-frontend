@@ -11,8 +11,8 @@ interface MaintenanceGuardProps {
 }
 
 /**
- * メンテナンスモード管理 (最終・完全版)
- * 「作業状況」という紛らわしい表現を排除し、「稼働状況」に統一。
+ * メンテナンスモード管理 (ビルド最適化版)
+ * 表示上の文言を「稼働状況」に統一。
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   const db = useFirestore();

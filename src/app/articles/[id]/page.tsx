@@ -12,9 +12,9 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終・黄金比版)
- * 行間(leading-6)と段落間余白(my-3)を詰め、HTMLレンダリングを最適化。
- * whitespace-pre-wrap を排除し、リッチエディタの意図を正確に再現。
+ * 記事詳細ページ (ビルド最適化版)
+ * 行間(leading-6)と段落間余白(my-3)を日本人の黄金比に設定。
+ * Tiptapから送られるHTMLを正確にレンダリング。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -31,12 +31,11 @@ export default function ArticlePage() {
 
   // 公開設定のチェック
   const isPublic = article?.isPublished === true;
-
   const displayImage = article?.mainImageUrl || "";
 
   const mainContent = useMemo(() => 
-    article?.htmlContent || article?.content || ''
-  , [article?.htmlContent, article?.content]);
+    article?.content || article?.htmlContent || ''
+  , [article?.content, article?.htmlContent]);
 
   if (isLoading) {
     return (
@@ -110,7 +109,7 @@ export default function ArticlePage() {
               <Separator className="flex-grow bg-slate-100" />
             </div>
             
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-10 leading-[1.2] text-slate-950 font-sans">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-10 leading-[1.2] text-slate-950">
               {article.title}
             </h1>
             
