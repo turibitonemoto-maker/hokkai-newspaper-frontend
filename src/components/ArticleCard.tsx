@@ -8,8 +8,8 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (最終・完全版)
- * AI要約を完全排除。next/image の sizes プロパティを最適化。
+ * 記事カードコンポーネント (最終・最適化版)
+ * AI要約を排除し、画像表示を最適化。
  */
 interface ArticleCardProps {
   article: {

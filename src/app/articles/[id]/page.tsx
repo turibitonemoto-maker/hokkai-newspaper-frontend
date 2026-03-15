@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,9 +12,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細ページ (最終・完全版)
- * AI機能を完全に排除し、記者の筆致をそのまま届けます。
- * Typographyの行間・余白設定を日本人向けに最適化しました。
+ * 記事詳細ページ (最終・最適化版)
+ * 行間(leading-6)と段落間余白(my-3)を詰め、日本人が最も読みやすい密度に調整しました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -146,10 +144,10 @@ export default function ArticlePage() {
             <div 
               className={cn(
                 "prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900 transition-all duration-300 font-medium",
-                "prose-p:leading-relaxed prose-p:my-4 prose-p:text-slate-800",
-                fontSize === 'base' && "prose-lg md:prose-xl text-lg md:text-xl", 
-                fontSize === 'lg' && "prose-xl md:prose-2xl text-xl md:text-2xl",
-                fontSize === 'xl' && "prose-2xl md:prose-3xl text-2xl md:text-3xl" 
+                "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl prose-img:shadow-lg",
+                fontSize === 'base' && "text-base md:text-lg", 
+                fontSize === 'lg' && "text-lg md:text-xl",
+                fontSize === 'xl' && "text-xl md:text-2xl" 
               )}
               dangerouslySetInnerHTML={{ __html: mainContent }}
             />
