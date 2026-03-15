@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 /**
  * 会長挨拶ページ (最終・最適化版)
  * TiptapエディタからのHTML出力を正しくレンダリングし、行間を日本人が読みやすい密度に調整。
+ * フィールド名の揺れ（message / content）にも対応するフォールバックロジックを搭載。
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -41,8 +42,9 @@ export default function GreetingPage() {
     );
   }
 
+  // 管理画面側のフィールド名の違いを吸収するフォールバック
   const displayTitle = greeting?.title || defaultData.title;
-  const displayMessage = greeting?.message || defaultData.message;
+  const displayMessage = greeting?.message || greeting?.content || defaultData.message;
   const displayAuthorName = greeting?.authorName || defaultData.authorName;
   const displayAuthorImageUrl = greeting?.authorImageUrl || defaultData.authorImageUrl;
 
@@ -81,10 +83,11 @@ export default function GreetingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-950 text-center leading-tight">
                 {displayTitle}
               </h2>
+              {/* 日本人が最も読みやすい密度（leading-6, my-3）に固定 */}
               <div 
                 className={cn(
-                  "prose prose-slate max-w-none font-medium text-slate-700",
-                  "prose-p:leading-6 prose-p:my-3 prose-li:my-1",
+                  "prose prose-slate max-w-none font-medium text-slate-700 mx-auto",
+                  "prose-p:leading-6 prose-p:my-3 prose-li:my-1 prose-img:rounded-xl",
                   "md:prose-lg"
                 )}
                 dangerouslySetInnerHTML={{ __html: displayMessage }}
