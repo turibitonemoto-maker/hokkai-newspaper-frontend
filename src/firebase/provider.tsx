@@ -8,9 +8,9 @@ import { useUser as useUserHook } from './auth/use-user';
 
 interface FirebaseProviderProps {
   children: ReactNode;
-  firebaseApp: FirebaseApp;
-  firestore: Firestore;
-  auth: Auth;
+  firebaseApp: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
 }
 
 export interface FirebaseContextState {
@@ -44,7 +44,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   const contextValue = useMemo((): FirebaseContextState => {
     return {
-      areServicesAvailable: true,
+      areServicesAvailable: !!firebaseApp,
       firebaseApp,
       firestore,
       auth,
@@ -61,13 +61,17 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   );
 };
 
+/**
+ * useFirebase フック (SSR安全版)
+ * サーバーサイドなど、サービスが未準備の状態でもクラッシュしないよう、強制的な非 null アサーション (!) を除去しました。
+ */
 export const useFirebase = (): FirebaseServicesAndUser => {
   const context = useContext(FirebaseContext);
   if (context === undefined) throw new Error('useFirebase must be used within a FirebaseProvider.');
   return {
-    firebaseApp: context.firebaseApp!,
-    firestore: context.firestore!,
-    auth: context.auth!,
+    firebaseApp: context.firebaseApp as FirebaseApp,
+    firestore: context.firestore as Firestore,
+    auth: context.auth as Auth,
     user: context.user,
     isUserLoading: context.isUserLoading,
     userError: context.userError,

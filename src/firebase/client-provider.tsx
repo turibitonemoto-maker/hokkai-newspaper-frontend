@@ -9,8 +9,9 @@ interface FirebaseClientProviderProps {
 }
 
 /**
- * Firebase Client Provider (最適化版)
- * 表示サイトの読み込み「重さ」を解消するため、マウント時の処理を簡略化しました。
+ * Firebase Client Provider (正常化版)
+ * ハイドレーション・ミスマッチを防ぐため、常に children をレンダリングします。
+ * 条件付きのフルスクリーン・ローダーを廃止し、ChunkLoadError を回避します。
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const [services, setServices] = useState<{
@@ -20,27 +21,18 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   } | null>(null);
 
   useEffect(() => {
-    // 実行をわずかに遅延させて初期レンダリングを優先
-    const timer = setTimeout(() => {
-      const initialized = initializeFirebase();
-      setServices(initialized);
-    }, 10);
-    return () => clearTimeout(timer);
+    // マウント時に同期的に初期化
+    const initialized = initializeFirebase();
+    setServices(initialized);
   }, []);
 
-  if (!services || !services.firebaseApp) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
+  // services が null の状態（サーバーサイドおよび初回マウント時）でも、
+  // children を透過的にレンダリングすることで、レイアウトの整合性を保ちます。
   return (
     <FirebaseProvider
-      firebaseApp={services.firebaseApp}
-      auth={services.auth}
-      firestore={services.firestore}
+      firebaseApp={services?.firebaseApp ?? null}
+      auth={services?.auth ?? null}
+      firestore={services?.firestore ?? null}
     >
       {children}
     </FirebaseProvider>
