@@ -55,6 +55,16 @@
         "authorImageUrl": { "type": "string", "format": "uri" }
       }
     },
+    "AboutUs": {
+      "title": "AboutUs",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "purpose": { "type": "string" },
+        "activities": { "type": "string" }
+      }
+    },
     "SiteSettings": {
       "title": "SiteSettings",
       "type": "object",
@@ -70,6 +80,7 @@
     "/categories/{categoryId}": { "schema": { "$ref": "#/backend/entities/Category" }, "description": "Categories." },
     "/ads/{adId}": { "schema": { "$ref": "#/backend/entities/Advertisement" }, "description": "Ads." },
     "/settings/president_greeting": { "schema": { "$ref": "#/backend/entities/Greeting" }, "description": "President greeting." },
+    "/settings/about_us": { "schema": { "$ref": "#/backend/entities/AboutUs" }, "description": "About Us content." },
     "/settings/maintenance": { "schema": { "$ref": "#/backend/entities/SiteSettings" }, "description": "Global settings." }
   }
 }
