@@ -14,9 +14,11 @@ import { cn } from '@/lib/utils';
  */
 export default function GreetingPage() {
   const db = useFirestore();
+  
+  // 管理画面側の保存パス「president_greeting」に完全一致させる
   const greetingRef = useMemoFirebase(() => {
     if (!db) return null;
-    return doc(db, 'settings', 'greeting');
+    return doc(db, 'settings', 'president_greeting');
   }, [db]);
 
   const { data: greeting, isLoading } = useDoc(greetingRef);
