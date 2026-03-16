@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, FileText, CheckCircle2, Loader2, Plus, X } from 'lucide-react';
+import { FileText, CheckCircle2, Loader2, Plus, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 /**
  * 紙面アーカイブ発行フォーム (物理直結・システム内完結版)
- * Cloudinary中継API経由で複数枚のJPEGを物理的に保存します。
+ * サーバーサイド中継API (/api/upload) を経由して画像を安全に保存します。
  */
 export default function AdminPage() {
   const db = useFirestore();
@@ -87,7 +87,7 @@ export default function AdminPage() {
       toast({
         variant: "destructive",
         title: "エラー発生",
-        description: error.message || "予期せぬエラーが発生しました。",
+        description: error.message || "予期せぬエラーが発生しました。サーバーのログ(npm run dev)を確認してください。",
       });
     } finally {
       setUploading(false);
@@ -177,7 +177,7 @@ export default function AdminPage() {
           </Button>
 
           <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">
-            Backend mediated via API Key: 2173...
+            Secure Mediation Protocol Active
           </p>
         </CardContent>
       </Card>
