@@ -31,10 +31,13 @@ export default function ViewerPage() {
 
   const { data: allArticles, isLoading } = useCollection(baseQuery);
 
-  // 公開済み、かつ Category が Paper のものをメモリ上でフィルタリング
+  // 公開済み、かつ Category が 'Paper' または 'Viewer' のものをメモリ上でフィルタリング
   const papers = useMemo(() => {
     if (!allArticles) return [];
-    return allArticles.filter(a => a.categoryId === 'Paper' && a.isPublished === true);
+    return allArticles.filter(a => 
+      (a.categoryId === 'Paper' || a.categoryId === 'Viewer') && 
+      a.isPublished === true
+    );
   }, [allArticles]);
 
   const paperGroupedByDate = useMemo(() => {

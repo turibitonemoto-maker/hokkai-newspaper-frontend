@@ -26,7 +26,7 @@ export default function CategoryPage() {
 
   const { data: articles, isLoading } = useCollection(categoryQuery);
 
-  const isPaper = slug === 'Paper';
+  const isPaper = slug === 'Paper' || slug === 'Viewer';
 
   const paperGroupedByDate = useMemo(() => {
     if (!articles || !isPaper) return [];

@@ -61,13 +61,13 @@ export default function AdminPage() {
         uploadedUrls.push(data.result.secure_url);
       }
 
-      // 2. Firestoreに「物理的に」保存
+      // 2. Firestoreに「物理的に」保存 (categoryId: Viewer を採用)
       await addDoc(collection(db, "articles"), {
         title: `${issueNumber} 紙面アーカイブ`,
         issueNumber,
         publishDate: new Date(publishDate).toISOString(),
         paperImages: uploadedUrls,
-        categoryId: "Paper",
+        categoryId: "Viewer",
         isPublished: true,
         createdAt: serverTimestamp(),
       });

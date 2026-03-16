@@ -64,10 +64,10 @@ export default function Home() {
     return validAds.length > 0 ? validAds[0] : null;
   }, [ads, now]);
 
-  const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
+  const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper', 'Viewer'];
 
   const latestArticles = useMemo(() => {
-    return articles.filter(a => a.categoryId !== 'Paper').slice(0, 4);
+    return articles.filter(a => a.categoryId !== 'Paper' && a.categoryId !== 'Viewer').slice(0, 4);
   }, [articles]);
   
   const categoryGroups = useMemo(() => {
@@ -79,7 +79,8 @@ export default function Home() {
   }, [articles]);
 
   const paperGroupedByDate = useMemo(() => {
-    const papers = categoryGroups['Paper'] || [];
+    // Paper と Viewer 両方を紙面として扱う
+    const papers = [...(categoryGroups['Paper'] || []), ...(categoryGroups['Viewer'] || [])];
     const grouped: Record<string, any[]> = {};
     papers.forEach(p => {
       const date = p.publishDate?.split('T')[0] || 'Unknown Date';
@@ -176,7 +177,7 @@ export default function Home() {
       </div>
 
       <div className="space-y-32">
-        {categoryList.filter(c => c !== 'Paper').map((category) => {
+        {categoryList.filter(c => c !== 'Paper' && c !== 'Viewer').map((category) => {
           const catArticles = categoryGroups[category]?.slice(0, 4) || [];
           if (catArticles.length === 0) return null;
           return (
