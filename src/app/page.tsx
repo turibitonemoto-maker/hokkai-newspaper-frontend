@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { PaperCard } from '@/components/PaperCard';
 import { Loader2, Calendar, Megaphone, CheckCircle2, BookOpen, ChevronRight } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 /**
  * ホームページ (紙面ビューアー強化版・広告最優先レイアウト)
  * 閲覧専用フロントエンドとして、多角的なニュース体験を提供。
+ * インデックス不足を回避するため、メモリ上でのフィルタリングを採用。
  */
 export default function Home() {
   const db = useFirestore();
@@ -28,16 +29,21 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  const allArticlesRef = useMemoFirebase(() => {
+  // 聖典 articles から全取得（ソートのみ）
+  const baseQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
   }, [db]);
 
-  const { data: articles, isLoading: isArticlesLoading } = useCollection(allArticlesRef);
+  const { data: allArticles, isLoading: isArticlesLoading } = useCollection(baseQuery);
+
+  // メモリ上で公開済み記事のみを抽出
+  const articles = useMemo(() => {
+    return allArticles?.filter(a => a.isPublished === true) || [];
+  }, [allArticles]);
 
   const adsRef = useMemoFirebase(() => {
     if (!db) return null;
@@ -61,11 +67,10 @@ export default function Home() {
   const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
 
   const latestArticles = useMemo(() => {
-    return articles?.filter(a => a.categoryId !== 'Paper').slice(0, 4) || [];
+    return articles.filter(a => a.categoryId !== 'Paper').slice(0, 4);
   }, [articles]);
   
   const categoryGroups = useMemo(() => {
-    if (!articles) return {};
     const groups: Record<string, any[]> = {};
     categoryList.forEach(cat => {
       groups[cat] = articles.filter(a => a.categoryId === cat);
@@ -86,14 +91,12 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
-      {/* 稼働ステータス */}
       <div className="mb-10 flex justify-start">
         <Badge variant="outline" className="gap-2 px-5 py-2 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm text-[10px] tracking-widest uppercase">
           <CheckCircle2 size={14} /> STATUS: OPERATIONAL
         </Badge>
       </div>
 
-      {/* 最新ニュース */}
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-12">
           <div className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
@@ -110,7 +113,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 広告エリア (戦略的配置) */}
       <div className="mb-32">
         <div className="flex items-center gap-2 mb-6">
           <Megaphone size={16} className="text-primary" />
@@ -127,7 +129,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* 紙面ビューアーセクション (道新リスペクト・最上位) */}
       <div className="mb-32">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
           <div className="flex items-center gap-4">
@@ -174,7 +175,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* その他のカテゴリー */}
       <div className="space-y-32">
         {categoryList.filter(c => c !== 'Paper').map((category) => {
           const catArticles = categoryGroups[category]?.slice(0, 4) || [];

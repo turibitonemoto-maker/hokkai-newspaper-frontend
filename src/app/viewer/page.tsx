@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { PaperCard } from '@/components/PaperCard';
 import { Loader2, Ghost, BookOpen, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -9,8 +9,8 @@ import { useMemo, useState, useEffect } from 'react';
 
 /**
  * 紙面ビューアー・物理直結ページ (デネブ版)
- * ベガ（管理）が Cloudinary 経由で保存した複数枚の JPEG データを、
- * 道新リスペクトの「日付別・号数順」で物理的に描画する。
+ * インデックス不足による「表示されない」問題を回避するため、
+ * シンプルなクエリで全取得し、メモリ上でフィルタリングを行う「物理的・確実表示」仕様。
  */
 export default function ViewerPage() {
   const db = useFirestore();
@@ -20,20 +20,24 @@ export default function ViewerPage() {
     setIsMounted(true);
   }, []);
 
-  const paperQuery = useMemoFirebase(() => {
+  // インデックスが必要な複雑なクエリを避け、publishDateのソートのみを行う
+  const baseQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('categoryId', '==', 'Paper'),
-      where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
   }, [db]);
 
-  const { data: papers, isLoading } = useCollection(paperQuery);
+  const { data: allArticles, isLoading } = useCollection(baseQuery);
+
+  // 公開済み、かつ Category が Paper のものをメモリ上でフィルタリング
+  const papers = useMemo(() => {
+    if (!allArticles) return [];
+    return allArticles.filter(a => a.categoryId === 'Paper' && a.isPublished === true);
+  }, [allArticles]);
 
   const paperGroupedByDate = useMemo(() => {
-    if (!papers) return [];
     const grouped: Record<string, any[]> = {};
     papers.forEach(p => {
       const date = p.publishDate?.split('T')[0] || 'Unknown Date';
@@ -79,7 +83,7 @@ export default function ViewerPage() {
           <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
           <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Fetching Archives from Firestore</p>
         </div>
-      ) : papers && papers.length > 0 ? (
+      ) : papers.length > 0 ? (
         <div className="space-y-16 animate-fade-in">
           {paperGroupedByDate.map(([date, papersList]) => (
             <div key={date} className="space-y-6">
