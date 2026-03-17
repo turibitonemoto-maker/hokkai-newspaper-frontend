@@ -1,16 +1,49 @@
 'use client';
 
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { MapPin, History, Target, Footprints } from 'lucide-react';
+import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucide-react';
 
 /**
- * About Us ページ (デネブ版・原点回帰)
- * 作成者様の指令により、不安定な動的連動を排し、1950年創立の威厳を固定。
+ * About Us ページ (物理連動・完全同期版)
+ * 管理サイトからの編集をリアルタイムに反映。
  * 日本仕様の黄金比 (leading-6, my-3) を適用。
  */
 export default function AboutPage() {
+  const db = useFirestore();
+  
+  const aboutRef = useMemoFirebase(() => {
+    if (!db) return null;
+    return doc(db, 'settings', 'about');
+  }, [db]);
+
+  const { data: aboutData, isLoading } = useDoc(aboutRef);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-primary mb-4" size={40} />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Loading Information...</p>
+      </div>
+    );
+  }
+
+  // データが空の場合のフォールバックは、管理サイトでの入力を促すスタイル
+  if (!aboutData || !aboutData.content) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center text-center">
+        <div className="bg-slate-50 p-10 rounded-[48px] border-2 border-dashed border-slate-200">
+          <AlertCircle className="text-slate-400 mx-auto mb-6" size={48} />
+          <h1 className="text-2xl font-black mb-4">紹介文が未設定です</h1>
+          <p className="text-slate-500 text-sm font-medium">管理サイトから「北海学園大学一部新聞会とは」の内容を保存してください。</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
@@ -22,17 +55,13 @@ export default function AboutPage() {
         </header>
 
         <section className="max-w-none">
-          <div className={cn(
-            "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
-            "prose-p:leading-6 prose-p:my-3 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
-          )}>
-            <p>
-              北海学園大学一部新聞会は、1950年の創立以来、学生の視点から大学や社会の出来事を捉え、批判的かつ創造的な言論空間を維持することを目指しています。
-            </p>
-            <p>
-              私たちは、単なる情報の伝達者ではなく、時代の記録者として、記者が自ら現場に足を運び、自らの言葉で真実を紡ぐことを大切にしています。AIのフィルターを通さない、純粋で力強い言葉を届けることが私たちの使命です。
-            </p>
-          </div>
+          <div 
+            className={cn(
+              "prose prose-slate max-w-none font-medium text-slate-800 mx-auto tracking-wide",
+              "prose-p:leading-6 prose-p:my-3 prose-p:text-lg md:prose-lg whitespace-pre-wrap"
+            )}
+            dangerouslySetInnerHTML={{ __html: aboutData.content }}
+          />
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
