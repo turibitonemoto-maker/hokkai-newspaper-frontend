@@ -91,8 +91,7 @@ export default function ViewerPage() {
           {paperGroupedByDate.map(([date, papersList]) => (
             <div key={date} className="space-y-6">
               <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest flex items-center gap-4 shadow-lg shadow-primary/10">
-                <span>{date.replace(/-/g, '/')}</span>
-                <span className="opacity-50 text-[10px] font-black uppercase tracking-widest">Published</span>
+                <span>{papersList[0]?.title || 'アーカイブ'}</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                 {papersList.map((paper) => (

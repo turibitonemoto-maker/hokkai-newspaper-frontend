@@ -13,6 +13,7 @@ import Image from 'next/image';
  * ホームページ (原点回帰・完全浄化版)
  * 指令に基づき、見出し横のアイコンおよび背景の青いバーを物理的に削除。
  * すべての見出しを「文字だけ」の純粋なスタイルで統一。
+ * 紙面アーカイブの青いバーには日付ではなくタイトルを表示。
  */
 export default function Home() {
   const db = useFirestore();
@@ -126,8 +127,7 @@ export default function Home() {
             {paperGroupedByDate.map(([date, papers]) => (
               <div key={date} className="space-y-6">
                 <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-xs tracking-widest flex items-center gap-4">
-                  <span>{date.replace(/-/g, '/')}</span>
-                  <span className="opacity-50 text-[10px]">発行分</span>
+                  <span>{papers[0]?.title || 'アーカイブ'}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                   {papers.map((paper) => (
