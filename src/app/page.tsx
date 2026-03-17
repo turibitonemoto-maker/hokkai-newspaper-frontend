@@ -16,12 +16,6 @@ import Image from 'next/image';
  */
 export default function Home() {
   const db = useFirestore();
-  const [now, setNow] = useState<Date>(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   const baseQuery = useMemoFirebase(() => {
     if (!db) return null;
@@ -45,6 +39,7 @@ export default function Home() {
 
   const activeAd = useMemo(() => {
     if (!ads || ads.length === 0) return null;
+    const now = new Date();
     const validAds = ads.filter(ad => {
       if (!ad.imageUrl) return false;
       if (!ad.displayEndTime) return true;
@@ -54,7 +49,7 @@ export default function Home() {
       } catch (e) { return true; }
     });
     return validAds.length > 0 ? validAds[0] : null;
-  }, [ads, now]);
+  }, [ads]);
 
   const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper', 'Viewer'];
 
