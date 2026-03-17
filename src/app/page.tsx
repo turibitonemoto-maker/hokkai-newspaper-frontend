@@ -4,15 +4,15 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { PaperCard } from '@/components/PaperCard';
-import { Loader2, Megaphone, BookOpen, ChevronRight } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { Loader2, ChevronRight } from 'lucide-react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 /**
- * ホームページ (原点回帰・浄化版)
- * 指令に基づき、見出し横の日付表示を完全に削除。
- * 「最新のニュース」の見出しを青バーの中に格納し、装飾を排除した「文字だけ」の構成。
+ * ホームページ (原点回帰・完全浄化版)
+ * 指令に基づき、見出し横のアイコンおよび背景の青いバーを物理的に削除。
+ * すべての見出しを「文字だけ」の純粋なスタイルで統一。
  */
 export default function Home() {
   const db = useFirestore();
@@ -78,10 +78,10 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
-      {/* 最新ニュースセクション (青バー見出し) */}
+      {/* 最新ニュースセクション (青バーをパージし下線スタイルへ) */}
       <div className="mb-20">
-        <div className="bg-primary px-8 py-5 rounded-sm mb-12 shadow-lg shadow-primary/10 flex items-center justify-between">
-          <h2 className="text-2xl md:text-4xl font-black tracking-tighter text-white leading-none">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950">
             最新のニュース
           </h2>
         </div>
@@ -109,15 +109,12 @@ export default function Home() {
         )}
       </div>
 
-      {/* 紙面ビューアーセクション */}
+      {/* 紙面ビューアーセクション (アイコンをパージ) */}
       <div className="mb-32">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg">
-              <BookOpen size={24} />
-            </div>
-            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 uppercase italic">紙面ビューアー</h2>
-          </div>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950">
+            紙面ビューアー
+          </h2>
         </div>
 
         {isArticlesLoading ? (
