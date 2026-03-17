@@ -12,7 +12,7 @@ import Image from 'next/image';
 /**
  * ホームページ (原点回帰・浄化版)
  * 指令に基づき、見出し横の日付表示を完全に削除。
- * 「最新のニュース」というタイトル自体を青いバーの中に格納する構成。
+ * 「最新のニュース」の見出しを青バーの中に格納し、装飾を排除した「文字だけ」の構成。
  */
 export default function Home() {
   const db = useFirestore();
@@ -81,10 +81,9 @@ export default function Home() {
       {/* 最新ニュースセクション (青バー見出し) */}
       <div className="mb-20">
         <div className="bg-primary px-8 py-5 rounded-sm mb-12 shadow-lg shadow-primary/10 flex items-center justify-between">
-          <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase italic text-white leading-none">
+          <h2 className="text-2xl md:text-4xl font-black tracking-tighter text-white leading-none">
             最新のニュース
           </h2>
-          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Hokkai News Feed</div>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
