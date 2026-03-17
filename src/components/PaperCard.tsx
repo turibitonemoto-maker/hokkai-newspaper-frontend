@@ -1,14 +1,13 @@
-
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileImage, Calendar, Layers, FileText } from 'lucide-react';
+import { FileImage, FileText, Layers } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 紙面物理サムネイル・コンポーネント (PDF/JPEG 統合)
- * PDFの場合は1ページ目のサムネイルを、JPEGの場合は最初の1枚を表示する。
+ * 紙面物理サムネイル・コンポーネント (PDF/JPEG 統合・浄化版)
+ * 題名と日付は上位の青バーへ移設されたため、ここではサムネイルのみを表示。
  */
 interface PaperCardProps {
   article: {
@@ -35,12 +34,11 @@ export function PaperCard({ article }: PaperCardProps) {
     return article.mainImageUrl || "";
   }, [article.pdfUrl, article.paperImages, article.mainImageUrl]);
 
-  const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
   const pageCount = article.paperImages?.length || 0;
   const isPdf = !!article.pdfUrl;
 
   return (
-    <Link href={`/articles/${article.id}`} className="group block text-center space-y-3">
+    <Link href={`/articles/${article.id}`} className="group block text-center">
       <div className="relative aspect-[1/1.414] w-full rounded-sm overflow-hidden border border-slate-200 bg-white shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:ring-2 group-hover:ring-primary/20">
         {displayImage ? (
           <Image
@@ -66,20 +64,6 @@ export function PaperCard({ article }: PaperCardProps) {
             <Layers size={10} /> {pageCount} PAGES
           </div>
         ) : null}
-      </div>
-      <div className="space-y-1">
-        {article.issueNumber && (
-          <div className="text-[10px] font-black text-primary uppercase tracking-widest">
-            {article.issueNumber}
-          </div>
-        )}
-        <div className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors line-clamp-1">
-          {article.title}
-        </div>
-        <div className="flex items-center justify-center gap-1 text-[9px] text-slate-400 font-medium uppercase tracking-widest">
-          <Calendar size={10} />
-          <span>{date.replace(/-/g, '.')}</span>
-        </div>
       </div>
     </Link>
   );
