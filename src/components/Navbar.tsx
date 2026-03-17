@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
- * ナビゲーション (完全復元版)
- * ロゴは白バー、サブリンクは青バーの二段構成を物理的に維持。
+ * ナビゲーション (黄金スタンダード・復元版)
+ * ロゴは白バー（上段）、サブリンクは青バー（下段）の二段構成を厳格に死守。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -31,7 +31,7 @@ export function Navbar() {
     { label: 'スポーツ', href: '/category/Sports' },
     { label: 'コラム', href: '/category/Column' },
     { label: 'オピニオン', href: '/category/Opinion' },
-    { label: '紙面ビューアー', href: '/viewer', icon: <FileText size={12} className="text-white/80" /> },
+    { label: '紙面ビューアー', href: '/viewer', icon: <FileText size={12} className="text-slate-400" /> },
   ];
 
   const subLinks = [
@@ -76,7 +76,7 @@ export function Navbar() {
                       pathname === link.href ? "bg-slate-100 text-primary" : "text-slate-600 hover:text-primary hover:bg-slate-50"
                     )}
                   >
-                    {link.icon && <span className="text-primary">{link.icon}</span>}
+                    {link.icon && <span>{link.icon}</span>}
                     {link.label}
                   </Link>
                 ))}
@@ -103,7 +103,6 @@ export function Navbar() {
                 <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
                   <Search size={20} className="text-slate-400" />
                 </Button>
-                {/* モバイル用メニュー */}
                 <div className="xl:hidden">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -126,7 +125,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 青バー：団体案内等 */}
+      {/* 青バー：団体案内 */}
       <div className="w-full bg-primary text-white shadow-inner">
         <div className="max-w-[1280px] mx-auto px-4 h-12 md:h-16 flex items-center overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-6 md:gap-10">

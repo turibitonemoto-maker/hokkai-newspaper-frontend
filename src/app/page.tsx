@@ -10,8 +10,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 /**
- * ホームページ (原点回帰版・日付表示パージ)
- * 作成者様の指令により、タイトル横の日付表示を物理的に削除。
+ * ホームページ (原点回帰・浄化版)
+ * 指令に基づき、見出し横の日付表示を完全に削除。
+ * 「最新のニュース」というタイトル自体を青いバーの中に格納する構成へ換装。
  */
 export default function Home() {
   const db = useFirestore();
@@ -84,11 +85,12 @@ export default function Home() {
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
       {/* 最新ニュースセクション */}
       <div className="mb-20">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b-2 border-primary/20 pb-6">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">
+        <div className="bg-primary px-8 py-5 rounded-sm mb-12 shadow-lg shadow-primary/10 flex items-center justify-between">
+          <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase italic text-white leading-none">
             最新のニュース
           </h2>
-          {/* 指令により日付表示をパージ */}
+          {/* 指令に基づき日付表示を物理的にパージ */}
+          <div className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Hokkai News Feed</div>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
@@ -101,15 +103,14 @@ export default function Home() {
       {/* 広告エリア */}
       <div className="mb-32">
         <div className="flex items-center gap-2 mb-6">
-          <Megaphone size={16} className="text-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.5em] text-slate-900 italic">SPONSORED MEDIA</span>
+          <span className="text-xs font-black uppercase tracking-[0.5em] text-slate-300 italic">SPONSORED MEDIA</span>
         </div>
         {activeAd ? (
           <Link href={activeAd.linkUrl || '#'} target="_blank" className="relative block w-full h-32 md:h-48 rounded-[40px] md:rounded-[56px] overflow-hidden group shadow-2xl ring-1 ring-slate-100 bg-slate-50 transition-all hover:ring-primary/20">
             <Image src={activeAd.imageUrl} alt="Ad" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" priority />
           </Link>
         ) : (
-          <div className="w-full h-32 bg-slate-50 rounded-[40px] border border-dashed border-slate-200 flex items-center justify-center text-[10px] font-black tracking-[0.6em] text-slate-300 uppercase">
+          <div className="w-full h-32 bg-slate-50 rounded-[40px] border border-dashed border-slate-200 flex items-center justify-center text-[10px] font-black tracking-[0.6em] text-slate-200 uppercase">
             Public Information Space
           </div>
         )}
