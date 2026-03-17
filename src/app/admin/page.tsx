@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -7,13 +6,13 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { FileText, CheckCircle2, Loader2, Plus, X, FileUp } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
  * 紙面アーカイブ発行フォーム (PDF/JPEG 統合・物理直結版)
+ * 一号分（複数ページ）の一括アップロードに対応。
  */
 export default function AdminPage() {
   const db = useFirestore();
@@ -26,6 +25,7 @@ export default function AdminPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      // 複数ファイルを追加
       setSelectedFiles(prev => [...prev, ...files]);
     }
   };
@@ -77,7 +77,7 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         });
       } else {
-        // JPEG複数枚アップロード
+        // JPEG複数枚アップロード（一号分）
         const uploadedUrls: string[] = [];
         for (const file of selectedFiles) {
           const formData = new FormData();
@@ -88,6 +88,7 @@ export default function AdminPage() {
           uploadedUrls.push(data.result.secure_url);
         }
 
+        // 全ページのURLを一つの記事データとして保存
         await addDoc(collection(db, "articles"), {
           title: `${issueNumber} 紙面アーカイブ`,
           issueNumber,
@@ -99,7 +100,7 @@ export default function AdminPage() {
         });
       }
 
-      toast({ title: "発行完了", description: `${issueNumber} が物理的に保存されました。` });
+      toast({ title: "発行完了", description: `${issueNumber}（全${mode === 'pdf' ? '1ファイル' : selectedFiles.length + 'ページ'}）が物理的に保存されました。` });
       setIssueNumber("");
       setPublishDate("");
       setSelectedFiles([]);
@@ -145,8 +146,8 @@ export default function AdminPage() {
 
           <Tabs defaultValue="pdf" className="w-full">
             <TabsList className="grid w-full grid-cols-2 rounded-2xl mb-6">
-              <TabsTrigger value="pdf" className="rounded-xl font-bold">PDF (推奨)</TabsTrigger>
-              <TabsTrigger value="jpeg" className="rounded-xl font-bold">JPEG (複数枚)</TabsTrigger>
+              <TabsTrigger value="pdf" className="rounded-xl font-bold">PDF (一号分一括)</TabsTrigger>
+              <TabsTrigger value="jpeg" className="rounded-xl font-bold">JPEG (複数枚選択)</TabsTrigger>
             </TabsList>
             
             <TabsContent value="pdf" className="space-y-4">
@@ -167,19 +168,19 @@ export default function AdminPage() {
             </TabsContent>
 
             <TabsContent value="jpeg" className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (JPEG)</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (複数ページ選択)</label>
               <div className="relative">
                 <input id="jpeg-input" type="file" multiple accept="image/jpeg,image/jpg" onChange={handleFileChange} className="hidden" />
                 <label htmlFor="jpeg-input" className="flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors group">
                   <Plus size={48} className="text-slate-200 group-hover:text-primary transition-colors mb-4" />
-                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択</span>
+                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択（ページ順）</span>
                 </label>
               </div>
               {selectedFiles.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 pt-4">
                   {selectedFiles.map((f, i) => (
                     <div key={i} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">{f.name}</span>
+                      <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">P.{i+1}: {f.name}</span>
                       <button onClick={() => removeFile(i)} className="text-slate-300 hover:text-destructive"><X size={14} /></button>
                     </div>
                   ))}
@@ -187,7 +188,7 @@ export default function AdminPage() {
               )}
               <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 mt-4">
                 {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
-                JPEG群を発行する
+                JPEG群を一号分として発行
               </Button>
             </TabsContent>
           </Tabs>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細・物理ビューアーページ (PDF/JPEG 統合・デネブ版)
+ * 複数ページにまたがる「一号分」の新聞全体を垂直に描画します。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -119,11 +119,11 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* PDF 物理ビューアー */}
+          {/* PDF 物理ビューアー (全ページ一括) */}
           {pdfUrl && (
             <div className="mb-20 space-y-8">
               <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest px-2">
-                <FileText size={16} /> Digital Document Archive (PDF)
+                <FileText size={16} /> Digital Document Archive (Full Issue PDF)
               </div>
               <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                 <iframe
@@ -143,12 +143,12 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* JPEG 物理ビューアー (JPEG 複数枚対応) */}
+          {/* JPEG 物理ビューアー (複数枚・全ページ連結) */}
           {paperImages.length > 0 && !pdfUrl && (
             <div className="mb-20 space-y-12">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <Layers size={16} /> Digital Archive Viewer ({paperImages.length} Pages)
+                  <Layers size={16} /> Digital Archive Viewer (Full Newspaper - {paperImages.length} Pages)
                 </div>
               </div>
               
@@ -157,7 +157,7 @@ export default function ArticlePage() {
                   <div key={index} className="relative aspect-[1/1.414] w-full rounded-[16px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                     <Image
                       src={imgUrl}
-                      alt={`${article.title} - P.${index + 1}`}
+                      alt={`${article.title} - Page ${index + 1}`}
                       fill
                       className="object-contain"
                       sizes="(max-width: 1024px) 100vw, 896px"

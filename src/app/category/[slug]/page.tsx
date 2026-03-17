@@ -8,7 +8,6 @@ import { PaperCard } from '@/components/PaperCard';
 import { ChevronRight, Filter, Loader2, Ghost, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -57,12 +56,6 @@ export default function CategoryPage() {
               {isPaper ? '紙面ビューアー' : slug}
             </h1>
           </div>
-          {isPaper && (
-            <div className="flex gap-2">
-              <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">サンプルを見る</Button>
-              <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">使い方を見る</Button>
-            </div>
-          )}
         </div>
         <p className="text-slate-500 font-medium max-w-2xl leading-relaxed mt-6">
           {isPaper ? '1950年の創立以来の歴史を、当時の紙面そのままに振り返ることができます。' : `${slug}に関するすべての記事一覧です。`}

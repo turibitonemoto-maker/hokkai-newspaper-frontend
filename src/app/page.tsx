@@ -4,12 +4,11 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { PaperCard } from '@/components/PaperCard';
-import { Loader2, Calendar, Megaphone, CheckCircle2, BookOpen, ChevronRight } from 'lucide-react';
+import { Loader2, Calendar, Megaphone, BookOpen, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 /**
  * ホームページ (紙面ビューアー強化版・広告最優先レイアウト)
@@ -92,12 +91,6 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
-      <div className="mb-10 flex justify-start">
-        <Badge variant="outline" className="gap-2 px-5 py-2 border-emerald-200 bg-emerald-50 text-emerald-700 font-black rounded-full shadow-sm text-[10px] tracking-widest uppercase">
-          <CheckCircle2 size={14} /> STATUS: OPERATIONAL
-        </Badge>
-      </div>
-
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-12">
           <div className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
@@ -137,10 +130,6 @@ export default function Home() {
               <BookOpen size={24} />
             </div>
             <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 uppercase italic">紙面ビューアー</h2>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">サンプルを見る</Button>
-            <Button variant="outline" className="rounded-full font-black text-[10px] px-6 h-9 border-primary text-primary">使い方を見る</Button>
           </div>
         </div>
 
