@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Search, X, ChevronDown, FileText } from 'lucide-react';
+import { Search, X, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +14,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * ナビゲーション (完全復元版)
+ * ロゴは白バー、サブリンクは青バーの二段構成を物理的に維持。
+ */
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
