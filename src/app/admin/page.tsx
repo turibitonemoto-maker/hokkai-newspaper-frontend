@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -7,18 +8,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, CheckCircle2, Loader2, Plus, X } from 'lucide-react';
+import { FileText, CheckCircle2, Loader2, Plus, X, FileUp } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
- * 紙面アーカイブ発行フォーム (物理直結・システム内完結版)
- * サーバーサイド中継API (/api/upload) を経由して画像を安全に保存します。
+ * 紙面アーカイブ発行フォーム (PDF/JPEG 統合・物理直結版)
  */
 export default function AdminPage() {
   const db = useFirestore();
   const [issueNumber, setIssueNumber] = useState("");
   const [publishDate, setPublishDate] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,67 +30,83 @@ export default function AdminPage() {
     }
   };
 
+  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPdfFile(e.target.files[0]);
+    }
+  };
+
   const removeFile = (index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleUploadAndSave = async () => {
-    if (!issueNumber || !publishDate || selectedFiles.length === 0 || !db) {
-      toast({
-        variant: "destructive",
-        title: "入力不備",
-        description: "号数、日付、画像は必須です。",
-      });
+  const handleUploadAndSave = async (mode: 'pdf' | 'jpeg') => {
+    if (!issueNumber || !publishDate || !db) {
+      toast({ variant: "destructive", title: "入力不備", description: "号数、日付は必須です。" });
+      return;
+    }
+
+    if (mode === 'pdf' && !pdfFile) {
+      toast({ variant: "destructive", title: "ファイル未選択", description: "PDFファイルを選択してください。" });
+      return;
+    }
+
+    if (mode === 'jpeg' && selectedFiles.length === 0) {
+      toast({ variant: "destructive", title: "ファイル未選択", description: "JPEG画像を1枚以上選択してください。" });
       return;
     }
 
     setUploading(true);
-    const uploadedUrls: string[] = [];
-
+    
     try {
-      // 1. 各画像を中継API経由でCloudinaryへ物理的に転送
-      for (const file of selectedFiles) {
+      if (mode === 'pdf' && pdfFile) {
+        // PDFアップロード
         const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
+        formData.append("file", pdfFile);
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (!data.success) throw new Error(data.error || "Upload failed");
-        uploadedUrls.push(data.result.secure_url);
+
+        await addDoc(collection(db, "articles"), {
+          title: `${issueNumber} 紙面アーカイブ`,
+          issueNumber,
+          publishDate: new Date(publishDate).toISOString(),
+          pdfUrl: data.result.secure_url,
+          categoryId: "Viewer",
+          isPublished: true,
+          createdAt: serverTimestamp(),
+        });
+      } else {
+        // JPEG複数枚アップロード
+        const uploadedUrls: string[] = [];
+        for (const file of selectedFiles) {
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/upload", { method: "POST", body: formData });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error || "Upload failed");
+          uploadedUrls.push(data.result.secure_url);
+        }
+
+        await addDoc(collection(db, "articles"), {
+          title: `${issueNumber} 紙面アーカイブ`,
+          issueNumber,
+          publishDate: new Date(publishDate).toISOString(),
+          paperImages: uploadedUrls,
+          categoryId: "Viewer",
+          isPublished: true,
+          createdAt: serverTimestamp(),
+        });
       }
 
-      // 2. Firestoreに「物理的に」保存 (categoryId: Viewer を採用)
-      await addDoc(collection(db, "articles"), {
-        title: `${issueNumber} 紙面アーカイブ`,
-        issueNumber,
-        publishDate: new Date(publishDate).toISOString(),
-        paperImages: uploadedUrls,
-        categoryId: "Viewer",
-        isPublished: true,
-        createdAt: serverTimestamp(),
-      });
-
-      toast({
-        title: "発行完了",
-        description: `${issueNumber} が物理的に保存されました。`,
-      });
-
-      // フォームリセット
+      toast({ title: "発行完了", description: `${issueNumber} が物理的に保存されました。` });
       setIssueNumber("");
       setPublishDate("");
       setSelectedFiles([]);
+      setPdfFile(null);
 
     } catch (error: any) {
-      console.error("Admin save error:", error);
-      toast({
-        variant: "destructive",
-        title: "エラー発生",
-        description: error.message || "予期せぬエラーが発生しました。サーバーのログ(npm run dev)を確認してください。",
-      });
+      toast({ variant: "destructive", title: "エラー発生", description: error.message });
     } finally {
       setUploading(false);
     }
@@ -125,60 +143,56 @@ export default function AdminPage() {
             />
           </div>
 
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (JPEG)</label>
-            <div className="relative">
-              <input 
-                id="file-input"
-                type="file" 
-                multiple 
-                accept="image/jpeg,image/jpg"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-              <label 
-                htmlFor="file-input"
-                className="flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors group"
-              >
-                <Plus size={48} className="text-slate-200 group-hover:text-primary transition-colors mb-4" />
-                <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択（JPEG形式）</span>
-              </label>
-            </div>
-            {selectedFiles.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 pt-4">
-                {selectedFiles.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100 group">
-                    <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">{f.name}</span>
-                    <button onClick={() => removeFile(i)} className="text-slate-300 hover:text-destructive transition-colors">
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
+          <Tabs defaultValue="pdf" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 rounded-2xl mb-6">
+              <TabsTrigger value="pdf" className="rounded-xl font-bold">PDF (推奨)</TabsTrigger>
+              <TabsTrigger value="jpeg" className="rounded-xl font-bold">JPEG (複数枚)</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="pdf" className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper PDF</label>
+              <div className="relative">
+                <input id="pdf-input" type="file" accept="application/pdf" onChange={handlePdfChange} className="hidden" />
+                <label htmlFor="pdf-input" className="flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors group">
+                  <FileUp size={48} className="text-slate-200 group-hover:text-primary transition-colors mb-4" />
+                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">
+                    {pdfFile ? pdfFile.name : "PDFファイルを選択"}
+                  </span>
+                </label>
               </div>
-            )}
-          </div>
+              <Button onClick={() => handleUploadAndSave('pdf')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 mt-4">
+                {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
+                PDFを発行する
+              </Button>
+            </TabsContent>
 
-          <Button 
-            onClick={handleUploadAndSave}
-            disabled={uploading}
-            className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
-          >
-            {uploading ? (
-              <>
-                <Loader2 className="animate-spin mr-2" />
-                サーバー中継中...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="mr-2" />
-                紙面を発行する
-              </>
-            )}
-          </Button>
+            <TabsContent value="jpeg" className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (JPEG)</label>
+              <div className="relative">
+                <input id="jpeg-input" type="file" multiple accept="image/jpeg,image/jpg" onChange={handleFileChange} className="hidden" />
+                <label htmlFor="jpeg-input" className="flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors group">
+                  <Plus size={48} className="text-slate-200 group-hover:text-primary transition-colors mb-4" />
+                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択</span>
+                </label>
+              </div>
+              {selectedFiles.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 pt-4">
+                  {selectedFiles.map((f, i) => (
+                    <div key={i} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">{f.name}</span>
+                      <button onClick={() => removeFile(i)} className="text-slate-300 hover:text-destructive"><X size={14} /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 mt-4">
+                {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
+                JPEG群を発行する
+              </Button>
+            </TabsContent>
+          </Tabs>
 
-          <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">
-            Secure Mediation Protocol Active
-          </p>
+          <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">Secure Mediation Protocol Active</p>
         </CardContent>
       </Card>
     </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -5,15 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, ShieldCheck, Layers, Camera } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, ShieldCheck, Layers, Camera, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
 /**
- * 記事詳細・物理ビューアーページ (デネブ版・最終連携)
- * ベガ（管理）が保存した複数枚の JPEG (paperImages) を Cloudinary から物理的に描画する。
+ * 記事詳細・物理ビューアーページ (PDF/JPEG 統合・デネブ版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -34,6 +34,7 @@ export default function ArticlePage() {
   const { data: article, isLoading } = useDoc(articleRef);
 
   const isPublic = article?.isPublished === true;
+  const pdfUrl = article?.pdfUrl;
   const paperImages = article?.paperImages || [];
   const mainContent = useMemo(() => article?.content || '', [article?.content]);
 
@@ -118,8 +119,32 @@ export default function ArticlePage() {
             </div>
           </header>
 
-          {/* Cloudinary 紙面物理ビューアー (JPEG 複数枚対応) */}
-          {paperImages.length > 0 && (
+          {/* PDF 物理ビューアー */}
+          {pdfUrl && (
+            <div className="mb-20 space-y-8">
+              <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest px-2">
+                <FileText size={16} /> Digital Document Archive (PDF)
+              </div>
+              <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                <iframe
+                  src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full h-full border-none"
+                  title={article.title}
+                />
+              </div>
+              <div className="flex justify-center">
+                <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 h-12 shadow-xl hover:scale-[1.05] transition-transform">
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面で表示する</a>
+                </Button>
+              </div>
+              <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
+                <ShieldCheck size={12} className="text-primary" /> CLOUD OPTIMIZED DOCUMENT
+              </p>
+            </div>
+          )}
+
+          {/* JPEG 物理ビューアー (JPEG 複数枚対応) */}
+          {paperImages.length > 0 && !pdfUrl && (
             <div className="mb-20 space-y-12">
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
@@ -152,7 +177,7 @@ export default function ArticlePage() {
           )}
 
           {/* メイン画像（紙面がない場合、または記事メイン画像として） */}
-          {article.mainImageUrl && paperImages.length === 0 && (
+          {article.mainImageUrl && !pdfUrl && paperImages.length === 0 && (
             <figure className="mb-20 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
                 <Image

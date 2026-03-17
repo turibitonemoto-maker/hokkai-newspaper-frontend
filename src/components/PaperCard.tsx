@@ -3,12 +3,12 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileImage, Calendar, Layers } from 'lucide-react';
+import { FileImage, Calendar, Layers, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 紙面物理サムネイル・コンポーネント
- * 最初の1枚を確実に表示し、複数枚の存在を可視化する。
+ * 紙面物理サムネイル・コンポーネント (PDF/JPEG 統合)
+ * PDFの場合は1ページ目のサムネイルを、JPEGの場合は最初の1枚を表示する。
  */
 interface PaperCardProps {
   article: {
@@ -17,21 +17,27 @@ interface PaperCardProps {
     issueNumber?: string;
     publishDate: string;
     mainImageUrl?: string;
+    pdfUrl?: string;
     paperImages?: string[];
   };
 }
 
 export function PaperCard({ article }: PaperCardProps) {
-  // 複数枚ある場合は最初の1枚を、なければメイン画像を使用
+  // PDFのサムネイル、またはJPEGの最初の1枚を抽出
   const displayImage = useMemo(() => {
+    if (article.pdfUrl) {
+      // Cloudinary PDF Thumbnail: PDF URL の拡張子を .jpg に変えることで1ページ目を取得可能
+      return article.pdfUrl.replace(/\.pdf$/, '.jpg');
+    }
     if (article.paperImages && article.paperImages.length > 0) {
       return article.paperImages[0];
     }
     return article.mainImageUrl || "";
-  }, [article.paperImages, article.mainImageUrl]);
+  }, [article.pdfUrl, article.paperImages, article.mainImageUrl]);
 
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
   const pageCount = article.paperImages?.length || 0;
+  const isPdf = !!article.pdfUrl;
 
   return (
     <Link href={`/articles/${article.id}`} className="group block text-center space-y-3">
@@ -51,11 +57,15 @@ export function PaperCard({ article }: PaperCardProps) {
           </div>
         )}
         
-        {pageCount > 0 && (
+        {isPdf ? (
+          <div className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[9px] font-black px-2 py-1 rounded-sm backdrop-blur-sm flex items-center gap-1">
+            <FileText size={10} /> PDF ARCHIVE
+          </div>
+        ) : pageCount > 0 ? (
           <div className="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[9px] font-black px-2 py-1 rounded-sm backdrop-blur-sm flex items-center gap-1">
             <Layers size={10} /> {pageCount} PAGES
           </div>
-        )}
+        ) : null}
       </div>
       <div className="space-y-1">
         {article.issueNumber && (
