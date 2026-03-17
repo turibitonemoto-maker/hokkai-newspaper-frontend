@@ -3,14 +3,13 @@
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { PaperCard } from '@/components/PaperCard';
-import { Loader2, Ghost, BookOpen, ChevronRight } from 'lucide-react';
+import { Loader2, Ghost, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState, useEffect } from 'react';
 
 /**
- * 紙面ビューアー・物理直結ページ (デネブ版)
- * インデックス不足による「表示されない」問題を回避するため、
- * シンプルなクエリで全取得し、メモリ上でフィルタリングを行う「物理的・確実表示」仕様。
+ * 紙面ビューアー・物理直結ページ (デネブ版・極限浄化)
+ * 不要な説明文や装飾をすべてパージし、アーカイブそのものを主役としたレイアウト。
  */
 export default function ViewerPage() {
   const db = useFirestore();
@@ -62,29 +61,16 @@ export default function ViewerPage() {
 
       <header className="mb-16">
         <div className="flex items-center justify-between flex-wrap gap-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg shadow-primary/20">
-              <BookOpen size={24} />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
-              紙面ビューアー
-            </h1>
-          </div>
-          <div className="text-right">
-             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Digital Archive</span>
-             <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-primary">Cloud Optimized</span>
-          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
+            紙面ビューアー
+          </h1>
         </div>
-        <p className="text-slate-500 font-medium max-w-2xl leading-6 my-6">
-          Cloudinary にホストされた高解像度の紙面 JPEG データが、ここにリアルタイムで反映されます。
-          1950年の創立以来の歴史を、当時の質感そのままに振り返ることができます。
-        </p>
       </header>
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-40">
           <Loader2 className="animate-spin text-primary mb-6" size={60} strokeWidth={3} />
-          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Fetching Archives from Firestore</p>
+          <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">Fetching Archives</p>
         </div>
       ) : papers.length > 0 ? (
         <div className="space-y-16 animate-fade-in">
@@ -108,7 +94,7 @@ export default function ViewerPage() {
           </div>
           <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">アーカイブ未登録</h3>
           <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
-            管理サイトから Cloudinary 経由で紙面をアップロードしてください。
+            管理サイトから紙面をアップロードしてください。
           </p>
           <Link href="/" className="inline-block mt-8 text-primary font-bold uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">BACK TO HOME</Link>
         </div>
