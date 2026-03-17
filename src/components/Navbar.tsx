@@ -1,6 +1,5 @@
 "use client";
 
-import Link from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -11,8 +10,8 @@ import LinkNext from 'next/link';
 
 /**
  * ナビゲーション (常時表示・物理固定版)
- * メニュー（ドロップダウン）を廃止し、全リンクを常に露出。
- * 白バー（上段）にロゴとメインリンク、青バー（下段）にサブリンクを配置。
+ * メニュー（ドロップダウン）を完全に排除。全リンクを常に露出。
+ * ブランドカラー：北海→青、大学→青。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -55,8 +54,11 @@ export function Navbar() {
           <div className="flex items-center gap-6 md:gap-12 flex-grow overflow-hidden">
             {!isSearchOpen && (
               <LinkNext href="/" className="flex items-center group shrink-0">
-                <div className="font-yuji text-xl md:text-3xl tracking-tighter leading-none whitespace-nowrap text-slate-900 group-hover:text-primary transition-colors">
-                  北海学園大学新聞
+                <div className="font-yuji text-xl md:text-3xl tracking-tighter leading-none whitespace-nowrap">
+                  <span className="text-primary group-hover:opacity-80 transition-opacity">北海</span>
+                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">学園</span>
+                  <span className="text-primary group-hover:opacity-80 transition-opacity">大学</span>
+                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">新聞</span>
                 </div>
               </LinkNext>
             )}
