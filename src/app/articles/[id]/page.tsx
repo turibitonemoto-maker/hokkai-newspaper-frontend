@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 
 /**
  * 記事詳細・物理ビューアーページ (PDF/JPEG 統合・デネブ版)
- * 複数ページにまたがる「一号分」の新聞全体を垂直に描画します。
+ * 最高司令官の指令により、画像を題名の「上」に配置するよう物理構成を組み替えました。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -36,7 +36,7 @@ export default function ArticlePage() {
   const isPublic = article?.isPublished === true;
   const pdfUrl = article?.pdfUrl;
   const paperImages = article?.paperImages || [];
-  const mainContent = useMemo(() => article?.content || '', [article?.content]);
+  const mainContent = article?.content || '';
 
   if (!isMounted) return null;
 
@@ -90,6 +90,71 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
+          {/* 【指令：見出し画像は題名の上】 */}
+          {/* PDF 物理ビューアー */}
+          {pdfUrl && (
+            <div className="mb-12 space-y-6">
+              <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                <iframe
+                  src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full h-full border-none"
+                  title={article.title}
+                />
+              </div>
+              <div className="flex justify-center">
+                <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 h-12 shadow-xl hover:scale-[1.05] transition-transform">
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面で表示する</a>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* JPEG 物理ビューアー */}
+          {paperImages.length > 0 && !pdfUrl && (
+            <div className="mb-12 space-y-12">
+              <div className="space-y-16">
+                {paperImages.map((imgUrl: string, index: number) => (
+                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[16px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                    <Image
+                      src={imgUrl}
+                      alt={`${article.title} - Page ${index + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                      priority={index === 0}
+                    />
+                    <div className="absolute top-4 left-4 bg-slate-900/60 text-white text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-sm">
+                      PAGE {index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* メイン画像（紙面がない場合） */}
+          {article.mainImageUrl && !pdfUrl && paperImages.length === 0 && (
+            <figure className="mb-12 space-y-5">
+              <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
+                <Image
+                  src={article.mainImageUrl}
+                  alt={article.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 896px"
+                  className="object-cover"
+                />
+              </div>
+              {article.mainImageCaption && (
+                <figcaption className="flex items-start gap-3 px-8 py-2 text-slate-500 italic border-l-4 border-primary/20">
+                  <Camera size={16} className="shrink-0 mt-1 text-primary/40" />
+                  <span className="text-sm md:text-base leading-relaxed font-medium tracking-wide">
+                    {article.mainImageCaption}
+                  </span>
+                </figcaption>
+              )}
+            </figure>
+          )}
+
           <header className="mb-12">
             <div className="flex items-center gap-4 mb-8">
               <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-md rounded-full">
@@ -118,86 +183,6 @@ export default function ArticlePage() {
               </div>
             </div>
           </header>
-
-          {/* PDF 物理ビューアー (全ページ一括) */}
-          {pdfUrl && (
-            <div className="mb-20 space-y-8">
-              <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest px-2">
-                <FileText size={16} /> Digital Document Archive (Full Issue PDF)
-              </div>
-              <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                <iframe
-                  src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                  className="w-full h-full border-none"
-                  title={article.title}
-                />
-              </div>
-              <div className="flex justify-center">
-                <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 h-12 shadow-xl hover:scale-[1.05] transition-transform">
-                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面で表示する</a>
-                </Button>
-              </div>
-              <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> CLOUD OPTIMIZED DOCUMENT
-              </p>
-            </div>
-          )}
-
-          {/* JPEG 物理ビューアー (複数枚・全ページ連結) */}
-          {paperImages.length > 0 && !pdfUrl && (
-            <div className="mb-20 space-y-12">
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest">
-                  <Layers size={16} /> Digital Archive Viewer (Full Newspaper - {paperImages.length} Pages)
-                </div>
-              </div>
-              
-              <div className="space-y-16">
-                {paperImages.map((imgUrl: string, index: number) => (
-                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[16px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                    <Image
-                      src={imgUrl}
-                      alt={`${article.title} - Page ${index + 1}`}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 100vw, 896px"
-                      priority={index === 0}
-                    />
-                    <div className="absolute top-4 left-4 bg-slate-900/60 text-white text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-sm">
-                      PAGE {index + 1}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <p className="text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] py-4 bg-slate-50 rounded-2xl flex items-center justify-center gap-2">
-                <ShieldCheck size={12} className="text-primary" /> CLOUD OPTIMIZED ARCHIVE
-              </p>
-            </div>
-          )}
-
-          {/* メイン画像（紙面がない場合、または記事メイン画像として） */}
-          {article.mainImageUrl && !pdfUrl && paperImages.length === 0 && (
-            <figure className="mb-20 space-y-5">
-              <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
-                <Image
-                  src={article.mainImageUrl}
-                  alt={article.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                  className="object-cover"
-                />
-              </div>
-              {article.mainImageCaption && (
-                <figcaption className="flex items-start gap-3 px-8 py-2 text-slate-500 italic border-l-4 border-primary/20">
-                  <Camera size={16} className="shrink-0 mt-1 text-primary/40" />
-                  <span className="text-sm md:text-base leading-relaxed font-medium tracking-wide">
-                    {article.mainImageCaption}
-                  </span>
-                </figcaption>
-              )}
-            </figure>
-          )}
 
           <div className="max-w-3xl mx-auto">
             <div 
