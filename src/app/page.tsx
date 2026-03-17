@@ -17,13 +17,9 @@ import { Badge } from '@/components/ui/badge';
  */
 export default function Home() {
   const db = useFirestore();
-  const [currentTime, setCurrentTime] = useState<string | null>(null);
   const [now, setNow] = useState<Date>(new Date());
 
   useEffect(() => {
-    setCurrentTime(new Date().toLocaleDateString('ja-JP', { 
-      year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' 
-    }));
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
@@ -95,9 +91,6 @@ export default function Home() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-slate-100 pb-12">
           <div className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
             <span className="text-primary">最新</span>の<span className="text-slate-950">ニュース</span>
-          </div>
-          <div className="flex items-center gap-3 text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] bg-white px-6 py-3 rounded-2xl border border-slate-100 shadow-sm w-fit">
-            <Calendar size={14} className="text-primary" /> <span>{currentTime || 'Synchronizing...'}</span>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">

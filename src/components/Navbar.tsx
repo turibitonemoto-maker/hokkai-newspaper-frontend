@@ -27,7 +27,7 @@ export function Navbar() {
     { label: 'スポーツ', href: '/category/Sports' },
     { label: 'コラム', href: '/category/Column' },
     { label: 'オピニオン', href: '/category/Opinion' },
-    { label: '紙面ビューアー', href: '/viewer', icon: <FileText size={12} className="text-primary" /> },
+    { label: '紙面ビューアー', href: '/viewer', icon: <FileText size={12} className="text-white/80" /> },
   ];
 
   const subLinks = [
@@ -48,19 +48,10 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 shadow-md bg-white">
+    <header className="fixed top-0 left-0 w-full z-50 shadow-md">
       <div className="w-full border-b bg-white relative">
-        <div className="max-w-[1280px] mx-auto px-4 h-20 md:h-24 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-8 flex-grow">
-            <Link href="/" className="flex items-center group shrink-0">
-              <div className="font-yuji text-2xl md:text-4xl tracking-tighter leading-none whitespace-nowrap">
-                <span className="text-primary">北海</span>
-                <span className="text-slate-950">学園</span>
-                <span className="text-primary">大学</span>
-                <span className="text-primary">新聞</span>
-              </div>
-            </Link>
-
             {!isSearchOpen && (
               <nav className="flex items-center gap-1 md:gap-2 py-2 overflow-hidden">
                 <div className="hidden xl:flex items-center gap-1">
@@ -73,7 +64,7 @@ export function Navbar() {
                         pathname === link.href ? "bg-slate-100 text-primary" : "text-slate-600 hover:text-primary hover:bg-slate-50"
                       )}
                     >
-                      {link.icon && link.icon}
+                      {link.icon && <span className="text-primary">{link.icon}</span>}
                       {link.label}
                     </Link>
                   ))}
@@ -138,18 +129,43 @@ export function Navbar() {
       </div>
 
       <div className="w-full bg-primary text-white shadow-inner">
-        <div className="max-w-[1280px] mx-auto px-4 h-12 md:h-14 flex items-center justify-start overflow-x-auto no-scrollbar">
-          <nav className="flex items-center gap-4 md:gap-8">
-            {subLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-[10px] md:text-xs font-black uppercase tracking-[0.1em] whitespace-nowrap hover:text-white/80 transition-colors py-2"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        <div className="max-w-[1280px] mx-auto px-4 h-16 md:h-24 flex items-center justify-between overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-6 md:gap-12 flex-shrink-0">
+            <Link href="/" className="flex items-center group">
+              <div className="font-yuji text-2xl md:text-5xl tracking-tighter leading-none whitespace-nowrap text-white">
+                北海学園大学新聞
+              </div>
+            </Link>
+            <nav className="hidden lg:flex items-center gap-4 md:gap-8">
+              {subLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-[10px] md:text-xs font-black uppercase tracking-[0.1em] whitespace-nowrap text-white/90 hover:text-white transition-colors py-2 border-b-2 border-transparent hover:border-white/30"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <div className="lg:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-[10px] font-black uppercase tracking-widest text-white/90 border border-white/20 rounded-full px-4 py-2 flex items-center gap-2">
+                  団体案内 <ChevronDown size={12} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-xl border-slate-100 shadow-xl min-w-[180px]">
+                {subLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href} className="w-full text-xs font-bold py-2">
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>
