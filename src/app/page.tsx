@@ -4,7 +4,7 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { ArticleCard } from '@/components/ArticleCard';
 import { PaperCard } from '@/components/PaperCard';
-import { Loader2, Megaphone, BookOpen, ChevronRight } from 'lucide-react';
+import { Loader2, Megaphone, BookOpen, ChevronRight, Calendar } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -82,13 +82,16 @@ export default function Home() {
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
-      {/* 最新ニュースセクション：見出しを青バー化 */}
+      {/* 最新ニュースセクション：復元版 */}
       <div className="mb-20">
-        <div className="bg-primary px-8 py-6 rounded-sm mb-12 shadow-lg shadow-primary/10">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-white leading-none">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b-2 border-primary/20 pb-6">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">
             最新のニュース
           </h2>
-          <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em] mt-3">Latest News Selection</p>
+          <div className="flex items-center gap-4 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100 shadow-sm">
+            <Calendar size={18} className="text-primary" />
+            <span className="text-sm font-black text-slate-900 tracking-widest">{now.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}</span>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
