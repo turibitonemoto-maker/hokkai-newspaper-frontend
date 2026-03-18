@@ -1,6 +1,5 @@
-import type { Category } from './types';
-
-export const CATEGORIES: Category[] = ['Campus', 'Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];
-
-// 実際のデータはFirestoreから取得するため、モックデータは空にします。
-export const MOCK_ARTICLES: any[] = [];
+/**
+ * 【最適化】モックデータを完全にパージしました。
+ * 本システムは Firestore 物理直結型へと完全移行済みです。
+ */
+export const CATEGORIES = ['Campus', 'Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper'];

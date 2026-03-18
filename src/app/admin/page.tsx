@@ -1,31 +1,55 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { FileText, CheckCircle2, Loader2, Plus, X, FileUp } from 'lucide-react';
+import { FileText, CheckCircle2, Loader2, Plus, X, FileUp, ShieldAlert } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from 'next/link';
 
-/**
- * 紙面アーカイブ発行フォーム (PDF/JPEG 統合・物理直結版)
- * 一号分（複数ページ）の一括アップロードに対応。
- */
+const ADMIN_EMAILS = ["r06hgunews@gmail.com", "turibitonemoto@gmail.com"];
+
 export default function AdminPage() {
   const db = useFirestore();
+  const { user, isUserLoading } = useUser();
   const [issueNumber, setIssueNumber] = useState("");
   const [publishDate, setPublishDate] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
+
+  if (isUserLoading) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={40} />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center text-center">
+        <div className="bg-slate-50 p-12 rounded-[48px] border border-slate-100 shadow-xl max-w-md">
+          <ShieldAlert className="text-destructive mx-auto mb-6" size={64} />
+          <h1 className="text-2xl font-black mb-4">ACCESS DENIED</h1>
+          <p className="text-slate-500 text-sm font-medium mb-8">このページへのアクセス権限がありません。管理者アカウントでログインしてください。</p>
+          <Button asChild variant="outline" className="rounded-full px-8 font-black tracking-widest">
+            <Link href="/">TOPに戻る</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      // 複数ファイルを追加
       setSelectedFiles(prev => [...prev, ...files]);
     }
   };
@@ -46,21 +70,10 @@ export default function AdminPage() {
       return;
     }
 
-    if (mode === 'pdf' && !pdfFile) {
-      toast({ variant: "destructive", title: "ファイル未選択", description: "PDFファイルを選択してください。" });
-      return;
-    }
-
-    if (mode === 'jpeg' && selectedFiles.length === 0) {
-      toast({ variant: "destructive", title: "ファイル未選択", description: "JPEG画像を1枚以上選択してください。" });
-      return;
-    }
-
     setUploading(true);
     
     try {
       if (mode === 'pdf' && pdfFile) {
-        // PDFアップロード
         const formData = new FormData();
         formData.append("file", pdfFile);
         const res = await fetch("/api/upload", { method: "POST", body: formData });
@@ -77,7 +90,6 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         });
       } else {
-        // JPEG複数枚アップロード（一号分）
         const uploadedUrls: string[] = [];
         for (const file of selectedFiles) {
           const formData = new FormData();
@@ -88,7 +100,6 @@ export default function AdminPage() {
           uploadedUrls.push(data.result.secure_url);
         }
 
-        // 全ページのURLを一つの記事データとして保存
         await addDoc(collection(db, "articles"), {
           title: `${issueNumber} 紙面アーカイブ`,
           issueNumber,
@@ -100,7 +111,7 @@ export default function AdminPage() {
         });
       }
 
-      toast({ title: "発行完了", description: `${issueNumber}（全${mode === 'pdf' ? '1ファイル' : selectedFiles.length + 'ページ'}）が物理的に保存されました。` });
+      toast({ title: "発行完了", description: `${issueNumber}が物理的に保存されました。` });
       setIssueNumber("");
       setPublishDate("");
       setSelectedFiles([]);
@@ -146,8 +157,8 @@ export default function AdminPage() {
 
           <Tabs defaultValue="pdf" className="w-full">
             <TabsList className="grid w-full grid-cols-2 rounded-2xl mb-6">
-              <TabsTrigger value="pdf" className="rounded-xl font-bold">PDF (一号分一括)</TabsTrigger>
-              <TabsTrigger value="jpeg" className="rounded-xl font-bold">JPEG (複数枚選択)</TabsTrigger>
+              <TabsTrigger value="pdf" className="rounded-xl font-bold">PDF 一括</TabsTrigger>
+              <TabsTrigger value="jpeg" className="rounded-xl font-bold">JPEG 複数</TabsTrigger>
             </TabsList>
             
             <TabsContent value="pdf" className="space-y-4">
@@ -161,39 +172,29 @@ export default function AdminPage() {
                   </span>
                 </label>
               </div>
-              <Button onClick={() => handleUploadAndSave('pdf')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 mt-4">
+              <Button onClick={() => handleUploadAndSave('pdf')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl mt-4">
                 {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
-                PDFを発行する
+                PDFを発行
               </Button>
             </TabsContent>
 
             <TabsContent value="jpeg" className="space-y-4">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images (複数ページ選択)</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paper Images</label>
               <div className="relative">
                 <input id="jpeg-input" type="file" multiple accept="image/jpeg,image/jpg" onChange={handleFileChange} className="hidden" />
                 <label htmlFor="jpeg-input" className="flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors group">
                   <Plus size={48} className="text-slate-200 group-hover:text-primary transition-colors mb-4" />
-                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択（ページ順）</span>
+                  <span className="text-sm font-bold text-slate-400 group-hover:text-slate-600">画像を複数選択</span>
                 </label>
               </div>
-              {selectedFiles.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 pt-4">
-                  {selectedFiles.map((f, i) => (
-                    <div key={i} className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-600 truncate max-w-[120px]">P.{i+1}: {f.name}</span>
-                      <button onClick={() => removeFile(i)} className="text-slate-300 hover:text-destructive"><X size={14} /></button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 mt-4">
+              <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading} className="w-full h-16 rounded-full bg-primary text-white font-black text-lg shadow-xl mt-4">
                 {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
-                JPEG群を一号分として発行
+                JPEG群を発行
               </Button>
             </TabsContent>
           </Tabs>
 
-          <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">Secure Mediation Protocol Active</p>
+          <p className="text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.4em]">Authorized Access Only</p>
         </CardContent>
       </Card>
     </div>

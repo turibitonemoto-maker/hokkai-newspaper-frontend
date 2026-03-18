@@ -1,11 +1,7 @@
-'use server';
-
 /**
- * 【改革により廃止】
- * note.comとのRSS連携は解除されました。
- * 今後は管理画面からの「人力投稿」のみが唯一のソースとなります。
+ * 【廃止】note.com RSS 同期アクション。
+ * 最高司令官の命により、現在は手動投稿のみを唯一のソースとして運用しています。
  */
 export async function fetchAndSyncNoteRss() {
-  console.log('RSS Sync is disabled. Switching to manual input mode.');
-  return { success: true, articles: [], message: 'Sync disabled by commander order.' };
+  return { success: false, message: 'Deprecated action' };
 }
