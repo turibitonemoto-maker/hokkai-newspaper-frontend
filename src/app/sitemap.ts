@@ -8,7 +8,7 @@ import { firebaseConfig } from '@/firebase/config';
  * クローラーがサイト内の全記事・全ページを正確に把握できるようにします。
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // 本番公開後の独自ドメインに書き換えてください
+  // 本番公開の独自ドメイン
   const baseUrl = 'https://hokkai-gakuen-news.web.app';
 
   // 1. 静的ルートの定義
