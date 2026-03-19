@@ -22,12 +22,28 @@ const yujiMai = Yuji_Mai({
 });
 
 /**
- * サイトのメタデータ (ステルス・公式版)
+ * サイトのメタデータ (クローラー申請・SEO強化版)
  */
 export const metadata: Metadata = {
-  title: '北海学園大学新聞 公式サイト',
+  metadataBase: new URL('https://hokkai-gakuen-news.web.app'),
+  title: {
+    default: '北海学園大学新聞 公式サイト',
+    template: '%s | 北海学園大学新聞'
+  },
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
-  keywords: ['北海学園大学', '新聞会', '学生新聞'],
+  keywords: ['北海学園大学', '新聞会', '学生新聞', '札幌', '大学ニュース'],
+  verification: {
+    // Google Search Console 等で発行された認証コードをここに記載してください
+    google: 'YOUR_GOOGLE_VERIFICATION_CODE',
+  },
+  openGraph: {
+    title: '北海学園大学新聞 公式サイト',
+    description: '学生が紡ぐ、北海学園のいま。',
+    url: 'https://hokkai-gakuen-news.web.app',
+    siteName: '北海学園大学新聞',
+    locale: 'ja_JP',
+    type: 'website',
+  },
   icons: {
     icon: '/icon.png',
     apple: '/icon.png',
