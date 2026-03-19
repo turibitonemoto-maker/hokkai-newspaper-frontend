@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
   keywords: ['北海学園大学', '新聞会', '学生新聞', '札幌', '大学ニュース'],
   verification: {
-    // Google Search Console 等で発行された認証コードをここに記載してください
-    google: 'YOUR_GOOGLE_VERIFICATION_CODE',
+    // Google Search Console の所有権認証コードを物理的に適用
+    google: 'vyBqZRop5RaNAce3rTB3EOwtzl5qlPCp_shVA1fT_oc',
   },
   openGraph: {
     title: '北海学園大学新聞 公式サイト',
