@@ -50,7 +50,7 @@ export default function RecruitPage() {
         </div>
 
         <section className="bg-slate-900 text-white rounded-[48px] p-8 md:p-16 space-y-12 shadow-2xl">
-          <h2 className="text-3xl md:text-5xl font-black text-center tracking-tighter">北海学園大学一部新聞会で得られること</h2>
+          <h2 className="text-3xl md:text-5xl font-black text-center tracking-tighter">北海学園大学新聞で得られること</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="flex items-start gap-4">
               <CheckCircle2 className="text-primary shrink-0" size={24} />
