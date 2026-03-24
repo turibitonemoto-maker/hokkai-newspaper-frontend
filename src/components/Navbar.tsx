@@ -30,7 +30,7 @@ export function Navbar() {
   ];
 
   const subLinks = [
-    { label: '北海学園大学一部新聞会とは', href: '/about' },
+    { label: '北海学園大学新聞とは', href: '/about' },
     { label: '会長挨拶', href: '/greeting' },
     { label: '部員募集', href: '/recruit' },
     { label: '広告募集', href: '/ads' },

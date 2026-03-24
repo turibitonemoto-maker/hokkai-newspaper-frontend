@@ -179,7 +179,7 @@ export default function ArticlePage() {
               </div>
               <div className="flex items-center gap-2.5">
                 <User size={14} className="text-primary/60" />
-                <span>{article.authorName || '北海学園大学一部新聞会'}</span>
+                <span>{article.authorName || '北海学園大学新聞'}</span>
               </div>
             </div>
           </header>

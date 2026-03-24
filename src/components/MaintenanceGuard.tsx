@@ -62,7 +62,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
             <div className="pt-8 border-t border-slate-100">
               <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                Hokkai Gakuen University Ichibu Newspaper
+                Hokkai Gakuen University Newspaper
               </p>
             </div>
           </div>

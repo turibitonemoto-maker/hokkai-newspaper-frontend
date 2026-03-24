@@ -86,7 +86,7 @@ export default function ContactPage() {
           <h2 className="text-2xl font-black tracking-tight text-slate-900">活動拠点</h2>
           <p className="text-slate-600 font-medium leading-relaxed">
             北海学園大学 豊平キャンパス内<br />
-            文化棟二階 一部新聞会部室
+            文化棟二階 北海学園大学新聞部室
           </p>
         </section>
       </div>

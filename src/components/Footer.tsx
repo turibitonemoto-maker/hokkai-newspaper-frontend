@@ -18,7 +18,7 @@ export function Footer() {
         </div>
 
         <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">
-          &copy; {new Date().getFullYear()} 北海学園大学一部新聞会 / REPORTING FOR THE FUTURE
+          &copy; {new Date().getFullYear()} 北海学園大学新聞 / REPORTING FOR THE FUTURE
         </p>
       </div>
     </footer>

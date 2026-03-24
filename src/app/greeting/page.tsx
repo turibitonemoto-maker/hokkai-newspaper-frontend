@@ -99,7 +99,7 @@ export default function GreetingPage() {
             />
 
             <div className="pt-12 border-t border-slate-100 text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">President, Hokkai Gakuen University Newspaper Association</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">President, Hokkai Gakuen University Newspaper</p>
               <p className="text-3xl md:text-5xl font-black italic text-slate-950 tracking-tighter">{greeting.authorName}</p>
             </div>
           </div>
