@@ -9,15 +9,20 @@ import { ChevronRight, Filter, Loader2, Ghost, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
+/**
+ * カテゴリ別記事一覧ページ (デネブ版)
+ * Firestore クエリを最適化し、正確なフィルタリングを執行します。
+ */
 export default function CategoryPage() {
   const { slug } = useParams();
   const db = useFirestore();
 
+  // カテゴリIDに基づいて記事を取得。大文字小文字の違いに配慮し、slugをそのまま使用。
   const categoryQuery = useMemoFirebase(() => {
     if (!db || !slug) return null;
     return query(
       collection(db, 'articles'),
-      where('categoryId', '==', slug),
+      where('categoryId', '==', slug as string),
       where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
@@ -38,12 +43,17 @@ export default function CategoryPage() {
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]));
   }, [articles, isPaper]);
 
+  const categoryDisplayName = useMemo(() => {
+    if (isPaper) return '紙面ビューアー';
+    return slug as string;
+  }, [isPaper, slug]);
+
   return (
     <div className="container mx-auto px-4 py-12 pb-24">
       <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8 bg-white w-fit px-4 py-2 rounded-full shadow-sm border">
         <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
         <ChevronRight size={12} className="text-slate-200" />
-        <span className="text-primary">{isPaper ? '紙面ビューアー' : slug}</span>
+        <span className="text-primary">{categoryDisplayName}</span>
       </nav>
 
       <header className="mb-16">
@@ -53,12 +63,12 @@ export default function CategoryPage() {
               {isPaper ? <BookOpen size={24} /> : <Filter size={24} />}
             </div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
-              {isPaper ? '紙面ビューアー' : slug}
+              {categoryDisplayName}
             </h1>
           </div>
         </div>
         <p className="text-slate-500 font-medium max-w-2xl leading-relaxed mt-6">
-          {isPaper ? '1950年の創立以来の歴史を、当時の紙面そのままに振り返ることができます。' : `${slug}に関するすべての記事一覧です。`}
+          {isPaper ? '1950年の創立以来の歴史を、当時の紙面そのままに振り返ることができます。' : `${categoryDisplayName}に関するすべての記事一覧です。`}
         </p>
       </header>
 
@@ -72,8 +82,8 @@ export default function CategoryPage() {
           <div className="space-y-16 animate-fade-in">
             {paperGroupedByDate.map(([date, papers]) => (
               <div key={date} className="space-y-6">
-                <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest">
-                  {date.replace(/-/g, '/')}
+                <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-sm tracking-widest flex items-center gap-4">
+                   <span>{papers[0]?.title || 'アーカイブ'}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                   {papers.map((paper) => (
@@ -96,7 +106,7 @@ export default function CategoryPage() {
             <Ghost className="text-slate-200" size={48} />
           </div>
           <h3 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">記事がありません</h3>
-          <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">まだ公開された記事がないようです。</p>
+          <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">まだこのカテゴリに公開された記事がないようです。</p>
           <Link href="/" className="inline-block mt-8 text-primary font-bold uppercase tracking-widest text-xs hover:underline decoration-2 underline-offset-8">BACK TO HOME</Link>
         </div>
       )}

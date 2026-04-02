@@ -3,15 +3,15 @@
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Search, X, FileText } from 'lucide-react';
+import { Search, X, FileText, Share2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import LinkNext from 'next/link';
 
 /**
  * ナビゲーション (常時表示・物理固定版)
- * メニュー（ドロップダウン）を完全に排除。全リンクを常に露出。
  * ブランドカラー：北海→青、大学→青。
+ * SNSページへのリンクを青バー（subLinks）に追加。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -33,6 +33,7 @@ export function Navbar() {
     { label: '北海学園大学新聞とは', href: '/about' },
     { label: '会長挨拶', href: '/greeting' },
     { label: '部員募集', href: '/recruit' },
+    { label: '公式SNS', href: '/social', icon: <Share2 size={12} className="text-white/60" /> },
     { label: '広告募集', href: '/ads' },
     { label: 'お問い合わせ', href: '/contact' },
   ];
@@ -113,8 +114,12 @@ export function Navbar() {
               <LinkNext
                 key={link.label}
                 href={link.href}
-                className="text-[10px] md:text-xs font-black uppercase tracking-[0.1em] whitespace-nowrap text-white/90 hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-white/30"
+                className={cn(
+                  "text-[10px] md:text-xs font-black uppercase tracking-[0.1em] whitespace-nowrap text-white/90 hover:text-white transition-colors py-1 border-b-2 flex items-center gap-2",
+                  pathname === link.href ? "border-white" : "border-transparent hover:border-white/30"
+                )}
               >
+                {link.icon && <span>{link.icon}</span>}
                 {link.label}
               </LinkNext>
             ))}
