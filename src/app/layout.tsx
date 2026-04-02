@@ -26,8 +26,8 @@ const yujiMai = Yuji_Mai({
 export const metadata: Metadata = {
   metadataBase: new URL('https://hokkai-gakuen-news.web.app'),
   title: {
-    default: '北海学園大学新聞 公式サイト',
-    template: '%s | 北海学園大学新聞'
+    default: '北海学園大学新聞会 公式サイト',
+    template: '%s | 北海学園大学新聞会'
   },
   description: '1950年創立。北海学園大学の最新ニュースを学生の視点からお届けする公式サイト。',
   keywords: ['北海学園大学', '新聞会', '学生新聞', '札幌', '大学ニュース'],
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     google: 'vyBqZRop5RaNAce3rTB3EOwtzl5qlPCp_shVA1fT_oc',
   },
   openGraph: {
-    title: '北海学園大学新聞 公式サイト',
+    title: '北海学園大学新聞会 公式サイト',
     description: '学生が紡ぐ、北海学園のいま。',
     url: 'https://hokkai-gakuen-news.web.app',
-    siteName: '北海学園大学新聞',
+    siteName: '北海学園大学新聞会',
     locale: 'ja_JP',
     type: 'website',
   },

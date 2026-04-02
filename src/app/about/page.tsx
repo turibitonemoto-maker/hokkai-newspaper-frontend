@@ -38,7 +38,7 @@ export default function AboutPage() {
         <div className="bg-slate-50 p-10 rounded-[48px] border-2 border-dashed border-slate-200">
           <AlertCircle className="text-slate-400 mx-auto mb-6" size={48} />
           <h1 className="text-2xl font-black mb-4">紹介文が未設定です</h1>
-          <p className="text-slate-500 text-sm font-medium">管理サイトから「北海学園大学新聞とは」の内容を保存してください。</p>
+          <p className="text-slate-500 text-sm font-medium">管理サイトから「北海学園大学新聞会とは」の内容を保存してください。</p>
         </div>
       </div>
     );
@@ -50,7 +50,7 @@ export default function AboutPage() {
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest rounded-full">ABOUT US</Badge>
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">
-            北海学園大学新聞とは
+            北海学園大学新聞会とは
           </h1>
         </header>
 
@@ -97,7 +97,7 @@ export default function AboutPage() {
           <div className="space-y-8">
             <div className="grid grid-cols-3 border-b border-slate-100 pb-6">
               <span className="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em]">団体名</span>
-              <span className="col-span-2 font-bold text-slate-900">北海学園大学新聞</span>
+              <span className="col-span-2 font-bold text-slate-900">北海学園大学新聞会</span>
             </div>
             <div className="grid grid-cols-3 border-b border-slate-100 pb-6">
               <span className="font-black text-slate-400 text-[10px] uppercase tracking-[0.3em]">設立</span>

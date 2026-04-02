@@ -31,7 +31,7 @@ export function Navbar() {
   ];
 
   const subLinks = [
-    { label: '北海学園大学新聞とは', href: '/about' },
+    { label: '北海学園大学新聞会とは', href: '/about' },
     { label: '会長挨拶', href: '/greeting' },
     { label: '部員募集', href: '/recruit' },
     { label: '公式SNS', href: '/social', icon: <Share2 size={12} className="text-white/60" /> },
@@ -60,7 +60,7 @@ export function Navbar() {
                   <span className="text-primary group-hover:opacity-80 transition-opacity">北海</span>
                   <span className="text-slate-900 group-hover:opacity-80 transition-opacity">学園</span>
                   <span className="text-primary group-hover:opacity-80 transition-opacity">大学</span>
-                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">新聞</span>
+                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">新聞会</span>
                 </div>
               </LinkNext>
             )}

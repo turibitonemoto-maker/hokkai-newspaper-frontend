@@ -90,7 +90,7 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* 見出し画像 */}
+          {/* 見出し画像 (題名の上) */}
           {pdfUrl && (
             <div className="mb-12 space-y-6">
               <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
@@ -178,7 +178,7 @@ export default function ArticlePage() {
               </div>
               <div className="flex items-center gap-2.5">
                 <User size={14} className="text-primary/60" />
-                <span>{article.authorName || '北海学園大学新聞'}</span>
+                <span>{article.authorName || '北海学園大学新聞会'}</span>
               </div>
             </div>
           </header>
