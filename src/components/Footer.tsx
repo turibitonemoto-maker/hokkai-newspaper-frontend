@@ -2,7 +2,7 @@
 
 /**
  * 画面の端から端まで広がる黒いフッター。
- * ロゴカラー：北海→青、大学→青。
+ * ロゴ表記を「北海学園大学新聞」に固定。
  */
 export function Footer() {
   return (
@@ -13,12 +13,12 @@ export function Footer() {
             <span className="text-primary">北海</span>
             <span className="text-white">学園</span>
             <span className="text-primary">大学</span>
-            <span className="text-white">新聞会</span>
+            <span className="text-white">新聞</span>
           </div>
         </div>
 
         <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-slate-500">
-          &copy; {new Date().getFullYear()} 北海学園大学新聞会
+          &copy; {new Date().getFullYear()} 北海学園大学新聞
         </p>
       </div>
     </footer>

@@ -11,7 +11,7 @@ import LinkNext from 'next/link';
 /**
  * ナビゲーション (常時表示・物理固定版)
  * ブランドカラー：北海→青、大学→青。
- * SNSページへのリンクを青バー（subLinks）に追加。
+ * ロゴ表記を「北海学園大学新聞」に固定。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -60,7 +60,7 @@ export function Navbar() {
                   <span className="text-primary group-hover:opacity-80 transition-opacity">北海</span>
                   <span className="text-slate-900 group-hover:opacity-80 transition-opacity">学園</span>
                   <span className="text-primary group-hover:opacity-80 transition-opacity">大学</span>
-                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">新聞会</span>
+                  <span className="text-slate-900 group-hover:opacity-80 transition-opacity">新聞</span>
                 </div>
               </LinkNext>
             )}
