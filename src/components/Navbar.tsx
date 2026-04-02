@@ -21,6 +21,7 @@ export function Navbar() {
 
   const mainLinks = [
     { label: 'トップ', href: '/' },
+    { label: 'キャンパス', href: '/category/Campus' },
     { label: 'イベント', href: '/category/Event' },
     { label: 'インタビュー', href: '/category/Interview' },
     { label: 'スポーツ', href: '/category/Sports' },

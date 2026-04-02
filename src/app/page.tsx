@@ -52,7 +52,7 @@ export default function Home() {
     return validAds.length > 0 ? validAds[0] : null;
   }, [ads]);
 
-  const categoryList = ['Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper', 'Viewer'];
+  const categoryList = ['Campus', 'Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper', 'Viewer'];
 
   const latestArticles = useMemo(() => {
     return articles.filter(a => a.categoryId !== 'Paper' && a.categoryId !== 'Viewer').slice(0, 4);
