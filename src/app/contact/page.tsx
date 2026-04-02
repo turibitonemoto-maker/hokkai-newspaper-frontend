@@ -7,7 +7,7 @@ import { Mail, MapPin, Instagram, ArrowRight, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * お問い合わせページ (表示用サイト専用)
+ * お問い合わせページ (表示用サイト専用・リンク最新化)
  * 荒らし対策のためフォームを廃止し、外部SNSおよびメール連絡に一本化。
  */
 export default function ContactPage() {
@@ -60,7 +60,7 @@ export default function ContactPage() {
           </button>
 
           {/* Instagram */}
-          <a href="https://www.instagram.com/hgu_news/" target="_blank" rel="noopener noreferrer" className="group">
+          <a href="https://www.instagram.com/hgu_news?igsh=YmRybG1mMWJ3MHBm" target="_blank" rel="noopener noreferrer" className="group">
             <Card className="rounded-[40px] border-none shadow-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white hover:shadow-2xl transition-all duration-300 h-full">
               <CardContent className="p-10 space-y-6">
                 <div className="bg-white/20 w-16 h-16 rounded-3xl flex items-center justify-center text-white backdrop-blur-sm">

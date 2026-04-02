@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Instagram, ArrowRight, ExternalLink, MessageSquare } from 'lucide-react';
 
 /**
- * 公式SNS集約ページ (デネブ版)
+ * 公式SNS集約ページ (デネブ版・URL最新化)
  * X (旧Twitter)、Instagram、Noteへのゲートウェイ。
  */
 export default function SocialPage() {
@@ -25,7 +25,7 @@ export default function SocialPage() {
     {
       name: 'Instagram',
       id: '@hgu_news',
-      url: 'https://www.instagram.com/hgu_news/',
+      url: 'https://www.instagram.com/hgu_news?igsh=YmRybG1mMWJ3MHBm',
       description: '取材現場の様子や、紙面に載りきらなかった写真を公開中。',
       color: 'bg-gradient-to-br from-purple-600 to-pink-500',
       icon: <Instagram size={24} />
@@ -33,7 +33,7 @@ export default function SocialPage() {
     {
       name: 'Note',
       id: '北海学園大学新聞',
-      url: 'https://note.com/hgu_news',
+      url: 'https://note.com/lucky_minnow287',
       description: '長期連載や、記者によるコラムなどをアーカイブしています。',
       color: 'bg-emerald-500',
       icon: <MessageSquare size={24} />
