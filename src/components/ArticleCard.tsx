@@ -8,8 +8,8 @@ import { Calendar, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 
 /**
- * 記事カードコンポーネント (自前主義・完全浄化版)
- * note.comのアイコンや外部リンク、HTMLタグを完全に排除し、気品あるスニペットを表示。
+ * 記事カードコンポーネント (正常化版)
+ * カテゴリバッジをリンク化し、導線を物理的に結合しました。
  */
 interface ArticleCardProps {
   article: {
@@ -32,14 +32,13 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   
   const excerpt = useMemo(() => {
     const rawContent = article.content || article.htmlContent || "";
-    // HTMLタグを物理的に剥離し、実体参照をデコード
     const plainText = rawContent
       .replace(/<[^>]*>?/gm, "")
       .replace(/&nbsp;/g, " ")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&amp;/g, "&")
-      .replace(/\s+/g, " ") // 重複スペースを統合
+      .replace(/\s+/g, " ")
       .trim();
     return plainText.substring(0, 100) + (plainText.length > 100 ? "..." : "");
   }, [article.content, article.htmlContent]);
@@ -47,9 +46,11 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
 
   return (
-    <Link href={`/articles/${article.id}`} className="group block h-full">
-      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-2xl transition-all duration-500 rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20">
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
+    <div className="h-full group">
+      <Card className="h-full overflow-hidden flex flex-col border-none shadow-sm bg-white hover:shadow-2xl transition-all duration-500 rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20 relative">
+        <Link href={`/articles/${article.id}`} className="absolute inset-0 z-0" />
+        
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-50 z-10">
           {hasImage ? (
             <Image
               src={displayImage}
@@ -66,9 +67,11 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
           )}
           
           <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-            <Badge className="bg-primary text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full">
-              {article.categoryId}
-            </Badge>
+            <Link href={`/category/${article.categoryId}`} className="relative z-20">
+              <Badge className="bg-primary text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full hover:scale-110 transition-transform">
+                {article.categoryId}
+              </Badge>
+            </Link>
             {hasPdf && (
               <Badge className="bg-slate-950 text-white border-none font-black text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1.5 items-center">
                 <FileText size={10} /> PAPER
@@ -77,7 +80,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
           </div>
         </div>
         
-        <CardHeader className="p-6 pb-2">
+        <CardHeader className="p-6 pb-2 z-10">
           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
             <Calendar className="text-primary/60" size={12} />
             <span>{date}</span>
@@ -87,12 +90,12 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
           </h3>
         </CardHeader>
 
-        <CardContent className="px-6 pb-6 flex-grow">
+        <CardContent className="px-6 pb-6 flex-grow z-10">
           <p className="text-slate-500 text-[11px] line-clamp-3 leading-relaxed font-medium tracking-wide">
             {excerpt}
           </p>
         </CardContent>
       </Card>
-    </Link>
+    </div>
   );
 }

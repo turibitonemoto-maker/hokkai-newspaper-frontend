@@ -5,15 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ChevronLeft, Type, ShieldCheck, Layers, Camera, FileText } from 'lucide-react';
+import { Calendar, User, ChevronLeft, Type, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (PDF/JPEG 統合・デネブ版)
- * 最高司令官の指令により、画像を題名の「上」に配置するよう物理構成を組み替えました。
+ * 記事詳細・物理ビューアーページ (タグリンク化版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -90,8 +90,7 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* 【指令：見出し画像は題名の上】 */}
-          {/* PDF 物理ビューアー */}
+          {/* 見出し画像 */}
           {pdfUrl && (
             <div className="mb-12 space-y-6">
               <div className="relative w-full aspect-[1/1.414] rounded-[32px] overflow-hidden border-8 border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
@@ -109,7 +108,6 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* JPEG 物理ビューアー */}
           {paperImages.length > 0 && !pdfUrl && (
             <div className="mb-12 space-y-12">
               <div className="space-y-16">
@@ -132,7 +130,6 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {/* メイン画像（紙面がない場合） */}
           {article.mainImageUrl && !pdfUrl && paperImages.length === 0 && (
             <figure className="mb-12 space-y-5">
               <div className="relative aspect-[16/9] rounded-[48px] overflow-hidden shadow-2xl ring-8 ring-white bg-slate-50">
@@ -157,9 +154,11 @@ export default function ArticlePage() {
 
           <header className="mb-12">
             <div className="flex items-center gap-4 mb-8">
-              <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-md rounded-full">
-                {article.categoryId}
-              </Badge>
+              <Link href={`/category/${article.categoryId}`}>
+                <Badge className="bg-primary text-white border-none font-black py-1 px-4 text-[10px] tracking-widest uppercase shadow-md rounded-full hover:scale-105 transition-transform">
+                  {article.categoryId}
+                </Badge>
+              </Link>
               {article.issueNumber && (
                 <Badge variant="outline" className="border-primary text-primary font-black py-1 px-4 text-[10px] tracking-widest uppercase rounded-full">
                   {article.issueNumber}

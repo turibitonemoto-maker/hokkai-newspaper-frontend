@@ -10,27 +10,35 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 
 /**
- * カテゴリ別記事一覧ページ (デネブ版)
- * Firestore クエリを最適化し、正確なフィルタリングを執行します。
+ * カテゴリ別記事一覧ページ (デネブ・正常化版)
+ * 大文字小文字の揺れを許容し、確実に記事を捕捉します。
  */
 export default function CategoryPage() {
   const { slug } = useParams();
   const db = useFirestore();
 
-  // カテゴリIDに基づいて記事を取得。大文字小文字の違いに配慮し、slugをそのまま使用。
-  const categoryQuery = useMemoFirebase(() => {
-    if (!db || !slug) return null;
+  // 物理的結合の強化: 大文字小文字の揺れに対応するため、公開済み記事を全取得してメモリ上でフィルタリング
+  const baseQuery = useMemoFirebase(() => {
+    if (!db) return null;
     return query(
       collection(db, 'articles'),
-      where('categoryId', '==', slug as string),
       where('isPublished', '==', true),
       orderBy('publishDate', 'desc')
     );
-  }, [db, slug]);
+  }, [db]);
 
-  const { data: articles, isLoading } = useCollection(categoryQuery);
+  const { data: allArticles, isLoading } = useCollection(baseQuery);
 
-  const isPaper = slug === 'Paper' || slug === 'Viewer';
+  const articles = useMemo(() => {
+    if (!allArticles || !slug) return [];
+    const targetSlug = (slug as string).toLowerCase();
+    return allArticles.filter(a => 
+      a.categoryId?.toLowerCase() === targetSlug ||
+      (targetSlug === 'viewer' && (a.categoryId === 'Paper' || a.categoryId === 'Viewer'))
+    );
+  }, [allArticles, slug]);
+
+  const isPaper = slug === 'Paper' || slug === 'Viewer' || (slug as string).toLowerCase() === 'paper' || (slug as string).toLowerCase() === 'viewer';
 
   const paperGroupedByDate = useMemo(() => {
     if (!articles || !isPaper) return [];

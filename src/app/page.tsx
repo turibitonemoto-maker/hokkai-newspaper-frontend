@@ -10,10 +10,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 /**
- * ホームページ (原点回帰・完全浄化版)
- * 指令に基づき、見出し横のアイコンおよび背景の青いバーを物理的に削除。
- * すべての見出しを「文字だけ」の純粋なスタイルで統一。
- * 紙面アーカイブの青いバーには日付ではなくタイトルを表示。
+ * ホームページ (正常化・統合版)
+ * カテゴリマッチングの揺れを吸収し、確実に最新ニュースを表示します。
  */
 export default function Home() {
   const db = useFirestore();
@@ -55,19 +53,26 @@ export default function Home() {
   const categoryList = ['Campus', 'Event', 'Interview', 'Sports', 'Column', 'Opinion', 'Paper', 'Viewer'];
 
   const latestArticles = useMemo(() => {
-    return articles.filter(a => a.categoryId !== 'Paper' && a.categoryId !== 'Viewer').slice(0, 4);
+    return articles.filter(a => {
+      const cat = a.categoryId?.toLowerCase();
+      return cat !== 'paper' && cat !== 'viewer';
+    }).slice(0, 4);
   }, [articles]);
   
   const categoryGroups = useMemo(() => {
     const groups: Record<string, any[]> = {};
     categoryList.forEach(cat => {
-      groups[cat] = articles.filter(a => a.categoryId === cat);
+      const targetCat = cat.toLowerCase();
+      groups[cat] = articles.filter(a => a.categoryId?.toLowerCase() === targetCat);
     });
     return groups;
   }, [articles]);
 
   const paperGroupedByDate = useMemo(() => {
-    const papers = [...(categoryGroups['Paper'] || []), ...(categoryGroups['Viewer'] || [])];
+    const papers = articles.filter(a => {
+      const cat = a.categoryId?.toLowerCase();
+      return cat === 'paper' || cat === 'viewer';
+    });
     const grouped: Record<string, any[]> = {};
     papers.forEach(p => {
       const date = p.publishDate?.split('T')[0] || 'Unknown Date';
@@ -75,11 +80,11 @@ export default function Home() {
       grouped[date].push(p);
     });
     return Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 2);
-  }, [categoryGroups]);
+  }, [articles]);
 
   return (
     <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
-      {/* 最新ニュースセクション (青バーをパージし下線スタイルへ) */}
+      {/* 最新ニュースセクション */}
       <div className="mb-20">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950">
@@ -110,7 +115,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 紙面ビューアーセクション (アイコンをパージ) */}
+      {/* 紙面ビューアーセクション */}
       <div className="mb-32">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b-2 border-primary/20">
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950">
