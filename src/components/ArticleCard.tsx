@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, FileText } from 'lucide-react';
 import { useMemo } from 'react';
+import { getDisplayImageUrl } from '@/lib/utils';
 
 /**
- * 記事カードコンポーネント (不具合修正・スマホ最適化版)
- * z-index を調整し、全域クリックとタグリンクの共存を物理的に保証。
+ * 記事カードコンポーネント (画像表示正常化・スマホ最適化版)
  */
 interface ArticleCardProps {
   article: {
@@ -26,8 +26,8 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, priority = false }: ArticleCardProps) {
-  const hasImage = !!article.mainImageUrl;
-  const displayImage = article.mainImageUrl || "";
+  const displayImage = useMemo(() => getDisplayImageUrl(article.mainImageUrl), [article.mainImageUrl]);
+  const hasImage = !!displayImage;
   const hasPdf = !!article.pdfUrl;
   
   const excerpt = useMemo(() => {
@@ -40,7 +40,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
       .replace(/&amp;/g, "&")
       .replace(/\s+/g, " ")
       .trim();
-    return plainText.substring(0, 100) + (plainText.length > 100 ? "..." : "");
+    return plainText.substring(0, 80) + (plainText.length > 80 ? "..." : "");
   }, [article.content, article.htmlContent]);
 
   const date = useMemo(() => article.publishDate?.split('T')[0] || "", [article.publishDate]);
@@ -48,10 +48,10 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <div className="h-full group relative">
       <Card className="h-full overflow-hidden flex flex-col border-none shadow-md bg-white hover:shadow-2xl transition-all duration-500 rounded-[24px] md:rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20">
-        {/* 全域リンク：z-10 でコンテンツの上に被せる (ただしタグは除外) */}
+        {/* 全域リンク */}
         <Link 
           href={`/articles/${article.id}`} 
-          className="absolute inset-0 z-10" 
+          className="absolute inset-0 z-20" 
           aria-label={article.title}
         />
         
@@ -64,6 +64,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               priority={priority}
+              unoptimized={displayImage.includes('drive.google.com')}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
@@ -71,14 +72,14 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             </div>
           )}
           
-          <div className="absolute top-3 left-3 md:top-4 md:left-4 flex flex-wrap gap-2 z-20">
-            <Link href={`/category/${article.categoryId}`} className="pointer-events-auto relative z-30">
-              <Badge className="bg-primary text-white border-none font-black text-[8px] md:text-[9px] tracking-widest uppercase py-0.5 md:py-1 px-2 md:px-3 shadow-lg rounded-full hover:scale-110 transition-transform">
+          <div className="absolute top-3 left-3 md:top-4 md:left-4 flex flex-wrap gap-2 z-30">
+            <Link href={`/category/${article.categoryId}`} className="pointer-events-auto relative z-40">
+              <Badge className="bg-primary text-white border-none font-black text-[8px] md:text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full hover:scale-110 transition-transform">
                 {article.categoryId}
               </Badge>
             </Link>
             {hasPdf && (
-              <Badge className="bg-slate-950 text-white border-none font-black text-[8px] md:text-[9px] tracking-widest uppercase py-0.5 md:py-1 px-2 md:px-3 shadow-lg rounded-full flex gap-1 items-center relative z-20">
+              <Badge className="bg-slate-950 text-white border-none font-black text-[8px] md:text-[9px] tracking-widest uppercase py-1 px-3 shadow-lg rounded-full flex gap-1 items-center">
                 <FileText size={10} /> PAPER
               </Badge>
             )}
@@ -86,7 +87,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
         </div>
         
         <CardHeader className="p-5 md:p-6 pb-2">
-          <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-3">
+          <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
             <Calendar className="text-primary/60" size={12} />
             <span>{date}</span>
           </div>
@@ -96,7 +97,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
         </CardHeader>
 
         <CardContent className="px-5 md:px-6 pb-6 flex-grow">
-          <p className="text-slate-500 text-[10px] md:text-[11px] line-clamp-3 leading-relaxed font-medium tracking-wide">
+          <p className="text-slate-500 text-[10px] md:text-[11px] line-clamp-2 leading-relaxed font-medium tracking-wide">
             {excerpt}
           </p>
         </CardContent>

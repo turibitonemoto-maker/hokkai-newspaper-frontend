@@ -4,10 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FileImage, FileText, Layers } from 'lucide-react';
 import { useMemo } from 'react';
+import { getDisplayImageUrl } from '@/lib/utils';
 
 /**
- * 紙面物理サムネイル・コンポーネント (PDF/JPEG 統合・浄化版)
- * 題名と日付は上位の青バーへ移設されたため、ここではサムネイルのみを表示。
+ * 紙面物理サムネイル・コンポーネント (画像表示正常化版)
  */
 interface PaperCardProps {
   article: {
@@ -22,16 +22,15 @@ interface PaperCardProps {
 }
 
 export function PaperCard({ article }: PaperCardProps) {
-  // PDFのサムネイル、またはJPEGの最初の1枚を抽出
+  // 画像URLの正規化を適用
   const displayImage = useMemo(() => {
     if (article.pdfUrl) {
-      // Cloudinary PDF Thumbnail: PDF URL の拡張子を .jpg に変えることで1ページ目を取得可能
-      return article.pdfUrl.replace(/\.pdf$/, '.jpg');
+      return getDisplayImageUrl(article.pdfUrl);
     }
     if (article.paperImages && article.paperImages.length > 0) {
-      return article.paperImages[0];
+      return getDisplayImageUrl(article.paperImages[0]);
     }
-    return article.mainImageUrl || "";
+    return getDisplayImageUrl(article.mainImageUrl);
   }, [article.pdfUrl, article.paperImages, article.mainImageUrl]);
 
   const pageCount = article.paperImages?.length || 0;
@@ -47,6 +46,7 @@ export function PaperCard({ article }: PaperCardProps) {
             fill
             sizes="(max-width: 640px) 50vw, 250px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+            unoptimized={displayImage.includes('drive.google.com')}
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-slate-50 text-slate-300 gap-2">

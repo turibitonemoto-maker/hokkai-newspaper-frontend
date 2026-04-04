@@ -8,12 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ChevronLeft, Type, Camera } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, getDisplayImageUrl } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (スマホ最適化・z-index浄化版)
+ * 記事詳細・物理ビューアーページ (画像表示正常化・スマホ版極限最適化)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -35,7 +35,8 @@ export default function ArticlePage() {
 
   const isPublic = article?.isPublished === true;
   const pdfUrl = article?.pdfUrl;
-  const paperImages = article?.paperImages || [];
+  const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
+  const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   const mainContent = article?.content || '';
 
   if (!isMounted) return null;
@@ -93,7 +94,7 @@ export default function ArticlePage() {
           {/* 紙面/画像ビューアー */}
           {pdfUrl && (
             <div className="mb-8 md:mb-12 space-y-4 md:space-y-6">
-              <div className="relative w-full aspect-[1/1.414] rounded-[24px] md:rounded-[32px] overflow-hidden border-4 md:border-8 border-white shadow-xl md:shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+              <div className="relative w-full aspect-[1/1.414] rounded-[16px] md:rounded-[32px] overflow-hidden border-2 md:border-8 border-white shadow-xl md:shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                 <iframe
                   src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                   className="w-full h-full border-none"
@@ -112,7 +113,7 @@ export default function ArticlePage() {
             <div className="mb-8 md:mb-12 space-y-8 md:space-y-12">
               <div className="space-y-8 md:space-y-16">
                 {paperImages.map((imgUrl: string, index: number) => (
-                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[16px] overflow-hidden border-4 md:border-8 border-white shadow-xl md:shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[8px] md:rounded-[16px] overflow-hidden border-2 md:border-8 border-white shadow-xl md:shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                     <Image
                       src={imgUrl}
                       alt={`${article.title} - Page ${index + 1}`}
@@ -120,8 +121,9 @@ export default function ArticlePage() {
                       className="object-contain"
                       sizes="(max-width: 1024px) 100vw, 896px"
                       priority={index === 0}
+                      unoptimized={imgUrl.includes('drive.google.com')}
                     />
-                    <div className="absolute top-3 left-3 bg-slate-900/60 text-white text-[8px] md:text-[10px] font-black px-2 md:px-3 py-0.5 md:py-1 rounded-full backdrop-blur-sm">
+                    <div className="absolute top-2 left-2 bg-slate-900/60 text-white text-[8px] md:text-[10px] font-black px-2 md:px-3 py-0.5 md:py-1 rounded-full backdrop-blur-sm">
                       PAGE {index + 1}
                     </div>
                   </div>
@@ -130,15 +132,16 @@ export default function ArticlePage() {
             </div>
           )}
 
-          {article.mainImageUrl && !pdfUrl && paperImages.length === 0 && (
+          {mainImageUrl && !pdfUrl && paperImages.length === 0 && (
             <figure className="mb-8 md:mb-12 space-y-3 md:space-y-5">
-              <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] md:rounded-[48px] overflow-hidden shadow-xl md:shadow-2xl ring-4 md:ring-8 ring-white bg-slate-50">
+              <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[16px] md:rounded-[48px] overflow-hidden shadow-xl md:shadow-2xl ring-2 md:ring-8 ring-white bg-slate-50">
                 <Image
-                  src={article.mainImageUrl}
+                  src={mainImageUrl}
                   alt={article.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 896px"
                   className="object-cover"
+                  unoptimized={mainImageUrl.includes('drive.google.com')}
                 />
               </div>
               {article.mainImageCaption && (
@@ -155,12 +158,12 @@ export default function ArticlePage() {
           <header className="mb-8 md:mb-12">
             <div className="flex items-center gap-2 md:gap-4 mb-6 md:mb-8">
               <Link href={`/category/${article.categoryId}`}>
-                <Badge className="bg-primary text-white border-none font-black py-0.5 md:py-1 px-3 md:px-4 text-[9px] md:text-[10px] tracking-widest uppercase shadow-md rounded-full hover:scale-105 transition-transform">
+                <Badge className="bg-primary text-white border-none font-black py-1 px-3 md:px-4 text-[9px] md:text-[10px] tracking-widest uppercase shadow-md rounded-full hover:scale-105 transition-transform">
                   {article.categoryId}
                 </Badge>
               </Link>
               {article.issueNumber && (
-                <Badge variant="outline" className="border-primary text-primary font-black py-0.5 md:py-1 px-3 md:px-4 text-[9px] md:text-[10px] tracking-widest uppercase rounded-full">
+                <Badge variant="outline" className="border-primary text-primary font-black py-1 px-3 md:px-4 text-[9px] md:text-[10px] tracking-widest uppercase rounded-full">
                   {article.issueNumber}
                 </Badge>
               )}
@@ -189,7 +192,7 @@ export default function ArticlePage() {
                 "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
                 "prose-p:leading-7 md:prose-p:leading-6 prose-p:my-3",
                 "prose-h2:text-xl md:prose-h2:text-2xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-4 md:prose-h2:mb-6 prose-h2:mt-8 md:prose-h2:mt-12",
-                "prose-img:rounded-[16px] md:prose-img:rounded-[32px] prose-img:shadow-lg md:prose-img:shadow-xl prose-img:ring-4 md:prose-img:ring-8 prose-img:ring-white prose-img:my-8 md:prose-img:my-12",
+                "prose-img:rounded-[12px] md:prose-img:rounded-[32px] prose-img:shadow-lg md:prose-img:shadow-xl prose-img:ring-2 md:prose-img:ring-8 prose-img:ring-white prose-img:my-8 md:prose-img:my-12",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 
