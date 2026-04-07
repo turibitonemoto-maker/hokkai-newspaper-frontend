@@ -48,7 +48,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <div className="h-full group relative">
       <Card className="h-full overflow-hidden flex flex-col border-none shadow-md bg-white hover:shadow-2xl transition-all duration-500 rounded-[24px] md:rounded-[32px] ring-1 ring-slate-100 group-hover:ring-primary/20">
-        {/* 全域リンク */}
+        {/* 全域リンクを最上位に配置 (z-20) */}
         <Link 
           href={`/articles/${article.id}`} 
           className="absolute inset-0 z-20" 

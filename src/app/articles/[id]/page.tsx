@@ -62,6 +62,7 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-4 py-6 md:py-16 pb-32">
       <div className="max-w-4xl mx-auto">
+        {/* 操作バー：戻る ＆ フォント切り替え (スマホ最適化) */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
           <Button 
             variant="ghost" 
@@ -91,7 +92,7 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* 紙面/画像ビューアー */}
+          {/* メインビジュアル / 紙面ビューアー */}
           {pdfUrl && (
             <div className="mb-8 md:mb-12 space-y-4 md:space-y-6">
               <div className="relative w-full aspect-[1/1.414] rounded-[16px] md:rounded-[32px] overflow-hidden border-2 md:border-8 border-white shadow-xl md:shadow-2xl bg-slate-50 ring-1 ring-slate-200">
