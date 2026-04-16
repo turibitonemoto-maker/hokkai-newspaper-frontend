@@ -1,3 +1,4 @@
+
 "use client";
 
 import { cn } from '@/lib/utils';
@@ -11,6 +12,7 @@ import LinkNext from 'next/link';
 /**
  * ナビゲーション (スマホ最適化・物理固定版)
  * ロゴサイズを動的に調整し、視認性と操作性を向上。
+ * PC表示時の圧迫感を排除するため、適切なパディングを確保。
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -49,9 +51,9 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 shadow-md">
-      {/* 白バー：ロゴとメインリンク (スマホ最適化) */}
+      {/* 白バー：ロゴとメインリンク */}
       <div className="w-full border-b bg-white relative">
-        <div className="max-w-[1280px] mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-2">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between gap-2">
           <div className="flex items-center gap-4 md:gap-12 flex-grow overflow-hidden">
             {!isSearchOpen && (
               <LinkNext href="/" className="flex items-center group shrink-0">
@@ -106,9 +108,9 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 青バー：団体案内 (スマホ最適化) */}
+      {/* 青バー：団体案内 */}
       <div className="w-full bg-primary text-white shadow-inner">
-        <div className="max-w-[1280px] mx-auto px-4 h-10 md:h-16 flex items-center overflow-x-auto no-scrollbar">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-12 h-10 md:h-16 flex items-center overflow-x-auto no-scrollbar">
           <nav className="flex items-center gap-5 md:gap-10 pr-4">
             {subLinks.map((link) => (
               <LinkNext
@@ -119,7 +121,6 @@ export function Navbar() {
                   pathname === link.href ? "border-white" : "border-transparent hover:border-white/30"
                 )}
               >
-                {link.icon && <span>{link.icon}</span>}
                 {link.label}
               </LinkNext>
             ))}

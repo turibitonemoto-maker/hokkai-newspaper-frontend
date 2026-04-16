@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -61,7 +62,7 @@ export default function Home() {
   }, [articles]);
 
   return (
-    <section className="container mx-auto px-4 md:px-0 pb-32 animate-fade-in">
+    <section className="container mx-auto px-6 md:px-12 lg:px-16 pb-32 animate-fade-in">
       <div className="mb-20">
         <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-950 mb-10 pb-6 border-b-2 border-primary/20">最新のニュース</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
@@ -85,13 +86,13 @@ export default function Home() {
           <div className="space-y-12">
             {paperGroupedByDate.map(([date, papers]) => (
               <div key={date} className="space-y-6">
-                <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-xs tracking-widest">{papers[0]?.title || 'アーカイブ'}</div>
+                <div className="bg-primary px-6 py-2 rounded-sm text-white font-black text-xs tracking-widest shadow-lg shadow-primary/10">{papers[0]?.title || 'アーカイブ'}</div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-10">
                   {papers.map((paper) => <PaperCard key={paper.id} article={paper as any} />)}
                 </div>
               </div>
             ))}
-            <Link href="/viewer" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary justify-end">VIEW ARCHIVES <ChevronRight size={14} /></Link>
+            <Link href="/viewer" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary justify-end hover:translate-x-1 transition-transform">VIEW ARCHIVES <ChevronRight size={14} /></Link>
           </div>
         ) : <div className="bg-slate-50 rounded-[32px] p-20 text-center border-2 border-dashed text-slate-400 font-bold">紙面データがありません</div>}
       </div>
@@ -104,7 +105,7 @@ export default function Home() {
             <div key={category}>
               <div className="flex items-center justify-between mb-10 border-l-8 border-primary pl-6">
                 <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic text-slate-950">{category}</h2>
-                <Link href={`/category/${category}`} className="text-[10px] font-black uppercase tracking-widest text-primary">VIEW ALL</Link>
+                <Link href={`/category/${category}`} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">VIEW ALL</Link>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
                 {catArticles.map((article) => <ArticleCard key={article.id} article={article as any} />)}
