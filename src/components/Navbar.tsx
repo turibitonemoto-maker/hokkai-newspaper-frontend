@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Search, X, FileText, Share2 } from 'lucide-react';
+import { Search, X, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import LinkNext from 'next/link';
@@ -33,7 +33,7 @@ export function Navbar() {
     { label: '北海学園大学新聞会とは', href: '/about' },
     { label: '会長挨拶', href: '/greeting' },
     { label: '部員募集', href: '/recruit' },
-    { label: '公式SNS', href: '/social', icon: <Share2 size={12} className="text-white/60" /> },
+    { label: '公式SNS', href: '/social' },
     { label: '広告募集', href: '/ads' },
     { label: 'お問い合わせ', href: '/contact' },
   ];
