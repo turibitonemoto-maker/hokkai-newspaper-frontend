@@ -1,15 +1,31 @@
-export type Category = 'Campus' | 'Event' | 'Interview' | 'Sports' | 'Column' | 'Opinion' | 'Paper';
+/**
+ * 物理的データ構造定義 (backend.json 同期版)
+ */
+export type CategoryId = 'Campus' | 'Event' | 'Interview' | 'Sports' | 'Column' | 'Opinion' | 'Paper' | 'Viewer';
 
 export interface Article {
   id: string;
   title: string;
-  excerpt: string;
-  content: string;
-  summary?: string;
-  category: Category;
-  author: string;
+  issueNumber?: string;
+  noteUrl?: string;
+  pdfUrl?: string;
+  paperImages?: string[];
+  source?: string;
   publishDate: string;
+  lastSyncedDate?: string;
+  content?: string;
+  summary?: string;
+  mainImageUrl?: string;
+  mainImageCaption?: string;
+  isPublished: boolean;
+  categoryId: CategoryId;
+  authorName?: string;
+}
+
+export interface Advertisement {
+  id: string;
+  title: string;
   imageUrl: string;
-  imageHint: string;
-  featured?: boolean;
+  linkUrl?: string;
+  displayEndTime?: any;
 }

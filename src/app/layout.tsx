@@ -40,10 +40,6 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * ルートレイアウト・コンポーネント
- * サイト全体の物理構造、認証、メンテナンスモード、デザイン規律を定義します。
- */
 export default function RootLayout({
   children,
 }: {
@@ -55,6 +51,19 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap" rel="stylesheet" />
+        {/* 物理的にGoogleへサイト名を教え込むための構造化データ */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "北海学園大学新聞会",
+              "alternateName": ["HGU新聞会", "HGU News"],
+              "url": "https://hgunews.com/"
+            }),
+          }}
+        />
       </head>
       <body className={inter.className}>
         <FirebaseClientProvider>
