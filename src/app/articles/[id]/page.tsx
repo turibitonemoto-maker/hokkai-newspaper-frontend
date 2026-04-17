@@ -39,7 +39,7 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトのフィールド "mainImageCaption" と物理的に結合
+  // 管理サイトのフィールド "mainImageCaption" を物理的に捕捉
   const mainImageCaption = article?.mainImageCaption || "";
   
   const mainContent = article?.content || '';
@@ -146,9 +146,9 @@ export default function ArticlePage() {
               </div>
             ) : null}
 
-            {/* キャプション：管理サイトのデータ (mainImageCaption) を物理的に描画 */}
+            {/* キャプション：管理サイトの mainImageCaption を物理的に描画（本文とは完全に分離） */}
             {mainImageCaption && (
-              <div className="flex items-start gap-4 md:gap-6 px-6 md:px-12 py-5 md:py-8 text-slate-700 italic border-l-8 border-primary bg-slate-50/70 rounded-r-[32px] shadow-sm animate-fade-in">
+              <div className="mt-8 md:mt-12 flex items-start gap-4 md:gap-6 px-6 md:px-12 py-5 md:py-8 text-slate-700 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-sm animate-fade-in ring-1 ring-slate-100">
                 <Camera size={24} className="shrink-0 mt-1 text-primary" />
                 <span className="text-base md:text-xl leading-relaxed font-bold tracking-wide">
                   {mainImageCaption}
@@ -195,7 +195,6 @@ export default function ArticlePage() {
                 "prose-p:leading-8 md:prose-p:leading-7 prose-p:my-4",
                 "prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 md:prose-h2:mb-10 prose-h2:mt-12 md:prose-h2:mt-20",
                 "prose-img:rounded-[24px] md:prose-img:rounded-[48px] prose-img:shadow-2xl prose-img:ring-4 md:prose-img:ring-[16px] prose-img:ring-white prose-img:my-12 md:prose-img:my-20",
-                "prose-figcaption:flex prose-figcaption:items-start prose-figcaption:gap-4 prose-figcaption:text-slate-700 prose-figcaption:italic prose-figcaption:text-base md:prose-figcaption:text-lg prose-figcaption:mt-6 prose-figcaption:px-6 prose-figcaption:border-l-8 prose-figcaption:border-primary prose-figcaption:bg-slate-50/70 prose-figcaption:py-6 prose-figcaption:rounded-r-2xl shadow-sm",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 
