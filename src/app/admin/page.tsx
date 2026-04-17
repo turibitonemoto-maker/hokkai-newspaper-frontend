@@ -61,9 +61,17 @@ export default function AdminPage() {
       if (mode === 'pdf' && pdfFile) {
         const formData = new FormData();
         formData.append("file", pdfFile);
+        
         const res = await fetch("/api/upload", { method: "POST", body: formData });
+        
+        // JSON 解析前のバリデーション
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Upload API returned error (${res.status}): ${errorText || 'No body'}`);
+        }
+        
         const data = await res.json();
-        if (!data.success) throw new Error("Upload failed");
+        if (!data.success) throw new Error(data.error || "Upload failed");
 
         addDoc(colRef, {
           ...baseData,
@@ -77,24 +85,36 @@ export default function AdminPage() {
         for (const file of selectedFiles) {
           const formData = new FormData();
           formData.append("file", file);
+          
           const res = await fetch("/api/upload", { method: "POST", body: formData });
+          
+          if (!res.ok) {
+            console.error(`Failed to upload file ${file.name}: Status ${res.status}`);
+            continue;
+          }
+
           const data = await res.json();
           if (data.success) uploadedUrls.push(data.result.secure_url);
         }
 
-        addDoc(colRef, {
-          ...baseData,
-          title: `${issueNumber} 紙面アーカイブ`,
-          paperImages: uploadedUrls,
-        }).catch(err => {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colRef.path, operation: 'create' }));
-        });
+        if (uploadedUrls.length > 0) {
+          addDoc(colRef, {
+            ...baseData,
+            title: `${issueNumber} 紙面アーカイブ`,
+            paperImages: uploadedUrls,
+          }).catch(err => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: colRef.path, operation: 'create' }));
+          });
+        } else {
+          throw new Error("有効な画像のアップロードに失敗しました。");
+        }
       }
 
-      toast({ title: "発行プロセス開始", description: "データの保存を開始しました。" });
+      toast({ title: "発行プロセス完了", description: "データを保存しました。" });
       setIssueNumber(""); setPublishDate(""); setSelectedFiles([]); setPdfFile(null);
     } catch (error: any) {
       toast({ variant: "destructive", title: "エラー発生", description: error.message });
+      console.error("Archive Error:", error);
     } finally {
       setUploading(false);
     }
@@ -121,7 +141,7 @@ export default function AdminPage() {
                 <FileUp size={48} className="text-slate-200 mb-4" />
                 <span className="text-sm font-bold text-slate-400">{pdfFile ? pdfFile.name : "PDFを選択"}</span>
               </label>
-              <Button onClick={() => handleUploadAndSave('pdf')} disabled={uploading} className="w-full h-16 rounded-full font-black text-lg">
+              <Button onClick={() => handleUploadAndSave('pdf')} disabled={uploading || !pdfFile} className="w-full h-16 rounded-full font-black text-lg">
                 {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />} PDFを発行
               </Button>
             </TabsContent>
@@ -129,9 +149,11 @@ export default function AdminPage() {
               <input id="jpeg-input" type="file" multiple accept="image/jpeg,image/jpg" onChange={(e) => e.target.files && setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)])} className="hidden" />
               <label htmlFor="jpeg-input" className="flex flex-col items-center justify-center border-4 border-dashed rounded-[32px] p-12 cursor-pointer hover:bg-slate-50 transition-colors">
                 <Plus size={48} className="text-slate-200 mb-4" />
-                <span className="text-sm font-bold text-slate-400">画像を複数選択</span>
+                <span className="text-sm font-bold text-slate-400">
+                  {selectedFiles.length > 0 ? `${selectedFiles.length}枚 選択中` : "画像を複数選択"}
+                </span>
               </label>
-              <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading} className="w-full h-16 rounded-full font-black text-lg">
+              <Button onClick={() => handleUploadAndSave('jpeg')} disabled={uploading || selectedFiles.length === 0} className="w-full h-16 rounded-full font-black text-lg">
                 {uploading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />} JPEG群を発行
               </Button>
             </TabsContent>
