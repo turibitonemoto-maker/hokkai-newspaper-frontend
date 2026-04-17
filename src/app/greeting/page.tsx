@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -9,7 +10,7 @@ import { cn, getDisplayImageUrl } from '@/lib/utils';
 import { useMemo } from 'react';
 
 /**
- * 会長挨拶ページ (画像表示正常化・物理パージ版)
+ * 会長挨拶ページ (余白・圧迫感パージ版)
  */
 export default function GreetingPage() {
   const db = useFirestore();
@@ -45,7 +46,7 @@ export default function GreetingPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in">
+    <div className="container mx-auto px-6 md:px-16 lg:px-24 py-12 md:py-24 animate-fade-in">
       <div className="max-w-3xl mx-auto space-y-20">
         <header className="text-center space-y-6">
           <Badge variant="outline" className="px-6 py-1.5 border-primary text-primary font-black uppercase tracking-widest rounded-full">

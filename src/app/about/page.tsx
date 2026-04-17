@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -8,9 +9,8 @@ import { cn } from '@/lib/utils';
 import { MapPin, History, Target, Footprints, Loader2, AlertCircle } from 'lucide-react';
 
 /**
- * About Us ページ (物理連動・完全同期版)
- * 管理サイトからの編集をリアルタイムに反映。
- * 日本仕様の黄金比 (leading-6, my-3) を適用。
+ * About Us ページ (物理連動・余白最適化版)
+ * PC閲覧時の圧迫感を排除するため px-12 以上を確保。
  */
 export default function AboutPage() {
   const db = useFirestore();
@@ -31,7 +31,6 @@ export default function AboutPage() {
     );
   }
 
-  // データが空の場合のフォールバックは、管理サイトでの入力を促すスタイル
   if (!aboutData || !aboutData.content) {
     return (
       <div className="container mx-auto px-4 py-40 flex flex-col items-center justify-center text-center">
@@ -45,7 +44,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20 animate-fade-in">
+    <div className="container mx-auto px-6 md:px-16 lg:px-24 py-12 md:py-20 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-16">
         <header className="text-center space-y-4">
           <Badge variant="outline" className="px-4 py-1 border-primary text-primary font-black uppercase tracking-widest rounded-full">ABOUT US</Badge>

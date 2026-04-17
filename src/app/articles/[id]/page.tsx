@@ -14,8 +14,9 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (画像表示正常化・スマホ版極限最適化)
- * PC閲覧時の圧迫感を排除し、心地よい余白を復元。
+ * 記事詳細・物理ビューアーページ (画像表示正常化・キャプション強化版)
+ * 画像の下に表示されるキャプションにアイコンと装飾を追加し、視認性を向上。
+ * PC表示時の余白をさらに拡大し、圧迫感を完全に排除。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -62,7 +63,7 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="container mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-24 pb-40">
+    <div className="container mx-auto px-6 md:px-16 lg:px-24 py-10 md:py-24 pb-40">
       <div className="max-w-4xl mx-auto">
         {/* 操作バー：戻る ＆ フォント切り替え */}
         <div className="flex items-center justify-between mb-8 md:mb-16">
@@ -146,8 +147,8 @@ export default function ArticlePage() {
                 />
               </div>
               {article.mainImageCaption && (
-                <figcaption className="flex items-start gap-3 md:gap-4 px-6 md:px-12 py-2 md:py-4 text-slate-500 italic border-l-8 border-primary/20">
-                  <Camera size={16} className="shrink-0 mt-1 text-primary/40" />
+                <figcaption className="flex items-start gap-3 md:gap-5 px-6 md:px-10 py-4 md:py-6 text-slate-500 italic border-l-4 border-primary/40 bg-slate-50/50 rounded-r-[24px]">
+                  <Camera size={20} className="shrink-0 mt-1 text-primary/60" />
                   <span className="text-sm md:text-lg leading-relaxed font-medium tracking-wide">
                     {article.mainImageCaption}
                   </span>
@@ -194,6 +195,7 @@ export default function ArticlePage() {
                 "prose-p:leading-8 md:prose-p:leading-7 prose-p:my-4",
                 "prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 md:prose-h2:mb-10 prose-h2:mt-12 md:prose-h2:mt-20",
                 "prose-img:rounded-[24px] md:prose-img:rounded-[48px] prose-img:shadow-2xl prose-img:ring-4 md:prose-img:ring-[16px] prose-img:ring-white prose-img:my-12 md:prose-img:my-20",
+                "prose-figcaption:text-slate-500 prose-figcaption:italic prose-figcaption:text-sm md:prose-figcaption:text-base prose-figcaption:mt-3 prose-figcaption:px-4 prose-figcaption:border-l-2 prose-figcaption:border-slate-200",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 
