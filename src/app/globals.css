@@ -1,10 +1,10 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* 背景色を純白 (100%) に統一 */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -46,9 +46,19 @@
   }
 }
 
-/* 本文内の figcaption スタイルを強制強化 */
-.prose figcaption {
-  @apply flex items-start gap-4 px-6 py-5 my-8 text-slate-700 italic border-l-8 border-primary bg-slate-50 rounded-r-2xl shadow-sm font-bold !important;
+/* 本文内のキャプション（figcaption）および画像直下のテキストに対する強制装飾 */
+.prose figcaption,
+.prose .image-caption,
+.prose p.caption,
+.prose .resizable-image-container + p {
+  @apply flex items-start gap-4 px-6 py-6 my-10 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-3xl shadow-lg font-black !important;
+  font-size: 1.1em;
+  line-height: 1.5;
+}
+
+/* Tiptap等のエディタで画像直後に来る段落がキャプションとして扱われるケースへの対応 */
+.prose img + p {
+  @apply -mt-6 mb-12 px-6 py-4 text-slate-600 font-bold italic border-l-4 border-primary/40 bg-slate-50/50 rounded-r-xl !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {

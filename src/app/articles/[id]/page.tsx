@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -39,7 +40,7 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトのフィールド "mainImageCaption" を物理的に捕捉
+  // 管理サイトの「報道キャプション」フィールドを物理的に捕捉
   const mainImageCaption = article?.mainImageCaption || "";
   
   const mainContent = article?.content || '';
@@ -67,7 +68,7 @@ export default function ArticlePage() {
   return (
     <div className="container mx-auto px-6 md:px-16 lg:px-24 py-10 md:py-24 pb-40">
       <div className="max-w-4xl mx-auto">
-        {/* 操作バー：戻る ＆ フォント切り替え */}
+        {/* 操作バー */}
         <div className="flex items-center justify-between mb-8 md:mb-16">
           <Button 
             variant="ghost" 
@@ -99,8 +100,8 @@ export default function ArticlePage() {
         <article className="animate-fade-in">
           {/* メインビジュアル / 紙面ビューアーセクション */}
           <div className="mb-10 md:mb-20 space-y-8 md:space-y-12">
-            {pdfUrl ? (
-              <div className="space-y-6 md:space-y-10">
+            <div className="space-y-6 md:space-y-10">
+              {pdfUrl ? (
                 <div className="relative w-full aspect-[1/1.414] rounded-[16px] md:rounded-[48px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                   <iframe
                     src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
@@ -108,51 +109,51 @@ export default function ArticlePage() {
                     title={article.title}
                   />
                 </div>
-                <div className="flex justify-center">
-                  <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 md:px-16 h-12 md:h-14 text-sm shadow-2xl hover:scale-[1.05] transition-transform">
-                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面表示で読む</a>
-                  </Button>
-                </div>
-              </div>
-            ) : paperImages.length > 0 ? (
-              <div className="space-y-12 md:space-y-24">
-                {paperImages.map((imgUrl: string, index: number) => (
-                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                    <Image
-                      src={imgUrl}
-                      alt={`${article.title} - Page ${index + 1}`}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 100vw, 896px"
-                      priority={index === 0}
-                      unoptimized={imgUrl.includes('drive.google.com')}
-                    />
-                    <div className="absolute top-4 left-4 bg-slate-900/70 text-white text-[10px] md:text-xs font-black px-4 py-1.5 rounded-full backdrop-blur-md">
-                      PAGE {index + 1}
+              ) : paperImages.length > 0 ? (
+                <div className="space-y-12 md:space-y-24">
+                  {paperImages.map((imgUrl: string, index: number) => (
+                    <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                      <Image
+                        src={imgUrl}
+                        alt={`${article.title} - Page ${index + 1}`}
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 1024px) 100vw, 896px"
+                        priority={index === 0}
+                        unoptimized={imgUrl.includes('drive.google.com')}
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : mainImageUrl ? (
-              <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] md:rounded-[64px] overflow-hidden shadow-2xl ring-4 md:ring-[20px] ring-white bg-slate-50">
-                <Image
-                  src={mainImageUrl}
-                  alt={article.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                  className="object-cover"
-                  unoptimized={mainImageUrl.includes('drive.google.com')}
-                />
-              </div>
-            ) : null}
+                  ))}
+                </div>
+              ) : mainImageUrl ? (
+                <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] md:rounded-[64px] overflow-hidden shadow-2xl ring-4 md:ring-[20px] ring-white bg-slate-50">
+                  <Image
+                    src={mainImageUrl}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 896px"
+                    className="object-cover"
+                    unoptimized={mainImageUrl.includes('drive.google.com')}
+                  />
+                </div>
+              ) : null}
 
-            {/* キャプション：管理サイトの mainImageCaption を物理的に描画（本文とは完全に分離） */}
-            {mainImageCaption && (
-              <div className="mt-8 md:mt-12 flex items-start gap-4 md:gap-6 px-6 md:px-12 py-5 md:py-8 text-slate-700 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-sm animate-fade-in ring-1 ring-slate-100">
-                <Camera size={24} className="shrink-0 mt-1 text-primary" />
-                <span className="text-base md:text-xl leading-relaxed font-bold tracking-wide">
-                  {mainImageCaption}
-                </span>
+              {/* 【最重要】管理サイトの mainImageCaption を物理的に描画 */}
+              {mainImageCaption && (
+                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-12 py-6 md:py-10 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-lg animate-fade-in ring-1 ring-slate-200">
+                  <Camera size={24} className="shrink-0 mt-1 text-primary" />
+                  <span className="text-lg md:text-2xl leading-relaxed font-black tracking-tight">
+                    {mainImageCaption}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {pdfUrl && (
+              <div className="flex justify-center">
+                <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 md:px-16 h-12 md:h-14 text-sm shadow-2xl hover:scale-[1.05] transition-transform">
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面表示で読む</a>
+                </Button>
               </div>
             )}
           </div>
