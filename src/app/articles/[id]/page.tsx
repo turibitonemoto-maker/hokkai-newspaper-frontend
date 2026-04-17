@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,9 +13,9 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (画像表示正常化・キャプション強化版)
- * 画像の下に表示されるキャプションにアイコンと装飾を追加し、視認性を向上。
- * PC表示時の余白をさらに拡大し、圧迫感を完全に排除。
+ * 記事詳細・物理ビューアーページ (キャプション完全連動・余白最適化版)
+ * 管理サイトの mainImageCaption と物理的に連動し、品格あるデザインで表示。
+ * PC表示時の圧迫感を排除するため、px-16 以上の深い余白を確保。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -195,7 +194,7 @@ export default function ArticlePage() {
                 "prose-p:leading-8 md:prose-p:leading-7 prose-p:my-4",
                 "prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 md:prose-h2:mb-10 prose-h2:mt-12 md:prose-h2:mt-20",
                 "prose-img:rounded-[24px] md:prose-img:rounded-[48px] prose-img:shadow-2xl prose-img:ring-4 md:prose-img:ring-[16px] prose-img:ring-white prose-img:my-12 md:prose-img:my-20",
-                "prose-figcaption:text-slate-500 prose-figcaption:italic prose-figcaption:text-sm md:prose-figcaption:text-base prose-figcaption:mt-3 prose-figcaption:px-4 prose-figcaption:border-l-2 prose-figcaption:border-slate-200",
+                "prose-figcaption:flex prose-figcaption:items-center prose-figcaption:gap-3 prose-figcaption:text-slate-500 prose-figcaption:italic prose-figcaption:text-sm md:prose-figcaption:text-base prose-figcaption:mt-4 prose-figcaption:px-4 prose-figcaption:border-l-4 prose-figcaption:border-primary/40 prose-figcaption:bg-slate-50/50 prose-figcaption:py-3 prose-figcaption:rounded-r-xl",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 
