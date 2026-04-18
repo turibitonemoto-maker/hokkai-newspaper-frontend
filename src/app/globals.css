@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,19 +41,22 @@
   @apply leading-6 my-3 !important;
 }
 
-/* 管理サイトからのキャプション構造を正確に捕捉し、品格ある装飾を適用（アイコンなし） */
+/* キャプションの意匠：note（note.com）のような目立たない品格あるスタイル */
 .prose figcaption,
 .prose .image-caption-text,
 .prose .image-caption,
 .prose p.caption,
 .prose p:has(img) + p,
 .prose img + p {
-  @apply flex items-start px-6 py-8 my-8 text-slate-900 italic border-l-[10px] border-primary bg-slate-50 rounded-r-[24px] shadow-sm font-black !important;
-  font-size: 1.15em !important;
-  line-height: 1.5 !important;
+  @apply text-center text-sm text-slate-500 mt-3 mb-10 block !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
-/* 写真アイコン(📸)の付与を物理的にパージ */
+/* 写真アイコン(📸)を含む一切の疑似要素をパージ */
 .prose figcaption::before,
 .prose .image-caption-text::before,
 .prose p:has(img) + p::before,

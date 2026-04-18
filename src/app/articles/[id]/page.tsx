@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,8 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・表示専用ページ (物理直結・アイコンなし版)
- * 管理サイトのデータを改変せず、正しい場所（ビジュアル直下）に表示します。
+ * 記事詳細・表示専用ページ (note風キャプション・物理直結版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -40,7 +38,7 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトのフィールドを正確に取得 (mainImageCaption または caption)
+  // 管理サイトの命名規則の揺れを吸収
   const mainImageCaption = article?.mainImageCaption || article?.caption || "";
   const mainContent = article?.content || '';
 
@@ -96,9 +94,9 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* ビジュアルコンテナ：画像とキャプションを物理的に密着させて結合 */}
-          <div className="mb-12 md:mb-20 shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
-            <div className="relative w-full">
+          {/* ビジュアルコンテナ：画像とキャプションを物理的に一つの影（shadow）の中に封じ込める */}
+          <div className="mb-12 md:mb-20 shadow-xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-white ring-1 ring-slate-200">
+            <div className="relative w-full bg-slate-50">
               {pdfUrl ? (
                 <div className="relative w-full aspect-[1/1.414]">
                   <iframe src={`${pdfUrl}#toolbar=0`} className="w-full h-full border-none" title={article.title} />
@@ -114,10 +112,10 @@ export default function ArticlePage() {
               ) : null}
             </div>
 
-            {/* 管理サイトから届いたキャプションをそのまま、正しい場所（画像直下）に表示 */}
+            {/* note風キャプション：コンテナ内部かつ直下に、目立たない品格をもって配置 */}
             {mainImageCaption && (
-              <div className="px-6 md:px-10 py-8 md:py-10 bg-white border-t-8 border-primary">
-                <p className="text-xl md:text-2xl font-black italic tracking-tight text-slate-900 leading-snug">
+              <div className="px-6 py-4 md:py-6 border-t border-slate-50">
+                <p className="text-center text-sm md:text-base text-slate-500 font-medium">
                   {mainImageCaption}
                 </p>
               </div>
@@ -128,7 +126,7 @@ export default function ArticlePage() {
           {!pdfUrl && paperImages.length > 1 && (
             <div className="mt-12 md:mt-24 space-y-12 md:space-y-24">
               {paperImages.slice(1).map((imgUrl: string, index: number) => (
-                <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-xl bg-slate-50 ring-1 ring-slate-200">
                   <Image src={imgUrl} alt={`${article.title} - Page ${index + 2}`} fill className="object-contain" sizes="100vw" unoptimized={imgUrl.includes('drive.google.com')} />
                 </div>
               ))}
