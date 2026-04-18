@@ -25,15 +25,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 211 50% 40%;
     --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 211 50% 40%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -47,15 +38,10 @@
 }
 
 /* 【聖典：報道キャプションの物理的強制定義】 */
-/* 
-  管理サイトのエディタ（Tiptap等）が生成しうる、あらゆる画像解説構造を捕捉します。
-  1. 標準の figcaption
-  2. 画像を含む段落の「直後」の段落 (p:has(img) + p)
-  3. 画像タグそのものの「直後」の段落 (img + p)
-  4. 明示的な caption クラス
-*/
+/* 管理サイトが生成するあらゆる画像解説構造（figcaption, .image-caption-text等）を確実に補足 */
 .prose figcaption,
 .prose .image-caption,
+.prose .image-caption-text,
 .prose p.caption,
 .prose p:has(img) + p,
 .prose img + p,
@@ -70,6 +56,7 @@
 /* キャプション冒頭に📸アイコンを強制挿入 */
 .prose figcaption::before,
 .prose .image-caption::before,
+.prose .image-caption-text::before,
 .prose p:has(img) + p::before,
 .prose img + p::before,
 .prose .resizable-image-container + p::before {
@@ -77,7 +64,7 @@
   @apply mr-3 not-italic text-2xl;
 }
 
-/* 属性抽出エンジン：data-caption 属性がある場合は疑似要素として強制表示 */
+/* 属性抽出エンジン：data-caption 属性がある場合は疑似要素として表示（保険） */
 .prose img[data-caption]::after {
   content: "📸 " attr(data-caption);
   @apply block mt-4 px-6 py-4 bg-primary text-white text-lg font-black rounded-xl italic;
