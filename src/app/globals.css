@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,33 +46,41 @@
   }
 }
 
-/* 【聖典：報道キャプションの物理定義】 */
-/* 1. figcaption や特定のクラス、または画像直後のPタグをキャプションとして強制装飾 */
+/* 【聖典：報道キャプションの物理的強制定義】 */
+/* 
+  管理サイトのエディタ（Tiptap等）が生成しうる、あらゆる画像解説構造を捕捉します。
+  1. 標準の figcaption
+  2. 画像を含む段落の「直後」の段落 (p:has(img) + p)
+  3. 画像タグそのものの「直後」の段落 (img + p)
+  4. 明示的な caption クラス
+*/
 .prose figcaption,
 .prose .image-caption,
 .prose p.caption,
 .prose p:has(img) + p,
 .prose img + p,
 .prose .resizable-image-container + p {
-  @apply flex items-start gap-4 px-6 py-6 my-8 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-3xl shadow-lg font-black !important;
-  font-size: 1.1em;
-  line-height: 1.5;
+  @apply flex items-start gap-4 px-6 py-10 my-10 text-slate-900 italic border-l-[12px] border-primary bg-slate-50 rounded-r-[32px] shadow-xl font-black !important;
+  font-size: 1.25em !important;
+  line-height: 1.4 !important;
   display: flex !important;
+  letter-spacing: -0.02em;
 }
 
-/* 2. 【属性抽出エンジン】imgタグの data-caption 属性を強制的に視覚化 */
-.prose img[data-caption]::after {
-  content: "📸 " attr(data-caption);
-  @apply block mt-2 text-sm text-slate-500 italic font-bold;
-}
-
-/* 3. キャプション内のアイコン擬似要素 */
+/* キャプション冒頭に📸アイコンを強制挿入 */
 .prose figcaption::before,
 .prose .image-caption::before,
 .prose p:has(img) + p::before,
-.prose img + p::before {
+.prose img + p::before,
+.prose .resizable-image-container + p::before {
   content: "📸";
-  @apply mr-2 not-italic;
+  @apply mr-3 not-italic text-2xl;
+}
+
+/* 属性抽出エンジン：data-caption 属性がある場合は疑似要素として強制表示 */
+.prose img[data-caption]::after {
+  content: "📸 " attr(data-caption);
+  @apply block mt-4 px-6 py-4 bg-primary text-white text-lg font-black rounded-xl italic;
 }
 
 /* 聖典：黄金比 (leading-6, my-3) の強制適用 */

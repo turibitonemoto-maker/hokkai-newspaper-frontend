@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -13,7 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (キャプション完全同期版)
+ * 記事詳細・物理ビューアーページ (キャプション物理密着・命名規則吸収版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -38,8 +39,9 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 命名規則の揺れを吸収 (mainImageCaption または caption)
-  const mainImageCaption = article?.mainImageCaption || article?.caption || "";
+  // 【最重要：命名規則の揺れをすべて吸収】
+  // mainImageCaption, caption, imageCaption のいずれかに入っていればキャッチする
+  const mainImageCaption = article?.mainImageCaption || article?.caption || article?.imageCaption || "";
   
   const mainContent = article?.content || '';
 
@@ -96,54 +98,56 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* メインビジュアルセクション (ここにキャプションを物理的に密着させる) */}
-          <div className="mb-10 md:mb-16">
-            <div className="space-y-0 shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
-              {pdfUrl ? (
-                <div className="relative w-full aspect-[1/1.414]">
-                  <iframe
-                    src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                    className="w-full h-full border-none"
-                    title={article.title}
-                  />
-                </div>
-              ) : paperImages.length > 0 ? (
-                <div className="relative aspect-[1/1.414] w-full">
-                  <Image
-                    src={paperImages[0]}
-                    alt={`${article.title} - Cover`}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 1024px) 100vw, 896px"
-                    priority
-                    unoptimized={paperImages[0].includes('drive.google.com')}
-                  />
-                </div>
-              ) : mainImageUrl ? (
-                <div className="relative aspect-[16/10] md:aspect-[16/9] w-full">
-                  <Image
-                    src={mainImageUrl}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 896px"
-                    className="object-cover"
-                    unoptimized={mainImageUrl.includes('drive.google.com')}
-                  />
-                </div>
-              ) : null}
+          {/* 【報道ブロック：ビジュアルとキャプションを物理的に一つのコンテナに封じ込める】 */}
+          <div className="mb-12 md:mb-20">
+            <div className="shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
+              <div className="relative w-full">
+                {pdfUrl ? (
+                  <div className="relative w-full aspect-[1/1.414]">
+                    <iframe
+                      src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                      className="w-full h-full border-none"
+                      title={article.title}
+                    />
+                  </div>
+                ) : paperImages.length > 0 ? (
+                  <div className="relative aspect-[1/1.414] w-full">
+                    <Image
+                      src={paperImages[0]}
+                      alt={`${article.title} - Cover`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                      priority
+                      unoptimized={paperImages[0].includes('drive.google.com')}
+                    />
+                  </div>
+                ) : mainImageUrl ? (
+                  <div className="relative aspect-[16/10] md:aspect-[16/9] w-full">
+                    <Image
+                      src={mainImageUrl}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                      className="object-cover"
+                      unoptimized={mainImageUrl.includes('drive.google.com')}
+                    />
+                  </div>
+                ) : null}
+              </div>
 
-              {/* 【物理直結・報道ブロック】ビジュアルの直下に専用のデザインでキャプションを表示 */}
+              {/* 【物理密着：ビジュアルコンテナの「内側」にキャプションを描画】 */}
               {mainImageCaption && (
-                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-6 md:py-10 text-slate-800 italic border-t-4 md:border-t-8 border-primary bg-white">
-                  <Camera size={28} className="shrink-0 mt-1 text-primary" />
-                  <span className="text-xl md:text-2xl leading-relaxed font-black tracking-tight">
+                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-8 md:py-12 text-slate-800 italic border-t-8 border-primary bg-white">
+                  <Camera size={32} className="shrink-0 mt-1 text-primary" />
+                  <span className="text-xl md:text-3xl leading-snug font-black tracking-tight">
                     {mainImageCaption}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* 複数画像がある場合の残りの画像 */}
+            {/* 紙面アーカイブの2ページ目以降 */}
             {!pdfUrl && paperImages.length > 1 && (
               <div className="mt-12 md:mt-24 space-y-12 md:space-y-24">
                 {paperImages.slice(1).map((imgUrl: string, index: number) => (
