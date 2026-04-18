@@ -38,7 +38,7 @@
 }
 
 /* 【聖典：報道キャプションの物理的強制定義】 */
-/* 管理サイトが生成するあらゆる画像解説構造（figcaption, .image-caption-text等）を確実に補足 */
+/* 管理サイトが生成するあらゆる構造（figcaption, .image-caption-text等）を確実に補足 */
 .prose figcaption,
 .prose .image-caption,
 .prose .image-caption-text,
@@ -62,12 +62,6 @@
 .prose .resizable-image-container + p::before {
   content: "📸";
   @apply mr-3 not-italic text-2xl;
-}
-
-/* 属性抽出エンジン：data-caption 属性がある場合は疑似要素として表示（保険） */
-.prose img[data-caption]::after {
-  content: "📸 " attr(data-caption);
-  @apply block mt-4 px-6 py-4 bg-primary text-white text-lg font-black rounded-xl italic;
 }
 
 /* 聖典：黄金比 (leading-6, my-3) の強制適用 */

@@ -39,8 +39,8 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 【最重要：管理サイトの新フィールド mainImageCaption を最優先で結合】
-  const mainImageCaption = article?.mainImageCaption || article?.caption || article?.imageCaption || "";
+  // 【最重要：管理サイトのデータを改変せず、そのまま受け取る】
+  const mainImageCaption = article?.mainImageCaption || article?.caption || "";
   
   const mainContent = article?.content || '';
 
@@ -97,7 +97,7 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* 【報道ブロック：ビジュアルとキャプションを物理的に一つのコンテナに密着固定】 */}
+          {/* 【物理密着ブロック：ビジュアルとキャプションを一つのコンテナ内に閉じ込める】 */}
           <div className="mb-12 md:mb-20">
             <div className="shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
               <div className="relative w-full">
@@ -135,7 +135,7 @@ export default function ArticlePage() {
                 ) : null}
               </div>
 
-              {/* 【物理密着：コンテナ内部でキャプションを描画することで場所の間違いを阻止】 */}
+              {/* 【物理結合：コンテナの内部でキャプションを描画】 */}
               {mainImageCaption && (
                 <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-8 md:py-12 text-slate-800 italic border-t-8 border-primary bg-white">
                   <Camera size={32} className="shrink-0 mt-1 text-primary" />
