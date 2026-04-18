@@ -42,25 +42,24 @@
   @apply leading-6 my-3 !important;
 }
 
-/* 管理サイトからのキャプション構造 (figcaption, .image-caption-text) を確実に捕捉 */
+/* 管理サイトからのキャプション構造を正確に捕捉し、品格ある装飾を適用（アイコンなし） */
 .prose figcaption,
 .prose .image-caption-text,
 .prose .image-caption,
 .prose p.caption,
 .prose p:has(img) + p,
 .prose img + p {
-  @apply flex items-start gap-4 px-6 py-10 my-10 text-slate-900 italic border-l-[12px] border-primary bg-slate-50 rounded-r-[32px] shadow-xl font-black !important;
-  font-size: 1.25em !important;
-  line-height: 1.4 !important;
+  @apply flex items-start px-6 py-8 my-8 text-slate-900 italic border-l-[10px] border-primary bg-slate-50 rounded-r-[24px] shadow-sm font-black !important;
+  font-size: 1.15em !important;
+  line-height: 1.5 !important;
 }
 
-/* キャプション冒頭に📸アイコンをCSSで付与（データ改変なしの装飾） */
+/* 写真アイコン(📸)の付与を物理的にパージ */
 .prose figcaption::before,
 .prose .image-caption-text::before,
 .prose p:has(img) + p::before,
 .prose img + p::before {
-  content: "📸";
-  @apply mr-3 not-italic text-2xl;
+  content: none !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {

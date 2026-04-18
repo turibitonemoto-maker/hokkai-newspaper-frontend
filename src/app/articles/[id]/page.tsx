@@ -14,8 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・表示専用ページ (物理直結版)
- * 管理サイトから届くデータを改変せず、正しい位置（ビジュアル直下）に表示します。
+ * 記事詳細・表示専用ページ (物理直結・アイコンなし版)
+ * 管理サイトのデータを改変せず、正しい場所（ビジュアル直下）に表示します。
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -40,7 +40,7 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトのフィールドを正確に取得
+  // 管理サイトのフィールドを正確に取得 (mainImageCaption または caption)
   const mainImageCaption = article?.mainImageCaption || article?.caption || "";
   const mainContent = article?.content || '';
 
@@ -96,7 +96,7 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* ビジュアルコンテナ：画像とキャプションを物理的に結合 */}
+          {/* ビジュアルコンテナ：画像とキャプションを物理的に密着させて結合 */}
           <div className="mb-12 md:mb-20 shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
             <div className="relative w-full">
               {pdfUrl ? (
@@ -114,10 +114,10 @@ export default function ArticlePage() {
               ) : null}
             </div>
 
-            {/* 管理サイトから届いたキャプションをそのまま表示 */}
+            {/* 管理サイトから届いたキャプションをそのまま、正しい場所（画像直下）に表示 */}
             {mainImageCaption && (
-              <div className="px-6 md:px-10 py-8 md:py-12 bg-white border-t-8 border-primary">
-                <p className="text-xl md:text-3xl font-black italic tracking-tight text-slate-900 leading-snug">
+              <div className="px-6 md:px-10 py-8 md:py-10 bg-white border-t-8 border-primary">
+                <p className="text-xl md:text-2xl font-black italic tracking-tight text-slate-900 leading-snug">
                   {mainImageCaption}
                 </p>
               </div>
