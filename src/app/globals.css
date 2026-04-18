@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,7 +46,7 @@
 }
 
 /* 【聖典：報道キャプションの物理定義】 */
-/* figcaption、特定のクラス、または画像（を包むP）の直後に来るPタグをキャプションとして強制装飾 */
+/* 1. figcaption や特定のクラス、または画像直後のPタグをキャプションとして強制装飾 */
 .prose figcaption,
 .prose .image-caption,
 .prose p.caption,
@@ -60,7 +59,13 @@
   display: flex !important;
 }
 
-/* キャプション内のテキストが埋もれないよう調整 */
+/* 2. 【属性抽出エンジン】imgタグの data-caption 属性を強制的に視覚化 */
+.prose img[data-caption]::after {
+  content: "📸 " attr(data-caption);
+  @apply block mt-2 text-sm text-slate-500 italic font-bold;
+}
+
+/* 3. キャプション内のアイコン擬似要素 */
 .prose figcaption::before,
 .prose .image-caption::before,
 .prose p:has(img) + p::before,

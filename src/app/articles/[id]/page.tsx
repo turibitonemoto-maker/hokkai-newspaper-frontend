@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (キャプション・黄金比完全準拠版)
+ * 記事詳細・物理ビューアーページ (キャプション完全同期版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -39,8 +38,8 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトの「報道キャプション」フィールド
-  const mainImageCaption = article?.mainImageCaption || "";
+  // 命名規則の揺れを吸収 (mainImageCaption または caption)
+  const mainImageCaption = article?.mainImageCaption || article?.caption || "";
   
   const mainContent = article?.content || '';
 
@@ -97,11 +96,11 @@ export default function ArticlePage() {
         </div>
 
         <article className="animate-fade-in">
-          {/* メインビジュアル / 紙面ビューアーセクション */}
+          {/* メインビジュアルセクション (ここにキャプションを物理的に密着させる) */}
           <div className="mb-10 md:mb-16">
-            <div className="space-y-6 md:space-y-8">
+            <div className="space-y-0 shadow-2xl rounded-[16px] md:rounded-[48px] overflow-hidden bg-slate-50 ring-1 ring-slate-200">
               {pdfUrl ? (
-                <div className="relative w-full aspect-[1/1.414] rounded-[16px] md:rounded-[48px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                <div className="relative w-full aspect-[1/1.414]">
                   <iframe
                     src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
                     className="w-full h-full border-none"
@@ -109,21 +108,19 @@ export default function ArticlePage() {
                   />
                 </div>
               ) : paperImages.length > 0 ? (
-                <div className="space-y-8 md:space-y-12">
-                  <div className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                    <Image
-                      src={paperImages[0]}
-                      alt={`${article.title} - Cover`}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 1024px) 100vw, 896px"
-                      priority
-                      unoptimized={paperImages[0].includes('drive.google.com')}
-                    />
-                  </div>
+                <div className="relative aspect-[1/1.414] w-full">
+                  <Image
+                    src={paperImages[0]}
+                    alt={`${article.title} - Cover`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 1024px) 100vw, 896px"
+                    priority
+                    unoptimized={paperImages[0].includes('drive.google.com')}
+                  />
                 </div>
               ) : mainImageUrl ? (
-                <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] md:rounded-[64px] overflow-hidden shadow-2xl ring-4 md:ring-[20px] ring-white bg-slate-50">
+                <div className="relative aspect-[16/10] md:aspect-[16/9] w-full">
                   <Image
                     src={mainImageUrl}
                     alt={article.title}
@@ -135,11 +132,11 @@ export default function ArticlePage() {
                 </div>
               ) : null}
 
-              {/* 【物理直結】画像・PDFの直後にキャプションを配置 */}
+              {/* 【物理直結・報道ブロック】ビジュアルの直下に専用のデザインでキャプションを表示 */}
               {mainImageCaption && (
-                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-6 md:py-8 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-lg animate-fade-in ring-1 ring-slate-200">
-                  <Camera size={24} className="shrink-0 mt-1 text-primary" />
-                  <span className="text-lg md:text-xl leading-relaxed font-black tracking-tight">
+                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-6 md:py-10 text-slate-800 italic border-t-4 md:border-t-8 border-primary bg-white">
+                  <Camera size={28} className="shrink-0 mt-1 text-primary" />
+                  <span className="text-xl md:text-2xl leading-relaxed font-black tracking-tight">
                     {mainImageCaption}
                   </span>
                 </div>

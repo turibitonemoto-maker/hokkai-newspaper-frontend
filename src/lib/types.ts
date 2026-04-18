@@ -17,6 +17,7 @@ export interface Article {
   summary?: string;
   mainImageUrl?: string;
   mainImageCaption?: string;
+  caption?: string; // 命名規則の揺れを吸収するためのフォールバック
   isPublished: boolean;
   categoryId: CategoryId;
   authorName?: string;
