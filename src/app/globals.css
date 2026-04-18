@@ -37,36 +37,30 @@
   }
 }
 
-/* 【聖典：報道キャプションの物理的強制定義】 */
-/* 管理サイトが生成するあらゆる構造（figcaption, .image-caption-text等）を確実に補足 */
-.prose figcaption,
-.prose .image-caption,
-.prose .image-caption-text,
-.prose p.caption,
-.prose p:has(img) + p,
-.prose img + p,
-.prose .resizable-image-container + p {
-  @apply flex items-start gap-4 px-6 py-10 my-10 text-slate-900 italic border-l-[12px] border-primary bg-slate-50 rounded-r-[32px] shadow-xl font-black !important;
-  font-size: 1.25em !important;
-  line-height: 1.4 !important;
-  display: flex !important;
-  letter-spacing: -0.02em;
-}
-
-/* キャプション冒頭に📸アイコンを強制挿入 */
-.prose figcaption::before,
-.prose .image-caption::before,
-.prose .image-caption-text::before,
-.prose p:has(img) + p::before,
-.prose img + p::before,
-.prose .resizable-image-container + p::before {
-  content: "📸";
-  @apply mr-3 not-italic text-2xl;
-}
-
 /* 聖典：黄金比 (leading-6, my-3) の強制適用 */
 .prose p {
   @apply leading-6 my-3 !important;
+}
+
+/* 管理サイトからのキャプション構造 (figcaption, .image-caption-text) を確実に捕捉 */
+.prose figcaption,
+.prose .image-caption-text,
+.prose .image-caption,
+.prose p.caption,
+.prose p:has(img) + p,
+.prose img + p {
+  @apply flex items-start gap-4 px-6 py-10 my-10 text-slate-900 italic border-l-[12px] border-primary bg-slate-50 rounded-r-[32px] shadow-xl font-black !important;
+  font-size: 1.25em !important;
+  line-height: 1.4 !important;
+}
+
+/* キャプション冒頭に📸アイコンをCSSで付与（データ改変なしの装飾） */
+.prose figcaption::before,
+.prose .image-caption-text::before,
+.prose p:has(img) + p::before,
+.prose img + p::before {
+  content: "📸";
+  @apply mr-3 not-italic text-2xl;
 }
 
 .no-scrollbar::-webkit-scrollbar {
