@@ -14,8 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 
 /**
- * 記事詳細・物理ビューアーページ (キャプション完全連動・全形式対応版)
- * 管理サイトの mainImageCaption を、PDF・画像群・単一画像のすべてで品格を持って表示。
+ * 記事詳細・物理ビューアーページ (キャプション・黄金比完全準拠版)
  */
 export default function ArticlePage() {
   const { id } = useParams();
@@ -40,7 +39,7 @@ export default function ArticlePage() {
   const paperImages = useMemo(() => (article?.paperImages || []).map((url: string) => getDisplayImageUrl(url)), [article?.paperImages]);
   const mainImageUrl = useMemo(() => getDisplayImageUrl(article?.mainImageUrl), [article?.mainImageUrl]);
   
-  // 管理サイトの「報道キャプション」フィールドを物理的に捕捉
+  // 管理サイトの「報道キャプション」フィールド
   const mainImageCaption = article?.mainImageCaption || "";
   
   const mainContent = article?.content || '';
@@ -66,10 +65,10 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="container mx-auto px-6 md:px-16 lg:px-24 py-10 md:py-24 pb-40">
+    <div className="container mx-auto px-6 md:px-16 lg:px-24 py-10 md:py-16 pb-40">
       <div className="max-w-4xl mx-auto">
         {/* 操作バー */}
-        <div className="flex items-center justify-between mb-8 md:mb-16">
+        <div className="flex items-center justify-between mb-8 md:mb-12">
           <Button 
             variant="ghost" 
             className="group gap-1 md:gap-2 -ml-2 md:-ml-4 hover:bg-slate-50 text-slate-400 font-black text-[10px] md:text-xs uppercase tracking-widest rounded-full px-4 md:px-6"
@@ -99,8 +98,8 @@ export default function ArticlePage() {
 
         <article className="animate-fade-in">
           {/* メインビジュアル / 紙面ビューアーセクション */}
-          <div className="mb-10 md:mb-20 space-y-8 md:space-y-12">
-            <div className="space-y-6 md:space-y-10">
+          <div className="mb-10 md:mb-16">
+            <div className="space-y-6 md:space-y-8">
               {pdfUrl ? (
                 <div className="relative w-full aspect-[1/1.414] rounded-[16px] md:rounded-[48px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
                   <iframe
@@ -110,20 +109,18 @@ export default function ArticlePage() {
                   />
                 </div>
               ) : paperImages.length > 0 ? (
-                <div className="space-y-12 md:space-y-24">
-                  {paperImages.map((imgUrl: string, index: number) => (
-                    <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
-                      <Image
-                        src={imgUrl}
-                        alt={`${article.title} - Page ${index + 1}`}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 1024px) 100vw, 896px"
-                        priority={index === 0}
-                        unoptimized={imgUrl.includes('drive.google.com')}
-                      />
-                    </div>
-                  ))}
+                <div className="space-y-8 md:space-y-12">
+                  <div className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                    <Image
+                      src={paperImages[0]}
+                      alt={`${article.title} - Cover`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                      priority
+                      unoptimized={paperImages[0].includes('drive.google.com')}
+                    />
+                  </div>
                 </div>
               ) : mainImageUrl ? (
                 <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-[24px] md:rounded-[64px] overflow-hidden shadow-2xl ring-4 md:ring-[20px] ring-white bg-slate-50">
@@ -138,19 +135,37 @@ export default function ArticlePage() {
                 </div>
               ) : null}
 
-              {/* 【最重要】管理サイトの mainImageCaption を物理的に描画 */}
+              {/* 【物理直結】画像・PDFの直後にキャプションを配置 */}
               {mainImageCaption && (
-                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-12 py-6 md:py-10 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-lg animate-fade-in ring-1 ring-slate-200">
+                <div className="flex items-start gap-4 md:gap-6 px-6 md:px-10 py-6 md:py-8 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-[32px] shadow-lg animate-fade-in ring-1 ring-slate-200">
                   <Camera size={24} className="shrink-0 mt-1 text-primary" />
-                  <span className="text-lg md:text-2xl leading-relaxed font-black tracking-tight">
+                  <span className="text-lg md:text-xl leading-relaxed font-black tracking-tight">
                     {mainImageCaption}
                   </span>
                 </div>
               )}
             </div>
+
+            {/* 複数画像がある場合の残りの画像 */}
+            {!pdfUrl && paperImages.length > 1 && (
+              <div className="mt-12 md:mt-24 space-y-12 md:space-y-24">
+                {paperImages.slice(1).map((imgUrl: string, index: number) => (
+                  <div key={index} className="relative aspect-[1/1.414] w-full rounded-[12px] md:rounded-[32px] overflow-hidden border-2 md:border-[16px] border-white shadow-2xl bg-slate-50 ring-1 ring-slate-200">
+                    <Image
+                      src={imgUrl}
+                      alt={`${article.title} - Page ${index + 2}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 1024px) 100vw, 896px"
+                      unoptimized={imgUrl.includes('drive.google.com')}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             
             {pdfUrl && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mt-8">
                 <Button asChild className="rounded-full bg-slate-900 text-white font-black px-10 md:px-16 h-12 md:h-14 text-sm shadow-2xl hover:scale-[1.05] transition-transform">
                   <a href={pdfUrl} target="_blank" rel="noopener noreferrer">全画面表示で読む</a>
                 </Button>
@@ -158,8 +173,8 @@ export default function ArticlePage() {
             )}
           </div>
 
-          <header className="mb-12 md:mb-20">
-            <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
+          <header className="mb-12 md:mb-16">
+            <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-10">
               <Link href={`/category/${article.categoryId}`}>
                 <Badge className="bg-primary text-white border-none font-black py-1.5 px-4 md:px-6 text-[10px] md:text-xs tracking-widest uppercase shadow-xl rounded-full hover:scale-105 transition-transform">
                   {article.categoryId}
@@ -173,11 +188,11 @@ export default function ArticlePage() {
               <Separator className="flex-grow bg-slate-100" />
             </div>
             
-            <h1 className="text-3xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-8 md:mb-16 leading-[1.1] text-slate-950">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-8 md:mb-12 leading-[1.1] text-slate-950">
               {article.title}
             </h1>
             
-            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10 py-6 md:py-12 border-y border-slate-100 text-[11px] md:text-xs text-slate-500 font-black uppercase tracking-[0.3em]">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10 py-6 md:py-8 border-y border-slate-100 text-[11px] md:text-xs text-slate-500 font-black uppercase tracking-[0.3em]">
               <div className="flex items-center gap-3">
                 <Calendar size={14} className="text-primary/60" />
                 <span>{article.publishDate?.split('T')[0]}</span>
@@ -193,9 +208,6 @@ export default function ArticlePage() {
             <div 
               className={cn(
                 "prose prose-slate max-w-none font-medium text-slate-800 tracking-wide",
-                "prose-p:leading-8 md:prose-p:leading-7 prose-p:my-4",
-                "prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-black prose-h2:tracking-tight prose-h2:mb-6 md:prose-h2:mb-10 prose-h2:mt-12 md:prose-h2:mt-20",
-                "prose-img:rounded-[24px] md:prose-img:rounded-[48px] prose-img:shadow-2xl prose-img:ring-4 md:prose-img:ring-[16px] prose-img:ring-white prose-img:my-12 md:prose-img:my-20",
                 fontSize === 'base' && "text-base md:text-lg", 
                 fontSize === 'lg' && "text-lg md:text-xl",
                 fontSize === 'xl' && "text-xl md:text-2xl" 

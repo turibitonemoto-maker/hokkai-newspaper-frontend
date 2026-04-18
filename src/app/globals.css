@@ -46,19 +46,32 @@
   }
 }
 
-/* 本文内のキャプション（figcaption）および画像直下のテキストに対する強制装飾 */
+/* 【聖典：報道キャプションの物理定義】 */
+/* figcaption、特定のクラス、または画像（を包むP）の直後に来るPタグをキャプションとして強制装飾 */
 .prose figcaption,
 .prose .image-caption,
 .prose p.caption,
+.prose p:has(img) + p,
+.prose img + p,
 .prose .resizable-image-container + p {
-  @apply flex items-start gap-4 px-6 py-6 my-10 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-3xl shadow-lg font-black !important;
+  @apply flex items-start gap-4 px-6 py-6 my-8 text-slate-800 italic border-l-8 border-primary bg-slate-50 rounded-r-3xl shadow-lg font-black !important;
   font-size: 1.1em;
   line-height: 1.5;
+  display: flex !important;
 }
 
-/* Tiptap等のエディタで画像直後に来る段落がキャプションとして扱われるケースへの対応 */
-.prose img + p {
-  @apply -mt-6 mb-12 px-6 py-4 text-slate-600 font-bold italic border-l-4 border-primary/40 bg-slate-50/50 rounded-r-xl !important;
+/* キャプション内のテキストが埋もれないよう調整 */
+.prose figcaption::before,
+.prose .image-caption::before,
+.prose p:has(img) + p::before,
+.prose img + p::before {
+  content: "📸";
+  @apply mr-2 not-italic;
+}
+
+/* 聖典：黄金比 (leading-6, my-3) の強制適用 */
+.prose p {
+  @apply leading-6 my-3 !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {
