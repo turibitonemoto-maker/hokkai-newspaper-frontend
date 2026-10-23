@@ -31,3 +31,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prevent stray prompt-template files from breaking deployment
+"[Provide the ABSOLUTE, FULL path to the file being modified]"
