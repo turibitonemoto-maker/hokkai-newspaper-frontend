@@ -152,7 +152,7 @@ export default function ArticlePage() {
               {article.title}
             </h1>
             
-            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10 py-6 md:py-8 border-y border-slate-100 text-[11px] md:text-xs text-slate-500 font-black uppercase tracking-[0.3em]">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10 py-6 md:py-8 border-y border-slate-100 text-[11px] md:text-xs text-slate-500 font-black uppercase tracking-[0.2em]">
               <div className="flex items-center gap-3"><Calendar size={14} className="text-primary/60" /><span>{article.publishDate?.split('T')[0]}</span></div>
               <div className="flex items-center gap-3"><User size={14} className="text-primary/60" /><span>{article.authorName || '北海学園大学新聞会'}</span></div>
             </div>
